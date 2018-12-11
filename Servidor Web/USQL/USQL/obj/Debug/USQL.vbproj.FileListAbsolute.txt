@@ -1,0 +1,12 @@
+C:\Users\erick\Documents\Diciembre2018\Compiladores2\Proyecto1\Servidor Web\USQL\USQL\bin\Debug\USQL.exe.config
+C:\Users\erick\Documents\Diciembre2018\Compiladores2\Proyecto1\Servidor Web\USQL\USQL\bin\Debug\USQL.exe
+C:\Users\erick\Documents\Diciembre2018\Compiladores2\Proyecto1\Servidor Web\USQL\USQL\bin\Debug\USQL.pdb
+C:\Users\erick\Documents\Diciembre2018\Compiladores2\Proyecto1\Servidor Web\USQL\USQL\bin\Debug\USQL.xml
+C:\Users\erick\Documents\Diciembre2018\Compiladores2\Proyecto1\Servidor Web\USQL\USQL\obj\Debug\USQL.vbprojAssemblyReference.cache
+C:\Users\erick\Documents\Diciembre2018\Compiladores2\Proyecto1\Servidor Web\USQL\USQL\obj\Debug\USQL.Form1.resources
+C:\Users\erick\Documents\Diciembre2018\Compiladores2\Proyecto1\Servidor Web\USQL\USQL\obj\Debug\USQL.Resources.resources
+C:\Users\erick\Documents\Diciembre2018\Compiladores2\Proyecto1\Servidor Web\USQL\USQL\obj\Debug\USQL.vbproj.GenerateResource.cache
+C:\Users\erick\Documents\Diciembre2018\Compiladores2\Proyecto1\Servidor Web\USQL\USQL\obj\Debug\USQL.vbproj.CoreCompileInputs.cache
+C:\Users\erick\Documents\Diciembre2018\Compiladores2\Proyecto1\Servidor Web\USQL\USQL\obj\Debug\USQL.exe
+C:\Users\erick\Documents\Diciembre2018\Compiladores2\Proyecto1\Servidor Web\USQL\USQL\obj\Debug\USQL.xml
+C:\Users\erick\Documents\Diciembre2018\Compiladores2\Proyecto1\Servidor Web\USQL\USQL\obj\Debug\USQL.pdb

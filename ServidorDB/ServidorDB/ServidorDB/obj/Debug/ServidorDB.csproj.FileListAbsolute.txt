@@ -1,0 +1,17 @@
+C:\Users\erick\Documents\Diciembre2018\Compiladores2\Proyecto1\ServidorDB\ServidorDB\ServidorDB\obj\Debug\ServidorDB.csprojAssemblyReference.cache
+C:\Users\erick\Documents\Diciembre2018\Compiladores2\Proyecto1\ServidorDB\ServidorDB\ServidorDB\obj\Debug\ServidorDB.Properties.Resources.resources
+C:\Users\erick\Documents\Diciembre2018\Compiladores2\Proyecto1\ServidorDB\ServidorDB\ServidorDB\obj\Debug\ServidorDB.csproj.GenerateResource.cache
+C:\Users\erick\Documents\Diciembre2018\Compiladores2\Proyecto1\ServidorDB\ServidorDB\ServidorDB\obj\Debug\ServidorDB.csproj.CoreCompileInputs.cache
+C:\Users\erick\Documents\Diciembre2018\Compiladores2\Proyecto1\ServidorDB\ServidorDB\ServidorDB\bin\Debug\ServidorDB.exe.config
+C:\Users\erick\Documents\Diciembre2018\Compiladores2\Proyecto1\ServidorDB\ServidorDB\ServidorDB\bin\Debug\ServidorDB.exe
+C:\Users\erick\Documents\Diciembre2018\Compiladores2\Proyecto1\ServidorDB\ServidorDB\ServidorDB\bin\Debug\ServidorDB.pdb
+C:\Users\erick\Documents\Diciembre2018\Compiladores2\Proyecto1\ServidorDB\ServidorDB\ServidorDB\bin\Debug\Irony.dll
+C:\Users\erick\Documents\Diciembre2018\Compiladores2\Proyecto1\ServidorDB\ServidorDB\ServidorDB\obj\Debug\ServidorDB.csproj.CopyComplete
+C:\Users\erick\Documents\Diciembre2018\Compiladores2\Proyecto1\ServidorDB\ServidorDB\ServidorDB\obj\Debug\ServidorDB.exe
+C:\Users\erick\Documents\Diciembre2018\Compiladores2\Proyecto1\ServidorDB\ServidorDB\ServidorDB\obj\Debug\ServidorDB.pdb
+C:\Users\erick\Documents\Diciembre2018\Compiladores2\Proyecto1\ServidorDB\ServidorDB\ServidorDB\obj\Debug\ServidorDB.Form1.resources
+C:\Users\erick\Documents\Diciembre2018\Compiladores2\Proyecto1\ServidorDB\ServidorDB\ServidorDB\bin\Debug\Irony.Interpreter.dll
+C:\Users\erick\Documents\Diciembre2018\Compiladores2\Proyecto1\ServidorDB\ServidorDB\ServidorDB\bin\Debug\Irony.pdb
+C:\Users\erick\Documents\Diciembre2018\Compiladores2\Proyecto1\ServidorDB\ServidorDB\ServidorDB\bin\Debug\Irony.xml
+C:\Users\erick\Documents\Diciembre2018\Compiladores2\Proyecto1\ServidorDB\ServidorDB\ServidorDB\bin\Debug\Irony.Interpreter.pdb
+C:\Users\erick\Documents\Diciembre2018\Compiladores2\Proyecto1\ServidorDB\ServidorDB\ServidorDB\bin\Debug\Irony.Interpreter.xml
