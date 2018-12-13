@@ -123,14 +123,14 @@ namespace ServidorDB.AnalizadorXML
             var VERDADERO = ToTerm("1");
             RegexBasedTerminal DIGITO = new RegexBasedTerminal("DIGITO", "[0-9]");
             RegexBasedTerminal DOUBLE = new RegexBasedTerminal("DOUBLE", "(-)?[0-9]+\\.[0-9]+");
-            RegexBasedTerminal INTEGER = new RegexBasedTerminal("INTEGER", "(-)?[0-9]+");            
+            RegexBasedTerminal INTEGER = new RegexBasedTerminal("INTEGER", "(-)?[0-9]+");
             RegexBasedTerminal DATE = new RegexBasedTerminal("DATE", "[0-9][0-9]-[0-9][0-9]-[0-9][0-9][0-9][0-9]");
             RegexBasedTerminal HORA = new RegexBasedTerminal("HORA", "[0-9][0-9]:[0-9][0-9]:[0-9][0-9]");
             RegexBasedTerminal NUMERO = new RegexBasedTerminal("NUMERO", "[0-9]+\\.[0-9]{6}");
             RegexBasedTerminal PATH = new RegexBasedTerminal("PATH", @"[a-zA-Z]:([\\][a-zA-Z]([a-zA-Z]|[0-9]|\.|_|-)*)*");
             //+		$exception	{"analizando \"\\G([a-zA-Z]:([\\])*)\" - Conjunto [] sin terminar."}	System.ArgumentException
 
-            RegexBasedTerminal S_IDENTIFICADOR = new RegexBasedTerminal("S_IDENTIFICADOR", "(@)?([a-zA-Z])+(([a-zA-Z])|([0-9])|_|#|$)+");
+            RegexBasedTerminal S_IDENTIFICADOR = new RegexBasedTerminal("S_IDENTIFICADOR", "(@)?([a-zA-Z])+(([a-zA-Z])|([0-9])|_|#|$|@|\\.)+");
             // ([a-zA-Z])+([0-9]|[a-zA-Z]|$|_|#)*
             StringLiteral CADENA_LITERAL = new StringLiteral("CADENA_LITERAL", "\"");
             StringLiteral CODIGO = new StringLiteral("CODIGO", "~");
@@ -144,7 +144,7 @@ namespace ServidorDB.AnalizadorXML
             var abrir = ToTerm("<");
             var diagonal = ToTerm("/");
             var cerrar = ToTerm(">");
-            var KNULO = ToTerm("nulo");          
+            var KNULO = ToTerm("nulo");
             var KDB = ToTerm("db");
             var KNOMBRE = ToTerm("nombre");
             var KPATH = ToTerm("path");
@@ -212,28 +212,89 @@ namespace ServidorDB.AnalizadorXML
                        ARCHIVO = new NonTerminal("ARCHIVO"),
                        ARCHIVOS = new NonTerminal("ARCHIVOS"),
                        FUNCIONES = new NonTerminal("FUNCIONES"),
-                       FUNCION = new NonTerminal("FUNCION")
+                       FUNCION = new NonTerminal("FUNCION"),
+                       NOBJETO = new NonTerminal("NOBJETO"), // NOMBRE DEL OBJETO
+                       LNOBJETO = new NonTerminal("LNOBJETO"), // LISTA DE NOMBRES DE OBJETOS
+                       PERDB = new NonTerminal("PERDB"), // Permisos base de datos
+                       LPERDB = new NonTerminal("LPERDB"), // Lista de bases de datos para un usuario
+                       PERMISO = new NonTerminal("PERMISO"),
+                       PERMISOS = new NonTerminal("PERMISOS")
                        ;
-                       
-            this.Root = ARCHIVOS;
+
+            this.Root = ARCHIVO;
             ARCHIVOS.Rule = MakePlusRule(ARCHIVOS, ARCHIVO);
             ARCHIVO.Rule = OBJETOS // Archivo de objetos 
                         | MAESTRO  // Archivo Maestro
-                        | LROW // Archivo de procedimientos
-                        | DB // Archivo de db
+                        | LROW // Archivo registros en cada tabla
+                        | DB // Archivo de informacion de dbq 
                         | FUNCIONES // Archivo de funciones
+                        | PERMISOS // Archivo de usuario 
+                        | PROCEDURE
                         ;
             /*
-<Func>
-	<nombre>"fibonaccidireccion"</nombre>
-	<params>
-	<ENTERO>"carnetfibonacci"</ENTERO>
-	<ENTERO>"carnetdireccion"</ENTERO>
-	</params>
-	<src>~CODIGO~</src>
-	<tipo>"ENTERO"</tipo>
-	</Func>
+<usuario>
+    <nombre> Erick </nombre>
+    <base>
+        <nombredb>Base1</nombredb>
+        <objetos>
+            <objeto>objeto1</objeto>
+            <objeto>objeto2</objeto>
+            <objeto>objeto3</objeto>
+        </objetos>
+    </base>
+    <base>
+        <nombredb>Base2</nombredb>
+        <objetos>
+            <objeto>objeto4</objeto>
+            <objeto>objeto5</objeto>
+            <objeto>objeto6</objeto>
+        </objetos>
+    </base>
+</usuario>
             */
+
+            #region Archivo de usuarios y permisos
+            PERMISOS.Rule = MakePlusRule(PERMISOS, PERMISO);
+
+            PERMISO.Rule =
+                abrir + ToTerm("usuario") + cerrar +
+                    abrir + ToTerm("nombre") + cerrar +
+                        VALOR +
+                    abrir + diagonal + ToTerm("nombre") + cerrar +
+                    abrir + ToTerm("password") + cerrar +
+                        VALOR +
+                    abrir + diagonal + ToTerm("password") + cerrar +
+                    LPERDB +
+                abrir + diagonal + ToTerm("usuario") + cerrar
+|
+                abrir + ToTerm("usuario") + cerrar +
+                    abrir + ToTerm("nombre") + cerrar +
+                        VALOR +
+                    abrir + diagonal + ToTerm("nombre") + cerrar +
+                    abrir + ToTerm("password") + cerrar +
+                        VALOR +
+                    abrir + diagonal + ToTerm("password") + cerrar +                    
+                abrir + diagonal + ToTerm("usuario") + cerrar;
+
+            LPERDB.Rule = MakePlusRule(LPERDB, PERDB);
+            PERDB.Rule =
+                abrir + ToTerm("base") + cerrar +                   // <base>
+                    abrir + ToTerm("nombredb") + cerrar +             //      <objeto>
+                    S_IDENTIFICADOR +
+                    abrir + diagonal + ToTerm("nombredb") + cerrar+
+                    abrir + ToTerm("objetos") + cerrar +             //      <objeto>
+                    LNOBJETO +
+                    abrir + diagonal + ToTerm("objetos") + cerrar +                    
+                abrir + diagonal + ToTerm("base") + cerrar 
+                ;
+
+
+            LNOBJETO.Rule = MakePlusRule(LNOBJETO, NOBJETO);
+            NOBJETO.Rule =
+                    abrir + ToTerm("objeto") + cerrar +
+                        S_IDENTIFICADOR+
+                    abrir + diagonal + ToTerm("objeto") + cerrar;
+            #endregion
 
             #region Archivo de funciones
             FUNCIONES.Rule = MakePlusRule(FUNCIONES, FUNCION);
@@ -277,6 +338,7 @@ namespace ServidorDB.AnalizadorXML
             #region Archivo de procedimientos
             PROCEDURE.Rule = MakePlusRule(PROCEDURE, PROC);
             PROC.Rule =
+                    //Funcion porque tiene tipo de retorno
                     abrir + ToTerm("proc") + cerrar +
                         abrir + ToTerm("nombre") + cerrar +
                             VALOR+
@@ -287,6 +349,9 @@ namespace ServidorDB.AnalizadorXML
                         abrir + ToTerm("src") + cerrar +
                             CODIGO + 
                         abrir + diagonal + ToTerm("src") + cerrar+
+                        abrir + ToTerm("tipo") + cerrar +
+                            S_IDENTIFICADOR +
+                        abrir + diagonal + ToTerm("tipo") + cerrar +
                     abrir + diagonal + ToTerm("proc") + cerrar
 |
                     abrir + ToTerm("proc") + cerrar +
@@ -299,7 +364,36 @@ namespace ServidorDB.AnalizadorXML
                         abrir + ToTerm("src") + cerrar +
                             CODIGO +
                         abrir + diagonal + ToTerm("src") + cerrar +
-                    abrir + diagonal + ToTerm("proc") + cerrar;
+                        abrir + ToTerm("tipo") + cerrar +
+                            S_IDENTIFICADOR +
+                        abrir + diagonal + ToTerm("tipo") + cerrar +
+                    abrir + diagonal + ToTerm("proc") + cerrar
+
+|                   // Procedimiento porque no tiene tipo de retorno
+                    abrir + ToTerm("proc") + cerrar +
+                        abrir + ToTerm("nombre") + cerrar +
+                            VALOR +
+                        abrir + diagonal + ToTerm("nombre") + cerrar +
+                        abrir + ToTerm("PARAMS") + cerrar +
+                            LCAMPO + //  todos los campos
+                        abrir + diagonal + ToTerm("PARAMS") + cerrar +
+                        abrir + ToTerm("src") + cerrar +
+                            CODIGO +
+                        abrir + diagonal + ToTerm("src") + cerrar +
+                    abrir + diagonal + ToTerm("proc") + cerrar
+|
+                    abrir + ToTerm("proc") + cerrar +
+                        abrir + ToTerm("nombre") + cerrar +
+                            VALOR +
+                        abrir + diagonal + ToTerm("nombre") + cerrar +
+                        abrir + ToTerm("PARAMS") + cerrar +
+                        //LCAMPO + //  todos los campos
+                        abrir + diagonal + ToTerm("PARAMS") + cerrar +
+                        abrir + ToTerm("src") + cerrar +
+                            CODIGO +
+                        abrir + diagonal + ToTerm("src") + cerrar +
+                    abrir + diagonal + ToTerm("proc") + cerrar
+                    ;
 
             #endregion
 
@@ -315,7 +409,7 @@ namespace ServidorDB.AnalizadorXML
                         abrir + S_IDENTIFICADOR + cerrar +
                         VALOR+
                         abrir + diagonal + S_IDENTIFICADOR + cerrar;
-            VALOR.Rule = S_IDENTIFICADOR | INTEGER | CADENA_LITERAL | DATE+ HORA|DOUBLE;
+            VALOR.Rule = S_IDENTIFICADOR | INTEGER | CADENA_LITERAL|DATE | DATE+ HORA| DOUBLE;
 
             #endregion
 
@@ -357,8 +451,8 @@ namespace ServidorDB.AnalizadorXML
                             PATH +
                             abrir + diagonal + ToTerm("PATH") + cerrar +
                             LROWS+
-                        abrir + diagonal + ToTerm("tabla") + cerrar; 
-
+                        abrir + diagonal + ToTerm("tabla") + cerrar;            
+            
             LROWS.Rule = abrir + ToTerm("ROWS") + cerrar +
                         LCAMPOS+
                         abrir + diagonal + ToTerm("ROWS") + cerrar;
@@ -376,12 +470,12 @@ namespace ServidorDB.AnalizadorXML
                                 abrir+ diagonal + ToTerm("PROPIEDADES") + cerrar;
 
             LATRIBUTOS.Rule = MakePlusRule(LATRIBUTOS, ATRIBUTO);
-            ATRIBUTO.Rule =  abrir+ KNULO+ cerrar + INTEGER + abrir + diagonal + KNULO  + cerrar
-                           | abrir + KPRIM + cerrar + INTEGER + abrir + diagonal + KPRIM + cerrar
-                           | abrir + KFOR + cerrar + S_IDENTIFICADOR + abrir + diagonal + KFOR + cerrar
-                           | abrir + KFOR + cerrar + INTEGER + abrir + diagonal + KFOR + cerrar
-                           | abrir + KAUTO + cerrar + INTEGER + abrir + diagonal + KAUTO + cerrar
-                           | abrir + KUNICO + cerrar + INTEGER + abrir + diagonal + KUNICO + cerrar                           
+            ATRIBUTO.Rule =  abrir+ KNULO+ cerrar + VALOR + abrir + diagonal + KNULO  + cerrar
+                           | abrir + KPRIM + cerrar + VALOR + abrir + diagonal + KPRIM + cerrar
+                           | abrir + KFOR + cerrar + VALOR + abrir + diagonal + KFOR + cerrar
+                           | abrir + KFOR + cerrar + VALOR + abrir + diagonal + KFOR + cerrar
+                           | abrir + KAUTO + cerrar + VALOR + abrir + diagonal + KAUTO + cerrar
+                           | abrir + KUNICO + cerrar + VALOR + abrir + diagonal + KUNICO + cerrar                           
                         ;
 
             #endregion
@@ -397,13 +491,14 @@ namespace ServidorDB.AnalizadorXML
                            abrir + KPATH + cerrar + PATH + abrir + diagonal + KPATH + cerrar +
                            abrir + KNOMBRE + cerrar + S_IDENTIFICADOR + abrir + diagonal + KNOMBRE + cerrar +
                            abrir + diagonal + KDB + cerrar;
+            DATOSDB.ErrorRule = SyntaxError + ">";
             #endregion 
 
             
             MarkPunctuation("<", "/", ">", "db","PROPIEDADES","CAMPO","rows","object", "procedure","tabla","attr",
                 "obj","row","ROWS", "PROPIEDADES","nulo","autoincrementable","primaria","foranea"
-                ,"params","src", "func");//para quitar hojas inutiles del arbol
-            MarkTransient(LROWS, ATRIBUTO, PROPIEDADES);
+                ,"params","src", "func", "base","nombredb","objetos","objeto");//para quitar hojas inutiles del arbol
+            MarkTransient(LROWS,/* ATRIBUTO, */PROPIEDADES,NOBJETO,ROW);
             NonGrammarTerminals.Add(comentarioSimple); 
             NonGrammarTerminals.Add(comentarioMulti);
             //LanguageFlags = LanguageFlags.CreateAst;

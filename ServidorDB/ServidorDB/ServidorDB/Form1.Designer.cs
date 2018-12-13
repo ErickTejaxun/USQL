@@ -40,7 +40,7 @@
             // 
             this.inputConsole.Location = new System.Drawing.Point(29, 50);
             this.inputConsole.Name = "inputConsole";
-            this.inputConsole.Size = new System.Drawing.Size(730, 77);
+            this.inputConsole.Size = new System.Drawing.Size(1146, 287);
             this.inputConsole.TabIndex = 0;
             this.inputConsole.Text = "";
             // 
@@ -60,15 +60,15 @@
             // 
             // outputConsola
             // 
-            this.outputConsola.Location = new System.Drawing.Point(29, 210);
+            this.outputConsola.Location = new System.Drawing.Point(29, 418);
             this.outputConsola.Name = "outputConsola";
-            this.outputConsola.Size = new System.Drawing.Size(730, 228);
+            this.outputConsola.Size = new System.Drawing.Size(1146, 228);
             this.outputConsola.TabIndex = 3;
             this.outputConsola.Text = "";
             // 
             // runButton
             // 
-            this.runButton.Location = new System.Drawing.Point(29, 153);
+            this.runButton.Location = new System.Drawing.Point(29, 360);
             this.runButton.Name = "runButton";
             this.runButton.Size = new System.Drawing.Size(118, 39);
             this.runButton.TabIndex = 4;
@@ -80,7 +80,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.ClientSize = new System.Drawing.Size(1229, 658);
             this.Controls.Add(this.runButton);
             this.Controls.Add(this.outputConsola);
             this.Controls.Add(this.label1);

@@ -59,6 +59,21 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AnalizadorXML\Analizador.cs" />
+    <Compile Include="AnalizadorXML\Ejecucion.cs" />
+    <Compile Include="estructurasDB\Atributo.cs" />
+    <Compile Include="estructurasDB\BD.cs" />
+    <Compile Include="estructurasDB\campo.cs" />
+    <Compile Include="estructurasDB\defCampo.cs" />
+    <Compile Include="estructurasDB\defTabla.cs" />
+    <Compile Include="estructurasDB\Entorno.cs" />
+    <Compile Include="estructurasDB\Objeto.cs" />
+    <Compile Include="estructurasDB\Permiso.cs" />
+    <Compile Include="estructurasDB\Procedimiento.cs" />
+    <Compile Include="estructurasDB\SistemaArchivos.cs" />
+    <Compile Include="estructurasDB\Tabla.cs" />
+    <Compile Include="estructurasDB\tupla.cs" />
+    <Compile Include="estructurasDB\Usuario.cs" />
+    <Compile Include="AnalizadorXML\generadorArbolXML.cs" />
     <Compile Include="AnalizadorXML\Gramatica.cs" />
     <Compile Include="AnalizadorXML\XMLGramatica.cs" />
     <Compile Include="AST\diagramadorDOT.cs" />

@@ -25,8 +25,18 @@ namespace ServidorDB.AnalizadorXML
                 //generarImagen(raiz);                
                 Genarbol(raiz);
                 generateGraph("ejemplo.txt");
+                return getErrores(arbol);            
             }
-            return "1";
+            
+            //return "1";
+        }
+
+        public ParseTree generarArbol(string cadenaEntrada, Grammar gramatica)
+        {
+            LanguageData lenguaje = new LanguageData(gramatica);
+            Parser p = new Parser(lenguaje);
+            ParseTree arbol = p.Parse(cadenaEntrada);
+            return arbol;
         }
 
         public string getErrores(ParseTree arbol)
@@ -38,11 +48,26 @@ namespace ServidorDB.AnalizadorXML
                 int elementos = arbol.ParserMessages.Count;
                 for (int x = 0; x < elementos; x++)
                 {
-                    cabecera += "Error en " + arbol.ParserMessages[x].Location + ";" + arbol.ParserMessages[x].Message + "\r\n";
-                    errores += arbol.ParserMessages[x].Location.Line + ";" + arbol.ParserMessages[x].Location.Column + ";" + arbol.ParserMessages[x].Message + "@";
+                    cabecera += "Error en " + arbol.ParserMessages[x].Location + "\t" + arbol.ParserMessages[x].Message + "\r\n---------->";
+                    errores += "Error en: Linea"+arbol.ParserMessages[x].Location.Line + "\tColumna:" + arbol.ParserMessages[x].Location.Column + "\r\n---------->" 
+                        + arbol.ParserMessages[x].Message + "@";
                 }
             }
-            return cabecera + "\n" + errores;
+            errores = errores.Replace("expected", "Se esperaba");
+            errores = errores.Replace("Syntax error", "Error Sintactico");
+            errores = errores.Replace("Invalid character", "Caracter invalido");
+            cabecera = cabecera.Replace("expected", "Se esperaba");
+            cabecera = cabecera.Replace("Syntax error", "Error Sintactico");
+            cabecera = cabecera.Replace("Invalid character", "Caracter invalido");
+            /*
+                ---------->Error en (9:1)	Invalid character: 'x'.
+                ---------->Error en (12:2)	Error Sintactico, Se esperaba: db
+                ---------->Error en (22:1)	Error Sintactico, Se esperaba: >
+                ---------->
+                8;0;Invalid character: 'x'.@11;1;Error Sintactico, Se esperaba: db@21;0;Error Sintactico, Se esperaba: >@             
+             
+             */
+            return cabecera  + errores;
         }
 
 

@@ -1,0 +1,20 @@
+﻿'ServidorDB.exe' (CLR v4.0.30319: DefaultDomain): 'C:\WINDOWS\Microsoft.Net\assembly\GAC_32\mscorlib\v4.0_4.0.0.0__b77a5c561934e089\mscorlib.dll' cargado. Se omitió la carga de símbolos. El módulo está optimizado y la opción del depurador 'Sólo mi código' está habilitada.
+'ServidorDB.exe' (CLR v4.0.30319: DefaultDomain): 'C:\Users\erick\Documents\Diciembre2018\Compiladores2\Proyecto1\ServidorDB\ServidorDB\ServidorDB\bin\Debug\ServidorDB.exe' cargado. Símbolos cargados.
+'ServidorDB.exe' (CLR v4.0.30319: ServidorDB.exe): 'C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\System.Windows.Forms\v4.0_4.0.0.0__b77a5c561934e089\System.Windows.Forms.dll' cargado. Se omitió la carga de símbolos. El módulo está optimizado y la opción del depurador 'Sólo mi código' está habilitada.
+'ServidorDB.exe' (CLR v4.0.30319: ServidorDB.exe): 'C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\System\v4.0_4.0.0.0__b77a5c561934e089\System.dll' cargado. Se omitió la carga de símbolos. El módulo está optimizado y la opción del depurador 'Sólo mi código' está habilitada.
+'ServidorDB.exe' (CLR v4.0.30319: ServidorDB.exe): 'C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\System.Drawing\v4.0_4.0.0.0__b03f5f7f11d50a3a\System.Drawing.dll' cargado. Se omitió la carga de símbolos. El módulo está optimizado y la opción del depurador 'Sólo mi código' está habilitada.
+'ServidorDB.exe' (CLR v4.0.30319: ServidorDB.exe): 'C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\System.Configuration\v4.0_4.0.0.0__b03f5f7f11d50a3a\System.Configuration.dll' cargado. Se omitió la carga de símbolos. El módulo está optimizado y la opción del depurador 'Sólo mi código' está habilitada.
+'ServidorDB.exe' (CLR v4.0.30319: ServidorDB.exe): 'C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\System.Core\v4.0_4.0.0.0__b77a5c561934e089\System.Core.dll' cargado. Se omitió la carga de símbolos. El módulo está optimizado y la opción del depurador 'Sólo mi código' está habilitada.
+'ServidorDB.exe' (CLR v4.0.30319: ServidorDB.exe): 'C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\System.Xml\v4.0_4.0.0.0__b77a5c561934e089\System.Xml.dll' cargado. Se omitió la carga de símbolos. El módulo está optimizado y la opción del depurador 'Sólo mi código' está habilitada.
+'ServidorDB.exe' (CLR v4.0.30319: ServidorDB.exe): 'C:\Users\erick\Documents\Diciembre2018\Compiladores2\Proyecto1\ServidorDB\ServidorDB\ServidorDB\bin\Debug\Irony.dll' cargado. Se omitió la carga de símbolos. El módulo está optimizado y la opción del depurador 'Sólo mi código' está habilitada.
+Texto encontrado --- 
+<proc>
+	<nombre>"CambiarTipoCliente"</nombre>
+	<params>
+		<entero>codigoCliente</entero>
+		<entero>nuevoTipo</entero>
+	</params>	 
+	<src>~crear procedimiento CambiarTipoCliente(integer @codigoCliente, integer @nuevoTipo){declarar @codigo integer = @codigoCliente;declarar @tipo integer = @nuevoTipo;	ACTUALIZAR TABLA clientes (tipo) VALORES (@tipo) DONDE codigo == @codigo;}~</src>
+</proc>
+'ServidorDB.exe' (CLR v4.0.30319: ServidorDB.exe): 'C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\mscorlib.resources\v4.0_4.0.0.0_es_b77a5c561934e089\mscorlib.resources.dll' cargado. El módulo se compiló sin símbolos.
+El programa '[16596] ServidorDB.exe' terminó con código 0 (0x0).
