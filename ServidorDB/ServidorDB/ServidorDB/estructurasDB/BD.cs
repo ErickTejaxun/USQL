@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Irony.Parsing;
+using ServidorBDD.EjecucionUsql;
 
 namespace ServidorDB.estructurasDB
 {
@@ -39,7 +40,17 @@ namespace ServidorDB.estructurasDB
             /*Primero realizamos el producto cartesiano de las tablas involucradas*/
             foreach (String ntab in listaTablas)
             {
-                cartesianoTemporal = productoCartesiano(cartesianoTemporal, buscarTabla(ntab) , ntab);                
+
+                if (buscarTabla(ntab) == null)
+                {
+                    data =  data + "Error: Tabla " + ntab + " no existe en la base de datos. \n";
+                    cartesianoTemporal = productoCartesiano(cartesianoTemporal, new List<tupla>(), ntab);
+                }
+                else
+                {
+                    cartesianoTemporal = productoCartesiano(cartesianoTemporal, buscarTabla(ntab), ntab);
+                }
+                
             }
             /*Verificamos las condiciones para filtrar resultados*/
             foreach (tupla tp in cartesianoTemporal)
@@ -54,19 +65,26 @@ namespace ServidorDB.estructurasDB
             cartesiano = filtrarResultados(listaCampos, cartesiano);
 
             /**/
-            cartesiano = ordenarResultados(cartesiano, campoOrdenacion, orden);
+            //cartesiano = ordenarResultados(cartesiano, campoOrdenacion, orden);
 
             #region imprimir resultado
-            foreach (campo cp in cartesiano[0].campos)
+            if (cartesiano.Count > 0)
             {
-                if (data.Equals("\n"))
+                foreach (campo cp in cartesiano[0].campos)
                 {
-                    data = cp.id;
+                    if (data.Equals("\n"))
+                    {
+                        data = cp.id;
+                    }
+                    else
+                    {
+                        data = data + "," + cp.id;
+                    }
                 }
-                else
-                {
-                    data = data + "," + cp.id;
-                }
+            }
+            else
+            {
+                return data + "\n Sin resultados";
             }
             data = data + "\n";
             foreach (tupla tpm in cartesiano)
@@ -150,15 +168,16 @@ namespace ServidorDB.estructurasDB
             {
                 return true;
             }
-
-
-            return true;
+            Relacional rel = new Relacional();
+            Resultado result = rel.operar(raiz);
+            return (bool) result.valor;            
         }
 
         public List<tupla> filtrarResultados(List<String> listaCampos, List<tupla> cartesiano)
         {
             List<tupla> listaFiltrada = new List<tupla>();
-            if(listaCampos.Count == 0)
+            #region Eleccion de campos
+            if (listaCampos.Count == 0)
             {
                 return cartesiano;
             }
@@ -171,24 +190,46 @@ namespace ServidorDB.estructurasDB
                     {
                         if (campoBuscado.ToLower().Equals(cp.id.ToLower()))// Es un campo buscado
                         {
-                            nuevaTupla.addCampo(cp);
+                            nuevaTupla.addCampo(new campo(cp.id, cp.valor));
                         }
                     }
                 }
                 listaFiltrada.Add(nuevaTupla);
             }
-            return listaFiltrada;
+            #endregion
+            #region Ordenar salida 
+            List<tupla> listaFinal = new List<tupla>();
+            foreach (tupla tp in listaFiltrada)
+            {
+                tupla newTp = new tupla();
+                foreach (String nombre in listaCampos)
+                {
+                    foreach (campo cp in tp.campos)
+                    {
+                        if (nombre.Equals(cp.id))
+                        {
+                            newTp.addCampo(new campo(cp.id, cp.valor));
+                        }
+                    }
+                }
+                listaFinal.Add(newTp);
+            }
+            #endregion
+            return listaFinal;
         }
         public List<tupla> productoCartesiano(List<tupla> tab1, List<tupla> tab2 , String nombre)
         {
             List<tupla> tablaCar = new List<tupla>();
-            if (tab1.Count >0 && tab2.Count > 0)
+            if (tab1.Count > 0 && tab2.Count > 0)
             {
                 foreach (tupla tp in tab2)
                 {
                     foreach (campo cp in tp.campos)
                     {
-                        cp.id = nombre + "." + cp.id;
+                        if (!cp.id.Contains("."))
+                        {
+                            cp.id = nombre + "." + cp.id;
+                        }                        
                     }
                 }
 
@@ -199,23 +240,40 @@ namespace ServidorDB.estructurasDB
                 {
                     tupla tpm = new tupla();
                     foreach (campo cmp in data.campo1.campos)
-                    {                        
-                        tpm.addCampo(cmp);
+                    {
+                        tpm.addCampo(new campo(cmp.id, cmp.valor));
                     }
                     foreach (campo cmp in data.campo2.campos)
-                    {                        
-                        tpm.addCampo(cmp); 
+                    {
+                        tpm.addCampo(new campo(cmp.id, cmp.valor));
                     }
                     tablaCar.Add(tpm);
                 }
             }
-            else
+            else if (tab1.Count > 0)
+            {
+                foreach (tupla tp in tab1)
+                {
+                    foreach (campo cp in tp.campos)
+                    {
+                        if (!cp.id.Contains("."))
+                        {
+                            cp.id = nombre + "." + cp.id;
+                        }
+                    }
+                }
+                return tab1;
+            }
+            else if (tab2.Count > 0)
             {
                 foreach (tupla tp in tab2)
                 {
                     foreach (campo cp in tp.campos)
                     {
-                        cp.id = nombre +"."+ cp.id;
+                        if (!cp.id.Contains("."))
+                        {
+                            cp.id = nombre + "." + cp.id;
+                        }                        
                     }
                 }
                 return tab2;
@@ -232,7 +290,7 @@ namespace ServidorDB.estructurasDB
                     return tab.tuplas;
                 }
             }
-            return null;
+            return null;            
         }
     }
 

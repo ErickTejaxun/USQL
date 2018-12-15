@@ -11,6 +11,8 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Irony.Parsing;
 using ServidorDB.estructurasDB;
+using ServidorBDD.AnalisisUsql;
+using ServidorBDD.EjecucionUsql;
 
 namespace ServidorDB
 {    
@@ -236,6 +238,28 @@ namespace ServidorDB
                 List<String> listaTablas, List<String> campos, ParseTreeNode raiz, String campoOrdenacion, int orden)             
              */
             imprimirSalida("-----------------------------------------");
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            GramaticaSDB grammar = new GramaticaSDB();
+            LanguageData lenguaje = new LanguageData(grammar);
+            Parser p = new Parser(lenguaje);
+            ParseTree arbol = p.Parse(inputConsole.Text);
+            if (arbol.Root != null)
+            {
+                imprimirSalida("Salida...");
+                //Genarbol(arbol.Root);
+                //generateGraph("Ejemplo.txt");
+                Interprete i = new Interprete();
+                i.sistemaActual = sistemaArchivos;
+                Resultado result = i.ejecutar(arbol.Root.ChildNodes[0]);
+                imprimirSalida(result.valor+"");                
+            }
+            else
+            {
+                imprimirSalida(getErrores(arbol));
+            }
         }
     }
 }

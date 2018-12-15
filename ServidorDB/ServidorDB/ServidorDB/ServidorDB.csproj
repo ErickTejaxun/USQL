@@ -8,9 +8,10 @@
     <OutputType>WinExe</OutputType>
     <RootNamespace>ServidorDB</RootNamespace>
     <AssemblyName>ServidorDB</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -58,8 +59,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AnalisisUsql\GramaticaSDB.cs" />
     <Compile Include="AnalizadorXML\Analizador.cs" />
     <Compile Include="AnalizadorXML\Ejecucion.cs" />
+    <Compile Include="EjecucionUsql\Aritmetica.cs" />
+    <Compile Include="EjecucionUsql\Interprete.cs" />
+    <Compile Include="EjecucionUsql\Relacional.cs" />
+    <Compile Include="EjecucionUsql\Resultado.cs" />
+    <Compile Include="EjecucionUsql\Variable.cs" />
     <Compile Include="estructurasDB\Atributo.cs" />
     <Compile Include="estructurasDB\BD.cs" />
     <Compile Include="estructurasDB\campo.cs" />
@@ -96,6 +103,7 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">

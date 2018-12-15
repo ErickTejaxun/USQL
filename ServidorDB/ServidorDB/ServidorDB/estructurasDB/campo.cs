@@ -9,6 +9,7 @@ namespace ServidorDB.estructurasDB
     class campo
     {
         public String id;
+        public String tablaId;
         public Object valor;
 
         public campo(String id, Object valor)
