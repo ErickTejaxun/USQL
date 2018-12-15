@@ -221,13 +221,20 @@ namespace ServidorDB
 
         private void button1_Click(object sender, EventArgs e)
         {
-            List<String> campos = new List<String>();
+            List<String> listaCampos = new List<String>();
+            listaCampos.Add("clientes.nombre");
+            listaCampos.Add("tipo.nombre");
             List<String> tablas = new List<String>();
+            String campoOrdenacion = "clientes.nombre";
+            int orden = 1;
             tablas.Add("tipo");
-            tablas.Add("clientes");            
-            //tablas.Add("clientes");
+            tablas.Add("clientes");                        
             imprimirSalida("-----------------------------------------");
-            imprimirSalida(sistemaArchivos.basesdedatos[0].seleccionar(campos, tablas , null));
+            imprimirSalida(sistemaArchivos.basesdedatos[0].seleccionar(listaCampos, tablas , null,campoOrdenacion, orden));
+            /*
+            (List<String> listaCampos, 
+                List<String> listaTablas, List<String> campos, ParseTreeNode raiz, String campoOrdenacion, int orden)             
+             */
             imprimirSalida("-----------------------------------------");
         }
     }
