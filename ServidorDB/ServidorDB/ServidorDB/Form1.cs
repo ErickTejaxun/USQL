@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -20,12 +21,11 @@ namespace ServidorDB
         private SistemaArchivos sistemaArchivos;
         public Form1()
         {
-            InitializeComponent();
-            ArrancarSistemaDeArchivos();
+            InitializeComponent();            
         }
 
         private void runButton_Click(object sender, EventArgs e)
-        {
+        {            
             String contenidoArchivo = inputConsole.Text;
             Console.WriteLine("Texto encontrado --- \n" + contenidoArchivo);
             AnalizadorXML.Analizador analizador = new AnalizadorXML.Analizador();
@@ -33,21 +33,37 @@ namespace ServidorDB
             //AnalizadorXML.analizador gramatica = new AnalizadorXML.analizador();
             ParseTree arbol = analizador.generarArbol(contenidoArchivo, gramatica);
             string respuesta = analizador.esCadenaValida(contenidoArchivo, gramatica);
-
             if (respuesta.Equals(""))
             {
-                imprimirSalida("Archivo cargado correctamente.");
+                imprimirSalida("Archivo cargado correctamente.------------------------------------------------------------");
             }
             else
             {
-                imprimirSalida("Archivo con errores. Verificar Archivo.");
+                imprimirSalida("Archivo con errores. Verificar Archivo.------------------------------------------------------------");
                 imprimirSalida(respuesta);
             }
         }
 
         private void ArrancarSistemaDeArchivos()
         {
-            String contenidoArchivo = getArchivo(pathRaiz+"maestro.xml");
+            sistemaArchivos = new SistemaArchivos(); // Inicializamos el sistema de archivos
+            analizarArchivoMaestro();
+            analizarArchivoUsuarios();
+            analizarBasesDatos();            
+        }
+
+        //Este metodo analiza el archivo DB y carga las tablas, metodos, y objetos.
+        public void analizarBasesDatos()
+        {
+            foreach (BD bass in sistemaArchivos.basesdedatos)
+            {
+                cargarBaseDatos(bass);
+            }
+        }
+
+        private BD cargarBaseDatos(BD baseActual)
+        {
+            String contenidoArchivo = getArchivo(baseActual.path);
             inputConsole.Text = contenidoArchivo;
             AnalizadorXML.Analizador analizador = new AnalizadorXML.Analizador();
             AnalizadorXML.XMLGramatica gramatica = new AnalizadorXML.XMLGramatica();
@@ -57,38 +73,105 @@ namespace ServidorDB
             errores = getErrores(arbol);
             if (errores.Equals(""))
             {
-                imprimirSalida("Archivo maestro cargado correctamente");
+                imprimirSalida("Archivo de base "+baseActual.path+" de datos cargado correctamente------------------------------------------------------------");
             }
             else
             {
-                imprimirSalida("El archivo maestro contiene errores. Cargado parcialmente");
+                imprimirSalida("El archivo de base de datos  " + baseActual.path + " contiene errores. Cargado parcialmente------------------------------------------------------------");
                 imprimirSalida(errores);
             }
             if (raiz != null)
             {
                 analizador.Genarbol(raiz);
                 analizador.generateGraph("ejemplo.txt");
-                ServidorDB.AnalizadorXML.Ejecucion ejecutor = new ServidorDB.AnalizadorXML.Ejecucion(raiz);
-                sistemaArchivos = new SistemaArchivos();
-                sistemaArchivos.basesdedatos = ejecutor.recorrerArbolMaestro(); // Recorre el archivo maestro y nos devuelve la lista de bases de datos;
-                //#region Abrir archivo de Usuarios
-                //contenidoArchivo = getArchivo(pathRaiz + "usuarios.xml");
-                //arbol = analizador.generarArbol(contenidoArchivo, gramatica);
-                //raiz = arbol.Root;
-                //#endregion
+                ServidorDB.AnalizadorXML.Ejecucion ejecutor = new ServidorDB.AnalizadorXML.Ejecucion(raiz, this);
+                ejecutor.cargarBaseDatos(baseActual);
+                //sistemaArchivos.basesdedatos = ejecutor.recorrerArbolMaestro(); // Recorre el archivo maestro y nos devuelve la lista de bases de datos;
+            }
+            return null;
+        }
+
+        public void analizarArchivoMaestro()
+        {
+            String contenidoArchivo = getArchivo(pathRaiz + "maestro.xml");
+            inputConsole.Text = contenidoArchivo;
+            AnalizadorXML.Analizador analizador = new AnalizadorXML.Analizador();
+            AnalizadorXML.XMLGramatica gramatica = new AnalizadorXML.XMLGramatica();
+            ParseTree arbol = analizador.generarArbol(contenidoArchivo, gramatica);
+            ParseTreeNode raiz = arbol.Root;
+            String errores = "";
+            errores = getErrores(arbol);
+            if (errores.Equals(""))
+            {
+                imprimirSalida("Archivo maestro cargado correctamente------------------------------------------------------------");
             }
             else
             {
-
+                imprimirSalida("El archivo maestro contiene errores. Cargado parcialmente------------------------------------------------------------");
+                imprimirSalida(errores);
             }
-            
-
+            if (raiz != null)
+            {
+                analizador.Genarbol(raiz);
+                analizador.generateGraph("ejemplo.txt");
+                ServidorDB.AnalizadorXML.Ejecucion ejecutor = new ServidorDB.AnalizadorXML.Ejecucion(raiz, this);
+                sistemaArchivos.basesdedatos = ejecutor.recorrerArbolMaestro(); // Recorre el archivo maestro y nos devuelve la lista de bases de datos;
+            }
+            imprimirSalida("Se han encontrado " + sistemaArchivos.basesdedatos.Count +" bases de datos.");
         }
 
+        public void analizarArchivoUsuarios()
+        {
+            String contenidoArchivo = getArchivo(pathRaiz + "usuarios.xml");
+            inputConsole.Text = contenidoArchivo;
+            AnalizadorXML.Analizador analizador = new AnalizadorXML.Analizador();
+            AnalizadorXML.XMLGramatica gramatica = new AnalizadorXML.XMLGramatica();
+            ParseTree arbol = analizador.generarArbol(contenidoArchivo, gramatica);
+            ParseTreeNode raiz = arbol.Root;
+            String errores = "";
+            errores = getErrores(arbol);
+            if (errores.Equals(""))
+            {
+                imprimirSalida("Archivo de Usuarios cargado correctamente------------------------------------------------------------");
+            }
+            else
+            {
+                imprimirSalida("El archivo de usuarios contiene errores. Cargado parcialmente------------------------------------------------------------");
+                imprimirSalida(errores);
+            }
+            if (raiz != null)
+            {
+                analizador.Genarbol(raiz);
+                analizador.generateGraph("ejemplo.txt");
+                ServidorDB.AnalizadorXML.Ejecucion ejecutor = new ServidorDB.AnalizadorXML.Ejecucion(raiz, this);                
+                sistemaArchivos.usuarios = ejecutor.recorrerUsuarios(); // Recorre el archivo de usuarios y nos devuelve la lista de usuarios con sus permisos
+            }
+        }
         public String getArchivo(String path)
         {
-            string textoArchivo = System.IO.File.ReadAllText(@path);            
-            return textoArchivo;
+            // Tengo que ver que putas como hacer el try catch para que no se chingue cuando no encuentre el archivo
+            // Ahorita iba a cargar las mierdas de las bases de datos: Empezando con el archivo BD donde están las paths de procedimientos, objetos y la definicion de la tabla
+            //string textoArchivo = System.IO.File.ReadAllText(@path);            
+            //return textoArchivo;
+
+            try
+            {
+                String textoArchivo = System.IO.File.ReadAllText(@path);
+                return textoArchivo;
+                throw new FileNotFoundException();
+
+                //The reste of the code
+            }
+            catch (FileNotFoundException)
+            {
+                return "0";
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+                return "0";
+            }
+
         }
 
         public void imprimirSalida(String mensaje)
@@ -131,5 +214,21 @@ namespace ServidorDB
         }
         #endregion
 
+        private void iniciarServidorToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ArrancarSistemaDeArchivos();
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            List<String> campos = new List<String>();
+            List<String> tablas = new List<String>();
+            tablas.Add("tipo");
+            tablas.Add("clientes");            
+            //tablas.Add("clientes");
+            imprimirSalida("-----------------------------------------");
+            imprimirSalida(sistemaArchivos.basesdedatos[0].seleccionar(campos, tablas , null));
+            imprimirSalida("-----------------------------------------");
+        }
     }
 }

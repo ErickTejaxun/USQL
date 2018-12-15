@@ -231,27 +231,6 @@ namespace ServidorDB.AnalizadorXML
                         | PERMISOS // Archivo de usuario 
                         | PROCEDURE
                         ;
-            /*
-<usuario>
-    <nombre> Erick </nombre>
-    <base>
-        <nombredb>Base1</nombredb>
-        <objetos>
-            <objeto>objeto1</objeto>
-            <objeto>objeto2</objeto>
-            <objeto>objeto3</objeto>
-        </objetos>
-    </base>
-    <base>
-        <nombredb>Base2</nombredb>
-        <objetos>
-            <objeto>objeto4</objeto>
-            <objeto>objeto5</objeto>
-            <objeto>objeto6</objeto>
-        </objetos>
-    </base>
-</usuario>
-            */
 
             #region Archivo de usuarios y permisos
             PERMISOS.Rule = MakePlusRule(PERMISOS, PERMISO);
@@ -415,7 +394,7 @@ namespace ServidorDB.AnalizadorXML
 
             #region Archivo DB
             DB.Rule = PPROCEDURE+ // Datos procedimientos
-                      PFUNCTION + // Datos funciones
+                      //PFUNCTION + // Datos funciones
                       POBJECT + // Datos objetos
                       LTABLA;  // Tablas
 

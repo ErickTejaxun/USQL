@@ -9,18 +9,16 @@ namespace ServidorDB.estructurasDB
     class defCampo
     {
         public String nombre;
-        public String tipo;
-        public Object valor;
+        public String tipo;        
         public bool auto;
         public bool nulo;
         public bool primaria;
         public String foranea;
 
-        public defCampo(String nombre, String tipo, Object valor, bool auto, bool nulo, bool primaria, String foranea) // Constructor
+        public defCampo(String nombre, String tipo, bool auto, bool nulo, bool primaria, String foranea) // Constructor
         {
             this.nombre = nombre;
-            this.tipo = tipo;
-            this.valor = valor;
+            this.tipo = tipo;           
             this.auto = auto;
             this.nulo = nulo;
             this.primaria = primaria;

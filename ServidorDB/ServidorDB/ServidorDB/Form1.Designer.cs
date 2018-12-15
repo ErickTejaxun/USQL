@@ -34,6 +34,10 @@
             this.label1 = new System.Windows.Forms.Label();
             this.outputConsola = new System.Windows.Forms.RichTextBox();
             this.runButton = new System.Windows.Forms.Button();
+            this.menuStrip1 = new System.Windows.Forms.MenuStrip();
+            this.iniciarServidorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.button1 = new System.Windows.Forms.Button();
+            this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // inputConsole
@@ -76,17 +80,49 @@
             this.runButton.UseVisualStyleBackColor = true;
             this.runButton.Click += new System.EventHandler(this.runButton_Click);
             // 
+            // menuStrip1
+            // 
+            this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.iniciarServidorToolStripMenuItem});
+            this.menuStrip1.Location = new System.Drawing.Point(0, 0);
+            this.menuStrip1.Name = "menuStrip1";
+            this.menuStrip1.Size = new System.Drawing.Size(1229, 24);
+            this.menuStrip1.TabIndex = 5;
+            this.menuStrip1.Text = "menuStrip1";
+            // 
+            // iniciarServidorToolStripMenuItem
+            // 
+            this.iniciarServidorToolStripMenuItem.Name = "iniciarServidorToolStripMenuItem";
+            this.iniciarServidorToolStripMenuItem.Size = new System.Drawing.Size(97, 20);
+            this.iniciarServidorToolStripMenuItem.Text = "Iniciar Servidor";
+            this.iniciarServidorToolStripMenuItem.Click += new System.EventHandler(this.iniciarServidorToolStripMenuItem_Click);
+            // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(167, 360);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(79, 39);
+            this.button1.TabIndex = 6;
+            this.button1.Text = "button1";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1229, 658);
+            this.Controls.Add(this.button1);
+            this.Controls.Add(this.menuStrip1);
             this.Controls.Add(this.runButton);
             this.Controls.Add(this.outputConsola);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.inputConsole);
+            this.MainMenuStrip = this.menuStrip1;
             this.Name = "Form1";
             this.Text = "Form1";
+            this.menuStrip1.ResumeLayout(false);
+            this.menuStrip1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -99,6 +135,9 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.RichTextBox outputConsola;
         private System.Windows.Forms.Button runButton;
+        private System.Windows.Forms.MenuStrip menuStrip1;
+        private System.Windows.Forms.ToolStripMenuItem iniciarServidorToolStripMenuItem;
+        private System.Windows.Forms.Button button1;
     }
 }
 

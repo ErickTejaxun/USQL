@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ServidorDB.estructurasDB
 {
-    class tupla
+    class tupla : ICloneable
     {
         public List<campo> campos;
 
@@ -40,6 +40,11 @@ namespace ServidorDB.estructurasDB
                 }
             }
             return false;
+        }
+
+        public object Clone()
+        {
+            throw new NotImplementedException();
         }
     }
 }

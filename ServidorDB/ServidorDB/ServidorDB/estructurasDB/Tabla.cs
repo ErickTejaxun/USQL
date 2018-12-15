@@ -12,9 +12,7 @@ namespace ServidorDB.estructurasDB
         public String nombre;
         public String path;
         public List<tupla> tuplas;
-        public List<defCampo> definiciones;
-        public String mensajes;
-
+        public List<defCampo> definiciones;        
         public Tabla(String nombre, String path)
         {
             this.nombre = nombre;
@@ -22,102 +20,95 @@ namespace ServidorDB.estructurasDB
             this.tuplas = new List<tupla>();
             this.definiciones = new List<defCampo>();
         }
-
-        public void addCampoATupla(tupla tup, campo cmp)
+        public void addCampoATupla(tupla tup, campo cmp, Form1 form)
         {
-            if (integridadCampo(cmp))
+            if (integridadCampo(cmp,form))
             {
                 tup.addCampo(cmp);
             }
         }
-
-
         public void addDefinicion(defCampo definicion)
         {
             definiciones.Add(definicion);
         }
-
-        public void addTupla(tupla registro)
+        public void addTupla(tupla registro, Form1 form)
         {
             foreach (campo cmp in registro.campos)
             {
-                integridadCampo(cmp);
+                integridadCampo(cmp, form);
 
             }
             tuplas.Add(registro);
         }
-
-        public bool integridadCampo(campo cmp)
+        public bool integridadCampo(campo cmp, Form1 formActual)
         {
             foreach (defCampo definicion in definiciones)
             {               
                 if (definicion.nombre.Equals(cmp.id))
                 {
-                    String tipo = cmp.valor.GetType().ToString().ToLower();
-                    switch (definicion.tipo)
+                    //String tipo = cmp.id.GetType().ToString().ToLower();
+                    String tipo = cmp.valor.GetType().ToString();
+                    switch (definicion.tipo.ToLower())
                     {
                         case "text":
-                            if (tipo.Equals("string"))
+                            if (cmp.valor is String)
                             {
                                 return true;
                             }
-                            mensajes = mensajes +  "\n"+"Error: El campo "+cmp.id + " es de tipo text y se ha intentado ingresar un " + tipo;
+                            formActual.imprimirSalida("Error: El campo "+cmp.id + " es de tipo text y se ha intentado ingresar un " + tipo);
                             return false;
-                        case "integer":
-                            if (tipo.Equals("int"))
+                        case "int":
+                            if (cmp.valor is Int32)
                             {
                                 return true;
                             }
-                            mensajes = mensajes +  "\n"+"Error: El campo " + cmp.id + " es de tipo integer y se ha intentado ingresar un " + tipo ;
+                            formActual.imprimirSalida("Error: El campo " + cmp.id + " es de tipo text y se ha intentado ingresar un " + tipo);
                             return false;
                         case "double":
-                            if (tipo.Equals("double"))
+                            if (cmp.valor is Double)
                             {
                                 return true;
                             }
-                            mensajes = mensajes +  "\n"+"Error: El campo " + cmp.id + " es de tipo double y se ha intentado ingresar un " + tipo ;
+                            formActual.imprimirSalida("Error: El campo " + cmp.id + " es de tipo text y se ha intentado ingresar un " + tipo);
                             return false;
                         case "bool":                            
-                            if (cmp.valor.GetType().ToString().ToLower().Equals("bool"))
+                            if (cmp.valor is Int32)
+                            {
+                                if ((int)cmp.valor == 0 || (int)cmp.valor == 1)
+                                {
+                                    return true;
+                                }
+                                else { return false; }
+                                
+                            }
+                            formActual.imprimirSalida("Error: El campo " + cmp.id + " es de tipo text y se ha intentado ingresar un " + tipo);
+                            return false;
+                        case "date":
+                            if (cmp.valor is DateTime)
                             {
                                 return true;
                             }
-                            mensajes = mensajes +  "\n"+"Error: El campo " + cmp.id + " es de tipo bool y se ha intentado ingresar un " + tipo ;
-                            return false;
-                        case "date":
-                            if (cmp.valor.GetType().ToString().ToLower().Equals("string"))
+                            else
                             {
-                                if (comprobarFecha((String)cmp.valor))
-                                {
-                                    return true;
-                                }
-                                else
-                                {
-                                    mensajes = mensajes +  "\n"+"Error: El campo " + cmp.id + " es de tipo date y se ha intentado ingresar un " + tipo ;
-                                    return false;
-                                }
-                            }
-                            break;
+                                formActual.imprimirSalida("Error: El campo " + cmp.id + " es de tipo text y se ha intentado ingresar un " + tipo);
+                                return false;
+                            }                            
                         case "datetime":
-                            if (cmp.valor.GetType().ToString().ToLower().Equals("string"))
+                            if (cmp.valor is DateTime)
                             {
-                                if (comprobarFecha((String)cmp.valor))
-                                {
-                                    return true;
-                                }
-                                else
-                                {
-                                    mensajes = mensajes +  "\n"+"Error: El campo " + cmp.id + " es de tipo datetime y se ha intentado ingresar un " + tipo ;
-                                    return false;
-                                }
+                                return true;
                             }
-                            break;
+                            else
+                            {
+                                formActual.imprimirSalida("Error: El campo " + cmp.id + " es de tipo text y se ha intentado ingresar un " + tipo);
+                                return false;
+                            }
                     }
+                    formActual.imprimirSalida("Error: El campo " + cmp.id + " es de tipo text y se ha intentado ingresar un " + tipo);
                 }
             }
             return false;
         }
-
         public bool comprobarFecha(String fecha)
         {
             try
@@ -133,6 +124,5 @@ namespace ServidorDB.estructurasDB
 
 
         }
-
     }
 }
