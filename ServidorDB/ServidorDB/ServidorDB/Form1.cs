@@ -13,6 +13,7 @@ using Irony.Parsing;
 using ServidorDB.estructurasDB;
 using ServidorBDD.AnalisisUsql;
 using ServidorBDD.EjecucionUsql;
+using ServidorDB.EjecucionUsql;
 
 namespace ServidorDB
 {    
@@ -21,6 +22,7 @@ namespace ServidorDB
 
         private String pathRaiz = "C:\\DB\\";
         private SistemaArchivos sistemaArchivos;
+        public static List<Error> errores;
         public Form1()
         {
             InitializeComponent();            
@@ -242,17 +244,19 @@ namespace ServidorDB
 
         private void button2_Click(object sender, EventArgs e)
         {
+            outputConsola.Text = "";
             GramaticaSDB grammar = new GramaticaSDB();
             LanguageData lenguaje = new LanguageData(grammar);
             Parser p = new Parser(lenguaje);
             ParseTree arbol = p.Parse(inputConsole.Text);
+            AnalizadorXML.Analizador analizador = new AnalizadorXML.Analizador();
             if (arbol.Root != null)
             {
                 imprimirSalida("Salida...");
-                //Genarbol(arbol.Root);
-                //generateGraph("Ejemplo.txt");
+                analizador.Genarbol(arbol.Root);
+                analizador.generateGraph2("Ejemplo.txt");
                 Interprete i = new Interprete();
-                i.sistemaActual = sistemaArchivos;
+                i.sistemaActual = sistemaArchivos;                
                 Resultado result = i.ejecutar(arbol.Root.ChildNodes[0]);
                 imprimirSalida(result.valor+"");                
             }
@@ -260,6 +264,17 @@ namespace ServidorDB
             {
                 imprimirSalida(getErrores(arbol));
             }
+        }
+
+
+        public void mostrarErrores()
+        {
+            imprimirSalida("--------------------------------------");
+            foreach (Error e in errores)
+            {
+                imprimirSalida(e.tipo + "  " + e.descripcion + "  "+e.linea + "  " + e.columna);
+            }
+            imprimirSalida("--------------------------------------");
         }
     }
 }

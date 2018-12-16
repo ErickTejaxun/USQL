@@ -238,10 +238,10 @@ namespace ServidorBDD.AnalisisUsql
                               | ToTerm("Seleccionar") + ToTerm("*") + ToTerm("De") + LID + COMPSELECCIONAR;
 
             COMPSELECCIONAR.Rule = ToTerm("Donde") + EXPL
-                                  | ToTerm("Donde") + EXPL + ToTerm("Ordenar_Por") + id + ToTerm("ASC")
-                                  | ToTerm("Donde") + EXPL + ToTerm("Ordenar_Por") + id + ToTerm("DESC")
-                                  | ToTerm("Ordenar_Por") + id + ToTerm("ASC")
-                                  | ToTerm("Ordenar_Por") + id + ToTerm("DESC")
+                                  | ToTerm("Donde") + EXPL + ToTerm("Ordenar_Por") + IDACCESO + ToTerm("ASC")
+                                  | ToTerm("Donde") + EXPL + ToTerm("Ordenar_Por") + IDACCESO + ToTerm("DESC")
+                                  | ToTerm("Ordenar_Por") + IDACCESO + ToTerm("ASC")
+                                  | ToTerm("Ordenar_Por") + IDACCESO + ToTerm("DESC")
                                   | Empty;
 
             CONTAR.Rule = ToTerm("Contar") + ToTerm("(") + ToTerm("<<") + SELECCIONAR + ToTerm(">>") + ToTerm(")");

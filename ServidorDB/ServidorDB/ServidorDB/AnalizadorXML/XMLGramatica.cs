@@ -128,10 +128,7 @@ namespace ServidorDB.AnalizadorXML
             RegexBasedTerminal HORA = new RegexBasedTerminal("HORA", "[0-9][0-9]:[0-9][0-9]:[0-9][0-9]");
             RegexBasedTerminal NUMERO = new RegexBasedTerminal("NUMERO", "[0-9]+\\.[0-9]{6}");
             RegexBasedTerminal PATH = new RegexBasedTerminal("PATH", @"[a-zA-Z]:([\\][a-zA-Z]([a-zA-Z]|[0-9]|\.|_|-)*)*");
-            //+		$exception	{"analizando \"\\G([a-zA-Z]:([\\])*)\" - Conjunto [] sin terminar."}	System.ArgumentException
-
-            RegexBasedTerminal S_IDENTIFICADOR = new RegexBasedTerminal("S_IDENTIFICADOR", "(@)?([a-zA-Z])+(([a-zA-Z])|([0-9])|_|#|$|@|\\.)+");
-            // ([a-zA-Z])+([0-9]|[a-zA-Z]|$|_|#)*
+            RegexBasedTerminal S_IDENTIFICADOR = new RegexBasedTerminal("S_IDENTIFICADOR", "(@)?([a-zA-Z])+(([a-zA-Z])|([0-9])|_|#|$|@|\\.)+");           
             StringLiteral CADENA_LITERAL = new StringLiteral("CADENA_LITERAL", "\"");
             StringLiteral CODIGO = new StringLiteral("CODIGO", "~");
 

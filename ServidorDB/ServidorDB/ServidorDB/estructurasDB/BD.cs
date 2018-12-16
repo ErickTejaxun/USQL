@@ -14,7 +14,8 @@ namespace ServidorDB.estructurasDB
         public String path;
         public List<Tabla> tablas;
         public List<Objeto> objetos;
-        public List<Procedimiento> procedimientos;        
+        public List<Procedimiento> procedimientos;
+        public Form1 formularioActual;
 
         public BD(String nombre, String path)
         {
@@ -62,10 +63,11 @@ namespace ServidorDB.estructurasDB
             }
 
             /*Elegimos las celdas que se solicitan. Las demás se descartan*/
+            /*Tambien se ordena los resultados según el usuario haya indicado*/
             cartesiano = filtrarResultados(listaCampos, cartesiano);
 
             /**/
-            //cartesiano = ordenarResultados(cartesiano, campoOrdenacion, orden);
+            cartesiano = ordenarResultados(cartesiano, campoOrdenacion, orden);
 
             #region imprimir resultado
             if (cartesiano.Count > 0)
@@ -108,28 +110,39 @@ namespace ServidorDB.estructurasDB
 
             return data;
         }
-
-        public List<tupla> ordenarResultados(List<tupla> listaCampos, String campoOrdenacion, int orden)
+        public List<tupla> ordenarResultados(List<tupla> listaTuplas, String campoOrdenacion, int orden)
         {
-            List<tupla> listaOrdenada = new List<tupla>();
+            // Si no hay filas, salimos de la función.
+            if (listaTuplas.Count == 0 || campoOrdenacion.Equals("")) { return listaTuplas; }
+            // El dos o mayor significa que no debe ordenarse.
             if (orden>2)
             {
-                return listaCampos;
+                return listaTuplas;
             }
-            int posicion = 0;
-            foreach (campo cp in listaCampos[0].campos)
-            {
-                if(cp.id.ToLower().Equals(campoOrdenacion.ToLower()))
+
+            // Ahora encontramos el índice por el cuál vamos a ordenar.
+            int indice = 0;
+            bool encontrada = false;
+            foreach (campo cp in listaTuplas[0].campos)
+            {                
+                if (cp.id.ToLower().Equals(campoOrdenacion.ToLower()))
                 {
-                    break;
+                    encontrada = true;
+                    break;                    
                 }
-                posicion++;
+                indice++;
             }
-            if (orden == 1)
+            if(!encontrada)
             {
+
+                return new List<tupla>();
+            } 
+            List<tupla> listaOrdenada = new List<tupla>();            
+            if (orden == 0)
+            {                
                 var ordenado =
-                    from campos in listaCampos
-                    //orderby campos.campos[posicion] ascending
+                    from campos in listaTuplas
+                    orderby campos.campos[indice].valor ascending
                     select new { campos };
                 foreach (var data in ordenado)
                 {
@@ -141,16 +154,16 @@ namespace ServidorDB.estructurasDB
                     listaOrdenada.Add(tpm);
                 }
             }
-            if (orden == 0)
+            if (orden == 1)
             {
                 var ordenado =
-                    from campos in listaCampos
-                    orderby campos.campos[posicion] descending
-                    select campos;
+                    from campos in listaTuplas
+                    orderby campos.campos[indice].valor descending
+                    select new { campos };
                 foreach (var data in ordenado)
                 {
                     tupla tpm = new tupla();
-                    foreach (campo cmp in data.campos)
+                    foreach (campo cmp in data.campos.campos)
                     {
                         tpm.addCampo(cmp);
                     }
@@ -160,8 +173,6 @@ namespace ServidorDB.estructurasDB
 
             return listaOrdenada;
         }
-
-
         public Boolean comprobarCondicion(tupla tup, ParseTreeNode raiz)
         {
             if (raiz==null)
@@ -172,7 +183,6 @@ namespace ServidorDB.estructurasDB
             Resultado result = rel.operar(raiz);
             return (bool) result.valor;            
         }
-
         public List<tupla> filtrarResultados(List<String> listaCampos, List<tupla> cartesiano)
         {
             List<tupla> listaFiltrada = new List<tupla>();
@@ -280,7 +290,6 @@ namespace ServidorDB.estructurasDB
             }
             return tablaCar;
         }
-
         public List<tupla> buscarTabla(String id)
         {
             foreach (Tabla tab in tablas)
