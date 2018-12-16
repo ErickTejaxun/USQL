@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ServidorDB.estructurasDB
 {
-    class Objeto
+    public class Objeto
     {
         public String tipo;
         public List<Atributo> atributos;

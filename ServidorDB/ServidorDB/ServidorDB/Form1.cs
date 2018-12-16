@@ -21,8 +21,11 @@ namespace ServidorDB
     {        
 
         private String pathRaiz = "C:\\DB\\";
-        private SistemaArchivos sistemaArchivos;
+        public static SistemaArchivos sistemaArchivos;
         public static List<Error> errores;
+        public static List<String> Mensajes;
+        
+
         public Form1()
         {
             InitializeComponent();            
@@ -98,6 +101,7 @@ namespace ServidorDB
         public void analizarArchivoMaestro()
         {
             String contenidoArchivo = getArchivo(pathRaiz + "maestro.xml");
+            Form1.errores = new List<Error>();
             inputConsole.Text = contenidoArchivo;
             AnalizadorXML.Analizador analizador = new AnalizadorXML.Analizador();
             AnalizadorXML.XMLGramatica gramatica = new AnalizadorXML.XMLGramatica();
@@ -220,31 +224,35 @@ namespace ServidorDB
 
         private void iniciarServidorToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            Form1.Mensajes= new List<string>(); ;
             ArrancarSistemaDeArchivos();
+            mostrarMensajes();
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
-            List<String> listaCampos = new List<String>();
-            listaCampos.Add("clientes.nombre");
-            listaCampos.Add("tipo.nombre");
-            List<String> tablas = new List<String>();
-            String campoOrdenacion = "clientes.nombre";
-            int orden = 1;
-            tablas.Add("tipo");
-            tablas.Add("clientes");                        
-            imprimirSalida("-----------------------------------------");
-            imprimirSalida(sistemaArchivos.basesdedatos[0].seleccionar(listaCampos, tablas , null,campoOrdenacion, orden));
-            /*
-            (List<String> listaCampos, 
-                List<String> listaTablas, List<String> campos, ParseTreeNode raiz, String campoOrdenacion, int orden)             
-             */
-            imprimirSalida("-----------------------------------------");
+            //List<String> listaCampos = new List<String>();
+            //listaCampos.Add("clientes.nombre");
+            //listaCampos.Add("tipo.nombre");
+            //List<String> tablas = new List<String>();
+            //String campoOrdenacion = "clientes.nombre";
+            //int orden = 1;
+            //tablas.Add("tipo");
+            //tablas.Add("clientes");                        
+            //imprimirSalida("-----------------------------------------");
+            //imprimirSalida(sistemaArchivos.basesdedatos[0].seleccionar(listaCampos, tablas , null,campoOrdenacion, orden));
+            ///*
+            //(List<String> listaCampos, 
+            //    List<String> listaTablas, List<String> campos, ParseTreeNode raiz, String campoOrdenacion, int orden)             
+            // */
+            //imprimirSalida("-----------------------------------------");
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
             outputConsola.Text = "";
+            Form1.Mensajes = new List<string>(); ;
+            Form1.errores = new List<Error>();
             GramaticaSDB grammar = new GramaticaSDB();
             LanguageData lenguaje = new LanguageData(grammar);
             Parser p = new Parser(lenguaje);
@@ -264,9 +272,19 @@ namespace ServidorDB
             {
                 imprimirSalida(getErrores(arbol));
             }
+            mostrarMensajes();
+            //mostrarErrores();
+            
         }
-
-
+        public void mostrarMensajes()
+        {
+            imprimirSalida("--------------------------------------");
+            foreach (String men in Mensajes)
+            {
+                imprimirSalida(men);
+            }
+            imprimirSalida("--------------------------------------");
+        }
         public void mostrarErrores()
         {
             imprimirSalida("--------------------------------------");

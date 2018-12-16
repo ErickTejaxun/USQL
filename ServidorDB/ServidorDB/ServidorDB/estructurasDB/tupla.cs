@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ServidorDB.estructurasDB
 {
-    class tupla : ICloneable
+    public class tupla : ICloneable
     {
         public List<campo> campos;
 

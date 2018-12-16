@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ServidorDB.estructurasDB
 {
-    class campo
+    public class campo
     {
         public String id;
         public String tablaId;

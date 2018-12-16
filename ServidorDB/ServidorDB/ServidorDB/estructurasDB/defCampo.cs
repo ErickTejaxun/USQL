@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ServidorDB.estructurasDB
 {
-    class defCampo
+    public class defCampo
     {
         public String nombre;
         public String tipo;        

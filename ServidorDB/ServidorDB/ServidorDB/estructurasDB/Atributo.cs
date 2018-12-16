@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ServidorDB.estructurasDB
 {
-    class Atributo
+    public class Atributo
     {
         public String tipo;
         public String id;

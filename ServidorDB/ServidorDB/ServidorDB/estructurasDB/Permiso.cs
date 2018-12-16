@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ServidorDB.estructurasDB
 {
-    class Permiso
+    public class Permiso
     {
         public String nombreDB;
         public List<String> listaObjetos;

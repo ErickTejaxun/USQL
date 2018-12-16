@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ServidorDB.estructurasDB
 {
-    class Parametro
+    public class Parametro
     {
         public String nombre;
         public String tipo;
@@ -18,7 +18,7 @@ namespace ServidorDB.estructurasDB
         }
     }
 
-    class Procedimiento
+    public class Procedimiento
     {
         public String nombre;
         public String tipoRetorno;

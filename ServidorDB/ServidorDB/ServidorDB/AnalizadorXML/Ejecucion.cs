@@ -37,7 +37,7 @@ namespace ServidorDB.AnalizadorXML
                 /*Cargar tuplas para cada tabla*/
                 foreach (Tabla tab in baseActual.tablas)
                 {
-                    formularioACtual.imprimirSalida(tab.path);
+                    Form1.Mensajes.Add(tab.path);
                     cargarTuplas(tab);
                 }
                 
@@ -55,12 +55,12 @@ namespace ServidorDB.AnalizadorXML
             errores = formularioACtual.getErrores(arbol);
             if (errores.Equals(""))
             {
-                formularioACtual.imprimirSalida("Archivo de registros " + path + " de datos cargado correctamente------------------------------------------------------------");
+                Form1.Mensajes.Add("Archivo de registros " + path + " de datos cargado correctamente------------------------------------------------------------");
             }
             else
             {
-                formularioACtual.imprimirSalida("El archivo de registros  " + path + " contiene errores. Cargado parcialmente------------------------------------------------------------");
-                formularioACtual.imprimirSalida(errores);
+                Form1.Mensajes.Add("El archivo de registros  " + path + " contiene errores. Cargado parcialmente------------------------------------------------------------");
+                Form1.Mensajes.Add(errores);
             }
             if (raiz != null)
             {
@@ -116,12 +116,12 @@ namespace ServidorDB.AnalizadorXML
                         //}
                         //else
                         //{
-                        //    formularioACtual.imprimirSalida("Error en tipos de datos en el campo");
+                        //    Form1.Mensajes.Add("Error en tipos de datos en el campo");
                         //}
                     }
                     else
                     {
-                        formularioACtual.imprimirSalida("Error en etiquetas del archivo " + tabla.path + " En linea:" + (nodoCampo.ChildNodes[0].Token.Location.Line + 1)
+                        Form1.Mensajes.Add("Error en etiquetas del archivo " + tabla.path + " En linea:" + (nodoCampo.ChildNodes[0].Token.Location.Line + 1)
                             + " En columna:" + nodoCampo.ChildNodes[0].Token.Location.Column + " Registro no cargado.");                        
                         continue;
                     }
@@ -192,7 +192,7 @@ namespace ServidorDB.AnalizadorXML
                     }
                     else
                     {
-                        formularioACtual.imprimirSalida("Tabla " + nuevaTabla.nombre+ "Path:" + nuevaTabla.path+" Error de etiquetas que no coinciden. Linea:" + nodoDef.ChildNodes[0].Token.Location.Line
+                        Form1.Mensajes.Add("Tabla " + nuevaTabla.nombre+ "Path:" + nuevaTabla.path+" Error de etiquetas que no coinciden. Linea:" + nodoDef.ChildNodes[0].Token.Location.Line
                             +" Columna:" + nodoDef.ChildNodes[0].Token.Location.Column);
                     }
                 }
@@ -203,14 +203,14 @@ namespace ServidorDB.AnalizadorXML
         public List<Objeto> cargarObjetos(String path)
         {
             List<Objeto> listaObjetos = new List<Objeto>();
-            this.formularioACtual.imprimirSalida("Abriendo archivo de objetos " + path);
+            Form1.Mensajes.Add("Abriendo archivo de objetos " + path);
             listaObjetos = obtenerObjetos(path);
             return listaObjetos;
         }
         public List<Procedimiento> cargarProcedimientos(String path)/*Falta ver qué putas con este archivo*/
         {
             List<Procedimiento> listaProcedimientos = new List<Procedimiento>();
-            this.formularioACtual.imprimirSalida("Abriendo archivo de procedimientos " + path);
+            Form1.Mensajes.Add("Abriendo archivo de procedimientos " + path);
             listaProcedimientos = obtenerProcedimientos(path);
             return listaProcedimientos;
         }
@@ -266,12 +266,12 @@ namespace ServidorDB.AnalizadorXML
             errores = formularioACtual.getErrores(arbol);
             if (errores.Equals(""))
             {
-                formularioACtual.imprimirSalida("Archivo de Procedimientos " + path + " de datos cargado correctamente------------------------------------------------------------");
+                Form1.Mensajes.Add("Archivo de Procedimientos " + path + " de datos cargado correctamente------------------------------------------------------------");
             }
             else
             {
-                formularioACtual.imprimirSalida("El archivo de Procedimientos  " + path + " contiene errores. Cargado parcialmente------------------------------------------------------------");
-                formularioACtual.imprimirSalida(errores);
+                Form1.Mensajes.Add("El archivo de Procedimientos  " + path + " contiene errores. Cargado parcialmente------------------------------------------------------------");
+                Form1.Mensajes.Add(errores);
             }
             if (raiz != null)
             {
@@ -295,12 +295,12 @@ namespace ServidorDB.AnalizadorXML
             errores = formularioACtual.getErrores(arbol);
             if (errores.Equals(""))
             {
-                formularioACtual.imprimirSalida("Archivo de objetos " + path + " de datos cargado correctamente------------------------------------------------------------");
+                Form1.Mensajes.Add("Archivo de objetos " + path + " de datos cargado correctamente------------------------------------------------------------");
             }
             else
             {
-                formularioACtual.imprimirSalida("El archivo de base de objetos  " + path + " contiene errores. Cargado parcialmente------------------------------------------------------------");
-                formularioACtual.imprimirSalida(errores);
+                Form1.Mensajes.Add("El archivo de base de objetos  " + path + " contiene errores. Cargado parcialmente------------------------------------------------------------");
+                Form1.Mensajes.Add(errores);
             }
             if (raiz != null)
             {
@@ -340,7 +340,7 @@ namespace ServidorDB.AnalizadorXML
                     }
                     else
                     {
-                        formularioACtual.imprimirSalida("Procedimiento " + nuevoProc.nombre +" Error en esta etiqueta. Linea:" +nodoParametro.ChildNodes[0].Token.Location.Line 
+                        Form1.Mensajes.Add("Procedimiento " + nuevoProc.nombre +" Error en esta etiqueta. Linea:" +nodoParametro.ChildNodes[0].Token.Location.Line 
                             + " Columna:" + +nodoParametro.ChildNodes[0].Token.Location.Column);
                     }                    
                 }
@@ -368,7 +368,7 @@ namespace ServidorDB.AnalizadorXML
                     }
                     else
                     {
-                        formularioACtual.imprimirSalida("Error en la etiquetas de declaracion de objeto en: linea " + nodoCampo.ChildNodes[0].Token.Location.Line
+                        Form1.Mensajes.Add("Error en la etiquetas de declaracion de objeto en: linea " + nodoCampo.ChildNodes[0].Token.Location.Line
                             +" Columna "+ nodoCampo.ChildNodes[0].Token.Location.Column);
                     }
                 }

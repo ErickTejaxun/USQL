@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ServidorDB.estructurasDB
 {
-    class Tabla
+    public class Tabla
     {
         public String nombre;
         public String path;

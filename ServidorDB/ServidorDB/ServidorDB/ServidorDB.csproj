@@ -63,6 +63,7 @@
     <Compile Include="AnalizadorXML\Analizador.cs" />
     <Compile Include="AnalizadorXML\Ejecucion.cs" />
     <Compile Include="EjecucionUsql\Aritmetica.cs" />
+    <Compile Include="EjecucionUsql\Error.cs" />
     <Compile Include="EjecucionUsql\Interprete.cs" />
     <Compile Include="EjecucionUsql\Relacional.cs" />
     <Compile Include="EjecucionUsql\Resultado.cs" />

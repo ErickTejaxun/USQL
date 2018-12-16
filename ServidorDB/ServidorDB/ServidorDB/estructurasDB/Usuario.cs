@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ServidorDB.estructurasDB
 {
-    class Usuario
+    public class Usuario
     {
         public String username;
         public String password;
