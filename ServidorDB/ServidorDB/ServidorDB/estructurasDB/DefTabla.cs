@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ServidorDB.estructurasDB
 {
-    class defTabla
+    public class defTabla
     {
         public String nombre;
         public String path;

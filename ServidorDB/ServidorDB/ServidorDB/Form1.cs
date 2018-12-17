@@ -231,6 +231,8 @@ namespace ServidorDB
 
         private void button1_Click(object sender, EventArgs e)
         {
+            sistemaArchivos.commit();
+            mostrarMensajes();
             //List<String> listaCampos = new List<String>();
             //listaCampos.Add("clientes.nombre");
             //listaCampos.Add("tipo.nombre");

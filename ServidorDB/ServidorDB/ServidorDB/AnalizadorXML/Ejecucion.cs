@@ -30,8 +30,10 @@ namespace ServidorDB.AnalizadorXML
             {
                 aux = inicio.ChildNodes[0]; //  Procedimientos . Tomar el segundo hijo que trae el path
                 baseActual.procedimientos = cargarProcedimientos(aux.ChildNodes[1].Token.Text);
+                baseActual.pathProcedimientos = aux.ChildNodes[1].Token.Text;
                 aux = inicio.ChildNodes[1]; // Objetos. Tomar el segundo hijo que trae el path del archivo.
                 baseActual.objetos = cargarObjetos(aux.ChildNodes[1].Token.Text);
+                baseActual.pathObjetos = aux.ChildNodes[1].Token.Text;
                 aux = inicio.ChildNodes[2]; // Tablas. 
                 baseActual.tablas = cargarTablas(aux);
                 /*Cargar tuplas para cada tabla*/
@@ -364,7 +366,7 @@ namespace ServidorDB.AnalizadorXML
                     if (nodoCampo.ChildNodes[0].Token.Text.Equals
                         (nodoCampo.ChildNodes[2].Token.Text))
                     {
-                        nuevoObjeto.atributos.Add(new Atributo(nodoCampo.ChildNodes[0].Token.Text, nodoCampo.ChildNodes[1].ChildNodes[0].Token.Text, null));
+                        nuevoObjeto.atributos.Add(new Atributo(nodoCampo.ChildNodes[0].Token.Text.ToLower(), nodoCampo.ChildNodes[1].ChildNodes[0].Token.Text.ToLower(), null));
                     }
                     else
                     {

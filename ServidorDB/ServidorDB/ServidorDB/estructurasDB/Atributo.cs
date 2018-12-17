@@ -17,6 +17,31 @@ namespace ServidorDB.estructurasDB
             this.tipo = tipo;
             this.id = id;
             this.valor = valor;
+            if (valor == null)
+            {
+                DateTime today = DateTime.Today;
+                switch (tipo.ToLower())
+                {
+                    case "integer":
+                        this.valor = 0;
+                        break;
+                    case "text":
+                        this.valor = "";
+                        break;
+                    case "double":
+                        this.valor = 0.0;
+                        break;
+                    case "date":
+                        this.valor = today.ToString("dd-MM-yyyy");
+                        break;
+                    case "datetime":
+                        this.valor = today.ToString("dd-MM-yyyy hh:mm:ss");
+                        break;
+                    case "bool":
+                        this.valor = 0;
+                        break;
+                }
+            }
         }
         public Object getValor()
         {

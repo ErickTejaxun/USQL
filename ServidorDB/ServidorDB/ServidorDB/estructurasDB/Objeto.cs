@@ -8,12 +8,12 @@ namespace ServidorDB.estructurasDB
 {
     public class Objeto
     {
-        public String tipo;
+        public String nombre;
         public List<Atributo> atributos;
 
         public Objeto(String tipo)
         {
-            this.tipo = tipo;
+            this.nombre = tipo;
             atributos = new List<Atributo>();
         }
 

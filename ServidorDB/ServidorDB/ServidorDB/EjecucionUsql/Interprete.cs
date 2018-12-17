@@ -33,6 +33,9 @@ namespace ServidorBDD.EjecucionUsql
                     case "USAR":
                         Form1.sistemaArchivos.setBaseActual(hijo.ChildNodes[0]);
                         break;
+                    case "ACTUALIZAR":
+                        Form1.sistemaArchivos.actualizacion(hijo);
+                        break;
                 }
             }
             return new Resultado("null", null);

@@ -15,10 +15,12 @@ namespace ServidorDB.estructurasDB
         public String path;
         public List<Tabla> tablas;
         public List<Objeto> objetos;
-        public List<Procedimiento> procedimientos;        
+        public List<Procedimiento> procedimientos;
         public List<String> nombres;
         public List<int> lineas;
         public List<int> columnas;
+        public String pathObjetos;
+        public String pathProcedimientos;        
 
         // Constructor de la clase
         public BD(String nombre, String path)
@@ -34,9 +36,9 @@ namespace ServidorDB.estructurasDB
         //< @param Campos: campos a seleccionar>
         //< @param listaTabla: lista de nombres de las tablas>
         //< @param raiz : Raiz de la condición a cumplirse>
-        public String seleccionar(List<String> listaCampos, 
+        public String seleccionar(List<String> listaCampos,
             List<String> listaTablas, ParseTreeNode raiz, String campoOrdenacion, int orden)
-        {            
+        {
             String data = "\n";
             List<tupla> cartesianoTemporal = new List<tupla>();
             List<tupla> cartesiano = new List<tupla>();
@@ -46,14 +48,14 @@ namespace ServidorDB.estructurasDB
 
                 if (buscarTabla(ntab) == null)
                 {
-                    data =  data + this.generarError("Error en ejecución", "Tabla " + ntab + " no existe en la base de datos. \n",ntab).getMensaje();
+                    data = data + this.generarError("Error en ejecución", "Tabla " + ntab + " no existe en la base de datos. \n", ntab).getMensaje();
                     cartesianoTemporal = productoCartesiano(cartesianoTemporal, new List<tupla>(), ntab);
                 }
                 else
                 {
                     cartesianoTemporal = productoCartesiano(cartesianoTemporal, buscarTabla(ntab), ntab);
                 }
-                
+
             }
             /*Verificamos las condiciones para filtrar resultados*/
             foreach (tupla tp in cartesianoTemporal)
@@ -104,7 +106,7 @@ namespace ServidorDB.estructurasDB
                     else
                     {
                         data = data + "," + cmp.valor.ToString();
-                    }                    
+                    }
                 }
                 data = data + "\n";
             }
@@ -117,7 +119,7 @@ namespace ServidorDB.estructurasDB
             // Si no hay filas, salimos de la función.
             if (listaTuplas.Count == 0 || campoOrdenacion.Equals("")) { return listaTuplas; }
             // El dos o mayor significa que no debe ordenarse.
-            if (orden>2)
+            if (orden > 2)
             {
                 return listaTuplas;
             }
@@ -126,23 +128,23 @@ namespace ServidorDB.estructurasDB
             int indice = 0;
             bool encontrada = false;
             foreach (campo cp in listaTuplas[0].campos)
-            {                
+            {
                 if (cp.id.ToLower().Equals(campoOrdenacion.ToLower()))
                 {
                     encontrada = true;
-                    break;                    
+                    break;
                 }
                 indice++;
             }
-            if(!encontrada)
+            if (!encontrada)
             {
-                Form1.Mensajes.Add( this.generarError("Error en tiempo de ejecución:", " El campo '" + campoOrdenacion + "' no existe en los resultados. No se ordenarán los resultados", campoOrdenacion).getMensaje());
+                Form1.Mensajes.Add(this.generarError("Error en tiempo de ejecución:", " El campo '" + campoOrdenacion + "' no existe en los resultados. No se ordenarán los resultados", campoOrdenacion).getMensaje());
                 //return new List<tupla>();
                 return listaTuplas;
-            } 
-            List<tupla> listaOrdenada = new List<tupla>();            
+            }
+            List<tupla> listaOrdenada = new List<tupla>();
             if (orden == 0)
-            {                
+            {
                 var ordenado =
                     from campos in listaTuplas
                     orderby campos.campos[indice].valor ascending
@@ -178,13 +180,13 @@ namespace ServidorDB.estructurasDB
         }
         public Boolean comprobarCondicion(tupla tup, ParseTreeNode raiz)
         {
-            if (raiz==null)
+            if (raiz == null)
             {
                 return true;
             }
             Relacional rel = new Relacional();
             Resultado result = rel.operar(raiz);
-            return (bool) result.valor;            
+            return (bool)result.valor;
         }
         public List<tupla> filtrarResultados(List<String> listaCampos, List<tupla> cartesiano)
         {
@@ -207,11 +209,11 @@ namespace ServidorDB.estructurasDB
                         }
                     }
                 }
-                if (nuevaTupla.campos.Count !=0)
+                if (nuevaTupla.campos.Count != 0)
                 {
                     listaFiltrada.Add(nuevaTupla);
                 }
-                
+
             }
             #endregion
             #region Ordenar salida 
@@ -232,10 +234,10 @@ namespace ServidorDB.estructurasDB
                 listaFinal.Add(newTp);
             }
             #endregion
-            if (listaFinal.Count==0)
+            if (listaFinal.Count == 0)
             {
                 String campos = "";
-                if (listaCampos.Count >1)
+                if (listaCampos.Count > 1)
                 {
                     foreach (String etiqueta in listaCampos)
                     {
@@ -253,11 +255,11 @@ namespace ServidorDB.estructurasDB
                 {
                     campos = listaCampos[0];
                 }
-                Form1.Mensajes.Add( this.generarError("Semantico", "Los campos "+ campos + " no existen en las tablas. " , listaCampos[0]).getMensaje());
+                Form1.Mensajes.Add(this.generarError("Semantico", "Los campos " + campos + " no existen en las tablas. ", listaCampos[0]).getMensaje());
             }
             return listaFinal;
         }
-        public List<tupla> productoCartesiano(List<tupla> tab1, List<tupla> tab2 , String nombre)
+        public List<tupla> productoCartesiano(List<tupla> tab1, List<tupla> tab2, String nombre)
         {
             List<tupla> tablaCar = new List<tupla>();
             if (tab1.Count > 0 && tab2.Count > 0)
@@ -269,7 +271,7 @@ namespace ServidorDB.estructurasDB
                         if (!cp.id.Contains("."))
                         {
                             cp.id = nombre + "." + cp.id;
-                        }                        
+                        }
                     }
                 }
 
@@ -313,7 +315,7 @@ namespace ServidorDB.estructurasDB
                         if (!cp.id.Contains("."))
                         {
                             cp.id = nombre + "." + cp.id;
-                        }                        
+                        }
                     }
                 }
                 return tab2;
@@ -329,13 +331,13 @@ namespace ServidorDB.estructurasDB
                     return tab.tuplas;
                 }
             }
-            return null;            
+            return null;
         }
 
-        
+
 
         public void seleccionar(ParseTreeNode hijo)
-        {            
+        {
             List<String> campos = new List<String>();
             List<String> tablas = new List<String>();
             String campoOrdenamiento = "";
@@ -392,7 +394,7 @@ namespace ServidorDB.estructurasDB
                 }
                 else
                 {
-    
+
                     campoOrdenamiento = hijo.ChildNodes[2].ChildNodes[1].ChildNodes[0].Token.Text
                         + "." + hijo.ChildNodes[2].ChildNodes[1].ChildNodes[1].Token.Text;
                     nombres.Add(campoOrdenamiento);
@@ -437,7 +439,7 @@ namespace ServidorDB.estructurasDB
                         {
                             campoOrdenamiento = hijo.ChildNodes[2].ChildNodes[1].ChildNodes[0].Token.Text
                                 + "." + hijo.ChildNodes[2].ChildNodes[1].ChildNodes[1].Token.Text;
-                            nombres.Add(campoOrdenamiento);                            
+                            nombres.Add(campoOrdenamiento);
                             lineas.Add(hijo.ChildNodes[2].ChildNodes[1].ChildNodes[0].Token.Location.Line);
                             columnas.Add(hijo.ChildNodes[2].ChildNodes[1].ChildNodes[0].Token.Location.Column);
 
@@ -467,10 +469,10 @@ namespace ServidorDB.estructurasDB
                 condicion = hijo.ChildNodes[2].ChildNodes[0];
             }
 
-            Form1.Mensajes.Add(seleccionar(campos, tablas, condicion, campoOrdenamiento, orden));            
+            Form1.Mensajes.Add(seleccionar(campos, tablas, condicion, campoOrdenamiento, orden));
         }
-        
-        public List<tupla> buscarTabla( ParseTreeNode raiz)
+
+        public List<tupla> buscarTabla(ParseTreeNode raiz)
         {
             String id = raiz.ChildNodes[0].Token.Text;
             foreach (Tabla tab in tablas)
@@ -480,7 +482,7 @@ namespace ServidorDB.estructurasDB
                     return tab.tuplas;
                 }
             }
-            Form1.Mensajes.Add( new Error("Semantico", "La tabla: " + id + "No existe en la base de datos seleccionada", raiz.ChildNodes[0].Token.Location.Line, raiz.ChildNodes[0].Token.Location.Column).getMensaje());
+            Form1.Mensajes.Add(new Error("Semantico", "La tabla: " + id + "No existe en la base de datos seleccionada", raiz.ChildNodes[0].Token.Location.Line, raiz.ChildNodes[0].Token.Location.Column).getMensaje());
             return null;
         }
 
@@ -491,11 +493,40 @@ namespace ServidorDB.estructurasDB
             {
                 if (nombre.Equals(etiqueta))
                 {
-                    return new Error(tipo,desc,lineas[contador],columnas[contador]);
+                    return new Error(tipo, desc, lineas[contador], columnas[contador]);
                 }
                 contador++;
             }
-            return new Error("","",0,0);
+            return new Error("", "", 0, 0);
+        }
+
+
+        public Boolean agregarObjeto(Objeto newObjecto, int linea, int columna)
+        {
+            //Primero vericamos que no exista el objeto           
+            foreach (Objeto obj in objetos)
+            {
+                if (obj.nombre.Equals(newObjecto.nombre))
+                {
+                    Form1.Mensajes.Add(new Error("Semantico", "El objeto " + newObjecto.nombre +" ya existe en la base de datos.",linea,columna).getMensaje());
+                    return false;
+                }
+            }
+            objetos.Add(newObjecto);
+            return true;
+        }
+
+        public Objeto getObjeto(String id, int linea, int columna)
+        {
+            foreach (Objeto obj in objetos)
+            {
+                if (obj.nombre.Equals(id))
+                {
+                    return obj;
+                }
+            }
+            Form1.Mensajes.Add(new Error("Semantico", "El objeto "+ id + " no existe",linea,columna).getMensaje());
+            return null;
         }
     }
 
