@@ -16,6 +16,9 @@ namespace ServidorDB.estructurasDB
         public List<Tabla> tablas;
         public List<Objeto> objetos;
         public List<Procedimiento> procedimientos;        
+        public List<String> nombres;
+        public List<int> lineas;
+        public List<int> columnas;
 
         // Constructor de la clase
         public BD(String nombre, String path)
@@ -43,7 +46,7 @@ namespace ServidorDB.estructurasDB
 
                 if (buscarTabla(ntab) == null)
                 {
-                    data =  data + "Error: Tabla " + ntab + " no existe en la base de datos. \n";
+                    data =  data + this.generarError("Error en ejecución", "Tabla " + ntab + " no existe en la base de datos. \n",ntab).getMensaje();
                     cartesianoTemporal = productoCartesiano(cartesianoTemporal, new List<tupla>(), ntab);
                 }
                 else
@@ -133,7 +136,7 @@ namespace ServidorDB.estructurasDB
             }
             if(!encontrada)
             {
-                Form1.Mensajes.Add("Error en tiempo de ejecución: El campo '" + campoOrdenacion + "' no existe en los resultados. No se ordenarán los resultados");
+                Form1.Mensajes.Add( this.generarError("Error en tiempo de ejecución:", " El campo '" + campoOrdenacion + "' no existe en los resultados. No se ordenarán los resultados", campoOrdenacion).getMensaje());
                 //return new List<tupla>();
                 return listaTuplas;
             } 
@@ -229,7 +232,29 @@ namespace ServidorDB.estructurasDB
                 listaFinal.Add(newTp);
             }
             #endregion
-            if (listaFinal.Count==0) { Form1.Mensajes.Add(new Error("Semantico", "Los campos indicados no existen en las tablas.", 0, 0).getMensaje()); }
+            if (listaFinal.Count==0)
+            {
+                String campos = "";
+                if (listaCampos.Count >1)
+                {
+                    foreach (String etiqueta in listaCampos)
+                    {
+                        if (campos.Equals(""))
+                        {
+                            campos = etiqueta;
+                        }
+                        else
+                        {
+                            campos = campos + "," + etiqueta;
+                        }
+                    }
+                }
+                else
+                {
+                    campos = listaCampos[0];
+                }
+                Form1.Mensajes.Add( this.generarError("Semantico", "Los campos "+ campos + " no existen en las tablas. " , listaCampos[0]).getMensaje());
+            }
             return listaFinal;
         }
         public List<tupla> productoCartesiano(List<tupla> tab1, List<tupla> tab2 , String nombre)
@@ -307,19 +332,24 @@ namespace ServidorDB.estructurasDB
             return null;            
         }
 
-
-        #region para manejar errores.
+        
 
         public void seleccionar(ParseTreeNode hijo)
-        {
+        {            
             List<String> campos = new List<String>();
             List<String> tablas = new List<String>();
             String campoOrdenamiento = "";
             int orden = 2;
             ParseTreeNode condicion = null;
+            nombres = new List<String>();
+            lineas = new List<int>();
+            columnas = new List<int>();
             foreach (ParseTreeNode nodo in hijo.ChildNodes[1].ChildNodes)
             {
                 tablas.Add(nodo.ChildNodes[0].Token.Text);
+                nombres.Add(nodo.ChildNodes[0].Token.Text);
+                lineas.Add(nodo.ChildNodes[0].Token.Location.Line);
+                columnas.Add(nodo.ChildNodes[0].Token.Location.Column);
             }
             foreach (ParseTreeNode nodoN in hijo.ChildNodes[0].ChildNodes)
             {
@@ -328,15 +358,24 @@ namespace ServidorDB.estructurasDB
                     if (tablas.Count == 1)
                     {
                         campos.Add(tablas[0] + "." + nodoN.ChildNodes[0].Token.Text);
+                        nombres.Add(tablas[0] + "." + nodoN.ChildNodes[0].Token.Text);
+                        lineas.Add(nodoN.ChildNodes[0].Token.Location.Line);
+                        columnas.Add(nodoN.ChildNodes[0].Token.Location.Column);
                     }
                     else
                     {
                         campos.Add(nodoN.ChildNodes[0].Token.Text);
+                        nombres.Add(nodoN.ChildNodes[0].Token.Text);
+                        lineas.Add(nodoN.ChildNodes[0].Token.Location.Line);
+                        columnas.Add(nodoN.ChildNodes[0].Token.Location.Column);
                     }
                 }
                 else
                 {
                     campos.Add(nodoN.ChildNodes[0].Token.Text + "." + nodoN.ChildNodes[1].Token.Text);
+                    nombres.Add(nodoN.ChildNodes[0].Token.Text + "." + nodoN.ChildNodes[1].Token.Text);
+                    lineas.Add(nodoN.ChildNodes[1].Token.Location.Line);
+                    columnas.Add(nodoN.ChildNodes[1].Token.Location.Column);
                 }
             }
             /*Si hay tres nodos existe where y ordenamiento*/
@@ -344,12 +383,21 @@ namespace ServidorDB.estructurasDB
             {
                 if (tablas.Count == 1)
                 {
-                    campoOrdenamiento = tablas[0] + "." + hijo.ChildNodes[2].ChildNodes[0].ChildNodes[0].Token.Text;
+
+                    campoOrdenamiento = tablas[0] + "." + hijo.ChildNodes[2].ChildNodes[1].ChildNodes[0].Token.Text;
+                    nombres.Add(campoOrdenamiento);
+                    lineas.Add(hijo.ChildNodes[2].ChildNodes[1].ChildNodes[0].Token.Location.Line);
+                    columnas.Add(hijo.ChildNodes[2].ChildNodes[1].ChildNodes[0].Token.Location.Column);
+
                 }
                 else
                 {
+    
                     campoOrdenamiento = hijo.ChildNodes[2].ChildNodes[1].ChildNodes[0].Token.Text
                         + "." + hijo.ChildNodes[2].ChildNodes[1].ChildNodes[1].Token.Text;
+                    nombres.Add(campoOrdenamiento);
+                    lineas.Add(hijo.ChildNodes[2].ChildNodes[1].ChildNodes[0].Token.Location.Line);
+                    columnas.Add(hijo.ChildNodes[2].ChildNodes[1].ChildNodes[0].Token.Location.Column);
                 }
                 condicion = hijo.ChildNodes[2].ChildNodes[0];
 
@@ -368,6 +416,9 @@ namespace ServidorDB.estructurasDB
                 {
                     campoOrdenamiento = hijo.ChildNodes[2].ChildNodes[0].ChildNodes[0].Token.Text
                         + "." + hijo.ChildNodes[2].ChildNodes[0].ChildNodes[1].Token.Text;
+                    nombres.Add(campoOrdenamiento);
+                    lineas.Add(hijo.ChildNodes[2].ChildNodes[0].ChildNodes[0].Token.Location.Line);
+                    columnas.Add(hijo.ChildNodes[2].ChildNodes[0].ChildNodes[0].Token.Location.Column);
                 }
                 else
                 {
@@ -376,6 +427,9 @@ namespace ServidorDB.estructurasDB
                     if (tablas.Count == 1)
                     {
                         campoOrdenamiento = tablas[0] + "." + hijo.ChildNodes[2].ChildNodes[0].ChildNodes[0].Token.Text;
+                        nombres.Add(campoOrdenamiento);
+                        lineas.Add(hijo.ChildNodes[2].ChildNodes[0].ChildNodes[0].Token.Location.Line);
+                        columnas.Add(hijo.ChildNodes[2].ChildNodes[0].ChildNodes[0].Token.Location.Column);
                     }
                     else
                     {
@@ -383,6 +437,10 @@ namespace ServidorDB.estructurasDB
                         {
                             campoOrdenamiento = hijo.ChildNodes[2].ChildNodes[1].ChildNodes[0].Token.Text
                                 + "." + hijo.ChildNodes[2].ChildNodes[1].ChildNodes[1].Token.Text;
+                            nombres.Add(campoOrdenamiento);                            
+                            lineas.Add(hijo.ChildNodes[2].ChildNodes[1].ChildNodes[0].Token.Location.Line);
+                            columnas.Add(hijo.ChildNodes[2].ChildNodes[1].ChildNodes[0].Token.Location.Column);
+
                         }
                         else
                         {
@@ -408,64 +466,10 @@ namespace ServidorDB.estructurasDB
             {
                 condicion = hijo.ChildNodes[2].ChildNodes[0];
             }
-            Form1.Mensajes.Add(seleccionar(campos, tablas, condicion, campoOrdenamiento, orden));
+
+            Form1.Mensajes.Add(seleccionar(campos, tablas, condicion, campoOrdenamiento, orden));            
         }
-        //public List<tupla> filtrarResultados( ParseTreeNode raiz, List<tupla> cartesiano)
-        //{
-        //    List<String> listaCampos = new List<String>;
-        //    foreach ()
-        //    {
-        //    }
-
-
-
-        //    List<tupla> listaFiltrada = new List<tupla>();
-        //    #region Eleccion de campos
-        //    if (listaCampos.Count == 0)
-        //    {
-        //        return cartesiano;
-        //    }
-        //    foreach (tupla tp in cartesiano)
-        //    {
-        //        tupla nuevaTupla = new tupla();
-        //        foreach (campo cp in tp.campos)
-        //        {
-        //            foreach (String campoBuscado in listaCampos)
-        //            {
-        //                if (campoBuscado.ToLower().Equals(cp.id.ToLower()))// Es un campo buscado
-        //                {
-        //                    nuevaTupla.addCampo(new campo(cp.id, cp.valor));
-        //                }
-        //            }
-        //        }
-        //        if (nuevaTupla.campos.Count != 0)
-        //        {
-        //            listaFiltrada.Add(nuevaTupla);
-        //        }
-
-        //    }
-        //    #endregion
-        //    #region Ordenar salida 
-        //    List<tupla> listaFinal = new List<tupla>();
-        //    foreach (tupla tp in listaFiltrada)
-        //    {
-        //        tupla newTp = new tupla();
-        //        foreach (String nombre in listaCampos)
-        //        {
-        //            foreach (campo cp in tp.campos)
-        //            {
-        //                if (nombre.Equals(cp.id))
-        //                {
-        //                    newTp.addCampo(new campo(cp.id, cp.valor));
-        //                }
-        //            }
-        //        }
-        //        listaFinal.Add(newTp);
-        //    }
-        //    #endregion
-        //    if (listaFinal.Count == 0) { Form1.Mensajes.Add(new Error("Semantico", "Los campos indicados no existen en las tablas.", 0, 0).getMensaje()); }
-        //    return listaFinal;
-        //}
+        
         public List<tupla> buscarTabla( ParseTreeNode raiz)
         {
             String id = raiz.ChildNodes[0].Token.Text;
@@ -480,85 +484,19 @@ namespace ServidorDB.estructurasDB
             return null;
         }
 
-        //public String seleccionar(ParseTreeNode raizCamposSeleccionados,
-        //    ParseTreeNode raizTablasSeleccionadas, ParseTreeNode raizComprobacion, ParseTreeNode campoOrdenamiento, ParseTreeNode orden)
-        //{
-        //    String data = "\n";
-        //    List<tupla> cartesianoTemporal = new List<tupla>();
-        //    List<tupla> cartesiano = new List<tupla>();
-        //    /*Primero realizamos el producto cartesiano de las tablas involucradas*/
-        //    foreach (String ntab in listaTablas)
-        //    {
-
-        //        if (buscarTabla(ntab) == null)
-        //        {
-        //            data = data + "Error: Tabla " + ntab + " no existe en la base de datos. \n";
-        //            cartesianoTemporal = productoCartesiano(cartesianoTemporal, new List<tupla>(), ntab);
-        //        }
-        //        else
-        //        {
-        //            cartesianoTemporal = productoCartesiano(cartesianoTemporal, buscarTabla(ntab), ntab);
-        //        }
-
-        //    }
-        //    /*Verificamos las condiciones para filtrar resultados*/
-        //    foreach (tupla tp in cartesianoTemporal)
-        //    {
-        //        if (comprobarCondicion(tp, raizComprobacion))
-        //        {
-        //            cartesiano.Add(tp);
-        //        }
-        //    }
-
-        //    /*Elegimos las celdas que se solicitan. Las demás se descartan*/
-        //    /*Tambien se ordena los resultados según el usuario haya indicado*/
-        //    cartesiano = filtrarResultados(listaCampos, cartesiano);
-
-        //    /**/
-        //    cartesiano = ordenarResultados(cartesiano, campoOrdenacion, orden);
-
-        //    #region imprimir resultado
-        //    if (cartesiano.Count > 0)
-        //    {
-        //        foreach (campo cp in cartesiano[0].campos)
-        //        {
-        //            if (data.Equals("\n"))
-        //            {
-        //                data = cp.id;
-        //            }
-        //            else
-        //            {
-        //                data = data + "," + cp.id;
-        //            }
-        //        }
-        //    }
-        //    else
-        //    {
-        //        return data + "\n Sin resultados";
-        //    }
-        //    data = data + "\n";
-        //    foreach (tupla tpm in cartesiano)
-        //    {
-        //        bool flag = false;
-        //        foreach (campo cmp in tpm.campos)
-        //        {
-        //            if (!flag)
-        //            {
-        //                data = data + cmp.valor.ToString();
-        //                flag = true;
-        //            }
-        //            else
-        //            {
-        //                data = data + "," + cmp.valor.ToString();
-        //            }
-        //        }
-        //        data = data + "\n";
-        //    }
-        //    #endregion
-
-        //    return data;
-        //}
-        #endregion
+        public Error generarError(String tipo, String desc, String nombre)
+        {
+            int contador = 0;
+            foreach (String etiqueta in nombres)
+            {
+                if (nombre.Equals(etiqueta))
+                {
+                    return new Error(tipo,desc,lineas[contador],columnas[contador]);
+                }
+                contador++;
+            }
+            return new Error("","",0,0);
+        }
     }
 
 }
