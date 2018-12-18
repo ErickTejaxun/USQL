@@ -13,7 +13,7 @@ namespace ServidorDB.estructurasDB
 
         public Objeto(String tipo)
         {
-            this.nombre = tipo;
+            this.nombre = tipo.ToLower();
             atributos = new List<Atributo>();
         }
 
@@ -43,6 +43,18 @@ namespace ServidorDB.estructurasDB
                     attr.valor = valor;
                 }
             }
+        }
+
+        public Atributo getAtributo(String id)
+        {
+            foreach (Atributo attr in atributos)
+            {
+                if (attr.id.Equals(id))
+                {
+                    return attr;
+                }
+            }
+            return null;
         }
     }
 }

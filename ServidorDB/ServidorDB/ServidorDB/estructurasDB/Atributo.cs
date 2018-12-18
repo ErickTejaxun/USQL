@@ -15,7 +15,7 @@ namespace ServidorDB.estructurasDB
         public Atributo(String tipo, String id, Object valor)
         {
             this.tipo = tipo;
-            this.id = id;
+            this.id = id.ToLower();
             this.valor = valor;
             if (valor == null)
             {
@@ -31,14 +31,17 @@ namespace ServidorDB.estructurasDB
                     case "double":
                         this.valor = 0.0;
                         break;
+                    case "bool":
+                        this.valor = 0;
+                        break;
                     case "date":
                         this.valor = today.ToString("dd-MM-yyyy");
                         break;
                     case "datetime":
                         this.valor = today.ToString("dd-MM-yyyy hh:mm:ss");
                         break;
-                    case "bool":
-                        this.valor = 0;
+                    default:
+                        this.valor = null;
                         break;
                 }
             }

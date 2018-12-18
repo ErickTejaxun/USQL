@@ -280,7 +280,7 @@ namespace ServidorBDD.AnalisisUsql
 
             MIENTRAS.Rule = ToTerm("Mientras") + ToTerm("(") + EXPL + ToTerm(")") + ToTerm("{") + SENTSPROC + ToTerm("}");
 
-            IMPRIMIR.Rule = ToTerm("Imprimir") + ToTerm("(") + EXPA + ToTerm(")") + ToTerm(";");
+            IMPRIMIR.Rule = ToTerm("Imprimir") + ToTerm("(") + EXPL + ToTerm(")") + ToTerm(";");
 
             BACKUP.Rule = ToTerm("Backup") + ToTerm("usqldump") + EXPA + EXPA + ToTerm(";")
                         | ToTerm("Backup") + ToTerm("Completo") + EXPA + EXPA + ToTerm(";");

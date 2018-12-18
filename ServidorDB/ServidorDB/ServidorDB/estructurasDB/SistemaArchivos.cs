@@ -69,11 +69,59 @@ namespace ServidorDB.estructurasDB
 
 
 
-        #region codigo para la actualización
-        public void actualizacion(ParseTreeNode raiz)
+        #region INSERT
+        public void insertar(ParseTreeNode raiz)
+        {
+            if(getBase()==null)
+            {
+                Error error = new Error("Ejecucion","No se ha seleccionado alguna base de datos.",0,0);
+                Form1.errores.Add(error);
+                Form1.Mensajes.Add(error.getMensaje());
+                return;
+            }
+            BD baseActual = getBase(); // Obtenemos la base actual
+            String idTabla = raiz.ChildNodes[0].Token.Text; // ID de la tabla desde el arbol :v
+            //Si no existe la base salimos
+            if (!baseActual.existeTabla(idTabla))
+            {
+                Error error = new Error("Semantico",
+                        "La tabla " + idTabla + " no existe en la base de datos",
+                        raiz.ChildNodes[0].Token.Location.Line,
+                        raiz.ChildNodes[0].Token.Location.Column);
+                Form1.errores.Add(error);
+                Form1.Mensajes.Add(error.getMensaje());
+                return;
+            }            
+            switch (raiz.ChildNodes.Count)
+            {
+                case 2: // 0 idbase, 1  lista valores           
+                    insertar(idTabla, raiz.ChildNodes[1]);
+                    break;
+                case 3: // 0 idbase, 1. Lista id campos, 2. lista valores
+                    insertar(idTabla, raiz.ChildNodes[1], raiz.ChildNodes[2]);
+                    break;               
+            }            
+        }
+
+        public void insertar(String nombreTabla, ParseTreeNode raizValores)
+        {
+            tupla nuevaTupla = new tupla();
+            foreach (ParseTreeNode nodo in raizValores.ChildNodes)
+            {
+                /*
+                 * Logica opL = new Logica();
+                 * Resultado result = opL.operar(nodo);                 
+                 */
+                 
+                 //nuevaTupla.addCampo(new campo("", result.))
+            }
+        }
+        public void insertar(String nombreTabla, ParseTreeNode raizCampos, ParseTreeNode raizValores)
         {
 
         }
+
+
         #endregion
 
         #region Codigo para guardar en disco todas las chivas.

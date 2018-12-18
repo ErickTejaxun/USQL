@@ -63,10 +63,15 @@
     <Compile Include="AnalizadorXML\Analizador.cs" />
     <Compile Include="AnalizadorXML\Ejecucion.cs" />
     <Compile Include="EjecucionUsql\Aritmetica.cs" />
+    <Compile Include="EjecucionUsql\Asignacion.cs" />
+    <Compile Include="EjecucionUsql\Declaracion.cs" />
     <Compile Include="EjecucionUsql\Error.cs" />
     <Compile Include="EjecucionUsql\Interprete.cs" />
+    <Compile Include="EjecucionUsql\Logica.cs" />
     <Compile Include="EjecucionUsql\Relacional.cs" />
     <Compile Include="EjecucionUsql\Resultado.cs" />
+    <Compile Include="EjecucionUsql\Simbolo.cs" />
+    <Compile Include="EjecucionUsql\TablaSimbolo.cs" />
     <Compile Include="EjecucionUsql\Variable.cs" />
     <Compile Include="estructurasDB\Atributo.cs" />
     <Compile Include="estructurasDB\BD.cs" />

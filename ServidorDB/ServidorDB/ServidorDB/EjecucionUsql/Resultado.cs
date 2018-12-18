@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ServidorBDD.EjecucionUsql
 {
-    class Resultado
+    public class Resultado
     {
 
         public String tipo;

@@ -178,13 +178,14 @@ namespace ServidorDB.estructurasDB
 
             return listaOrdenada;
         }
+
         public Boolean comprobarCondicion(tupla tup, ParseTreeNode raiz)
         {
             if (raiz == null)
             {
                 return true;
             }
-            Relacional rel = new Relacional();
+            Logica rel = new Logica(tup);
             Resultado result = rel.operar(raiz);
             return (bool)result.valor;
         }
@@ -518,6 +519,7 @@ namespace ServidorDB.estructurasDB
 
         public Objeto getObjeto(String id, int linea, int columna)
         {
+            id = id.ToLower();
             foreach (Objeto obj in objetos)
             {
                 if (obj.nombre.Equals(id))
@@ -527,6 +529,19 @@ namespace ServidorDB.estructurasDB
             }
             Form1.Mensajes.Add(new Error("Semantico", "El objeto "+ id + " no existe",linea,columna).getMensaje());
             return null;
+        }
+
+
+        public bool existeTabla(String id)
+        {
+            foreach (Tabla tab in tablas)
+            {
+                if (tab.nombre.ToLower().Equals(id.ToLower()))
+                {
+                    return true;
+                }
+            }
+            return false;
         }
     }
 
