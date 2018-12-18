@@ -118,7 +118,7 @@ namespace ServidorDB.EjecucionUsql
                         case "integer":
                             return resultado;
                         case "double":
-                            return new Resultado("integer", Convert.ToInt32(Convert.ToDouble(resultado.valor))); ;
+                            return new Resultado("integer", Convert.ToInt64(Convert.ToDouble(resultado.valor))); ;
                         case "bool":
                             return new Resultado("integer", resultado.valor);
                         case "text":
@@ -132,11 +132,11 @@ namespace ServidorDB.EjecucionUsql
                     switch (tipo2)
                     {
                         case "integer":
-                            return new Resultado("double", Convert.ToDouble(Convert.ToInt32(resultado.valor)));
+                            return new Resultado("double", Convert.ToDouble(Convert.ToInt64(resultado.valor)));
                         case "double":
                             return resultado;
                         case "bool":
-                            return new Resultado("double", Convert.ToDouble(Convert.ToInt32(resultado.valor)));
+                            return new Resultado("double", Convert.ToDouble(Convert.ToInt64(resultado.valor)));
                         case "text":
                         case "date":
                         case "datetime":

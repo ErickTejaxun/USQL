@@ -101,7 +101,7 @@ namespace ServidorDB.estructurasDB
                     insertar(idTabla, raiz.ChildNodes[1],linea, columna);
                     break;
                 case 3: // 0 idbase, 1. Lista id campos, 2. lista valores
-                    insertar(idTabla, raiz.ChildNodes[1], raiz.ChildNodes[2]);
+                    insertar(idTabla, raiz.ChildNodes[1], raiz.ChildNodes[2], linea, columna);
                     break;               
             }            
         }
@@ -206,9 +206,216 @@ namespace ServidorDB.estructurasDB
             // Ahora ya tenemos la tupla nueva :v
         }
         //Metodo insertar cuando hay una lista de campos
-        public void insertar(String nombreTabla, ParseTreeNode raizCampos, ParseTreeNode raizValores)
-        {
+        public void insertar(String nombreTabla, ParseTreeNode raizCampos, ParseTreeNode raizValores, int linea, int columna)
+        {            
+            tupla nuevaTupla = new tupla(); // La nueva tupla a ingresar.
+            int contador = 0;            
+            Tabla tabActual = getTabla(nombreTabla, linea, columna);
+            List<defCampo> definiciones = tabActual.definiciones;
+            foreach (defCampo def in definiciones)
+            {
+                campo nuevoCampo =null;
+                switch (def.tipo)
+                {
+                    case "text":
+                        nuevoCampo = new campo(def.nombre, "", def.tipo);
+                        nuevoCampo.tablaId = "nulo";                        
+                        break;
+                    case "integer":
+                        nuevoCampo = new campo(def.nombre, 0, def.tipo);
+                        nuevoCampo.tablaId = "nulo";
+                        break;
+                    case "bool":
+                        nuevoCampo = new campo(def.nombre, 0, def.tipo);
+                        nuevoCampo.tablaId = "nulo";                        
+                        break;
+                    case "date":
+                        DateTime hoy = DateTime.Today;                        
+                        nuevoCampo = new campo(def.nombre, hoy.ToString("dd-MM-yyyy"), def.tipo);
+                        nuevoCampo.tablaId = "nulo";
+                        break;
+                    case "datetime":
+                        hoy = DateTime.Today;
+                        nuevoCampo = new campo(def.nombre, hoy.ToString("dd-MM-yyyy hh:mm:ss"), def.tipo);
+                        nuevoCampo.tablaId = "nulo";
+                        break;
+                }
+                nuevaTupla.addCampo(nuevoCampo);
+            }
 
+            // Setear los valores que trae la lista.
+            List<String> listaEtiquetas = new List<String>();
+            for(contador = 0; contador<raizValores.ChildNodes.Count; contador++)
+            {
+                Logica opL = new Logica();
+                Resultado result = opL.operar(raizValores.ChildNodes[contador]);
+                nuevaTupla.getCampo(raizCampos.ChildNodes[contador].ChildNodes[0].Token.Text).valor=result.valor;
+                nuevaTupla.getCampo(raizCampos.ChildNodes[contador].ChildNodes[0].Token.Text).tablaId = ""; // Con esto sabremos que no es nulo.
+                listaEtiquetas.Add(raizCampos.ChildNodes[contador].ChildNodes[0].Token.Text);
+            }
+
+            #region Verificamos que el número de valores coinicida con 
+            //if (raizValores.ChildNodes.Count != definiciones.Count)
+            //{
+            //    Error error = new Error("Semantico", "El número de campos no coincide, se esperaban " + definiciones.Count + " campos y se han ingresado " + raizValores.ChildNodes.Count
+            //        , raizValores.ChildNodes[0].Span.Location.Line, raizValores.ChildNodes[0].Span.Location.Column);
+            //    Form1.errores.Add(error);
+            //    Form1.Mensajes.Add(error.getMensaje());
+            //    return;
+            //}
+            #endregion
+
+
+
+            bool flag = true;  // Si es true se guarda, si es false no se guarda.
+            for (contador = 0; contador < definiciones.Count; contador++)
+            {
+                if (nuevaTupla.campos[contador].tipo.ToLower().Equals(definiciones[contador].tipo.ToLower())
+                   || (nuevaTupla.campos[contador].tipo.ToLower().Equals("integer") && definiciones[contador].tipo.ToLower().Equals("bool")))
+                {
+                    /*Codigo para ver si los datos cumplen con la definicion*/
+                    nuevaTupla.campos[contador].id = definiciones[contador].nombre; // Nombre del campo
+                    #region Verificamos si es llave primaria
+                    if (definiciones[contador].primaria)
+                    {
+                        // Verificamos que no exista una igual.
+                        foreach (tupla tup in tabActual.tuplas)
+                        {
+                            campo tmpcampo = tup.getCampo(definiciones[contador].nombre);
+                            if (tmpcampo.valor.ToString().Equals(nuevaTupla.campos[contador].valor.ToString()))
+                            {
+                                flag = false;
+                                int contador2 = 0;
+                                foreach (String etiqueta in listaEtiquetas)
+                                {
+                                    if (!etiqueta.Equals(definiciones[contador].nombre))
+                                    {
+                                        contador2++;
+                                    }
+                                    else
+                                    {
+                                        break;
+                                    }
+                                }
+                                Error error = new Error("Ejecución", "Condicion de unico (Llave primaria) fallada " + nombreTabla + "." + nuevaTupla.campos[contador].id,
+                                    raizValores.ChildNodes[contador2].Span.Location.Line, raizValores.ChildNodes[contador2].Span.Location.Column);
+                                Form1.errores.Add(error);
+                                Form1.Mensajes.Add(error.getMensaje());
+                            }
+                        }
+                    }
+                    #endregion
+                    #region Autoincremental
+                    if (definiciones[contador].auto)
+                    {
+                        // Si es entero y no tiene valor en el campo, se busca el mayor
+                        if (nuevaTupla.campos[contador].tipo.Equals("integer") && nuevaTupla.campos[contador].tablaId.Equals("nulo"))
+                        {
+                            long maximo = 0;
+                            if (getTabla(nombreTabla, linea, columna) != null)
+                            {
+                                foreach (tupla tup in getTabla(nombreTabla, linea, columna).tuplas)
+                                {
+                                    long valor = Convert.ToInt64(tup.campos[contador].valor);
+                                    if (valor > maximo)
+                                    {
+                                        maximo = valor;
+                                    }
+                                }
+                            }
+                            nuevaTupla.campos[contador].valor = maximo + 1;
+                            nuevaTupla.campos[contador].tablaId = "";
+                        }
+                    }
+                    #endregion
+
+                    #region Verificamos si es Unico
+                    if (definiciones[contador].unico)
+                    {
+                        // Verificamos que no exista una igual.
+                        foreach (tupla tup in tabActual.tuplas)
+                        {
+                            if (tup.getCampo(definiciones[contador].nombre).valor == nuevaTupla.campos[contador].valor)
+                            {
+                                flag = false;
+                                Error error = new Error("Ejecución", "Condicion de unico (Unico) fallada " + nombreTabla + "." + nuevaTupla.campos[contador].id,
+                                    raizValores.ChildNodes[contador].Span.Location.Line, raizValores.ChildNodes[contador].Span.Location.Column);
+                                Form1.errores.Add(error);
+                                Form1.Mensajes.Add(error.getMensaje());
+                            }
+                        }
+                    }
+                    #endregion
+                    #region Verificamos que exista la llave Foranea
+                    if (!definiciones[contador].foranea.Equals(""))
+                    {
+                        if (!existeTupla(definiciones[contador].foranea, nuevaTupla.campos[contador].id, nuevaTupla.campos[contador].valor, linea, columna))
+                        {
+                            flag = false;
+                            int contador2 = 0;
+                            foreach (String etiqueta in listaEtiquetas)
+                            {
+                                if (!etiqueta.Equals(definiciones[contador].nombre))
+                                {
+                                    contador2++;
+                                }
+                                else
+                                {
+                                    break;
+                                }                                
+                            }
+                            Error error = new Error("Semantico", "Error, no se encuentra la llave foranea " + definiciones[contador].foranea, 
+                                raizValores.ChildNodes[contador2].Span.Location.Line, 
+                                raizValores.ChildNodes[contador2].Span.Location.Column);
+                            Form1.errores.Add(error);
+                            Form1.Mensajes.Add(error.getMensaje());
+                        }
+                    }
+                    #region Verificación de nulo
+                    if (!definiciones[contador].nulo)
+                    {
+                        if(nuevaTupla.campos[contador].tablaId.ToLower().Equals("nulo"))
+                        {
+                            flag = false;
+                            int contador2 = 0;
+                            foreach (String etiqueta in listaEtiquetas)
+                            {
+                                if (!etiqueta.ToLower().Equals(definiciones[contador].nombre.ToLower()))
+                                {
+                                    contador2++;
+                                }
+                                else
+                                {
+                                    break;
+                                }
+                            }
+                            Error error = new Error("Semantico", "El campo " + definiciones[contador].nombre + " es no nulo.",
+                                raizValores.ChildNodes[contador2].Span.Location.Line,
+                                raizValores.ChildNodes[contador2].Span.Location.Column);
+                            Form1.errores.Add(error);
+                            Form1.Mensajes.Add(error.getMensaje());
+                        }
+                    }
+
+                    #endregion
+
+                    #endregion
+                }
+                else
+                {
+                    flag = false;
+                    Error error = new Error("Semantico",
+                        "Se esperaba un dato de tipo " + definiciones[contador].tipo + ", valor " + nuevaTupla.campos[contador].valor + " inválido",
+                        raizValores.ChildNodes[contador].Span.Location.Line, raizValores.ChildNodes[contador].Span.Location.Column);
+                    Form1.errores.Add(error);
+                    Form1.Mensajes.Add(error.getMensaje());
+                }
+            }
+            if (flag)
+            {
+                getTabla(nombreTabla, linea, columna).tuplas.Add(nuevaTupla);
+            }
+            // Ahora ya tenemos la tupla nueva :v
         }
 
         //Verifica si existe el registro (para verificar la llave foranea

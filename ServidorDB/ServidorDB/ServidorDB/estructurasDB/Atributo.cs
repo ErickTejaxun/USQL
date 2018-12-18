@@ -14,7 +14,7 @@ namespace ServidorDB.estructurasDB
 
         public Atributo(String tipo, String id, Object valor)
         {
-            this.tipo = tipo;
+            this.tipo = tipo.ToLower();
             this.id = id.ToLower();
             this.valor = valor;
             if (valor == null)

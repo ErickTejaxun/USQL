@@ -16,7 +16,7 @@ namespace ServidorDB.estructurasDB
         }
         public campo getCampo(String id)
         {
-            String nombre = id;
+            String nombre = id.ToLower();
             if (nombre.ToLower().Contains("."))
             {
                 String[] partes = nombre.Split('.');
@@ -29,9 +29,9 @@ namespace ServidorDB.estructurasDB
                 if (nombre2.ToLower().Contains("."))
                 {
                     String[] partes = nombre2.Split('.');
-                    nombre2 = partes[1];
+                    nombre2 = partes[1].ToLower();
                 }
-                if (nombre2.Equals(id))
+                if (nombre2.ToLower().Equals(id.ToLower()))
                 {
                     return camp;
                 }

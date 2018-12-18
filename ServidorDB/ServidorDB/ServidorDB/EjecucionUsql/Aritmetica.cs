@@ -56,11 +56,11 @@ namespace ServidorBDD.EjecucionUsql
                         switch (r1.tipo)
                         {
                             case "integer":
-                                return new Resultado("integer", Convert.ToInt32(r1.valor) * -1);
+                                return new Resultado("integer", Convert.ToInt64(r1.valor) * -1);
                             case "double":
                                 return new Resultado("double", Convert.ToDouble(r1.valor) * -1);
                             case "bool":
-                                return new Resultado("integer", Convert.ToInt32(r1.valor) * -1);
+                                return new Resultado("integer", Convert.ToInt64(r1.valor) * -1);
                             default:
                                 return new Resultado("Error", null);
 
@@ -103,11 +103,11 @@ namespace ServidorBDD.EjecucionUsql
                                 case "text":
                                     return new Resultado("text", r1.valor.ToString() + r2.valor.ToString());
                                 case "integer":
-                                    return new Resultado("text", r1.valor.ToString() + Convert.ToInt32(r2.valor.ToString()));
+                                    return new Resultado("text", r1.valor.ToString() + Convert.ToInt64(r2.valor.ToString()));
                                 case "double":
                                     return new Resultado("text", r1.valor.ToString() + Convert.ToDouble(r2.valor.ToString()));
                                 case "bool":
-                                    return new Resultado("text", r1.valor.ToString() + Convert.ToInt32(r2.valor.ToString()));
+                                    return new Resultado("text", r1.valor.ToString() + Convert.ToInt64(r2.valor.ToString()));
                                 case "date":
                                 case "datetime":
                                     agregarError("Semantico", "Operacion aritmetica + no complatible entre datos Text y Date/DateTime", raiz.Span.Location.Line, raiz.Span.Location.Column);
@@ -118,13 +118,13 @@ namespace ServidorBDD.EjecucionUsql
                             switch (r2.tipo)
                             {
                                 case "text":
-                                    return new Resultado("text", Convert.ToInt32(r1.valor) + r2.valor.ToString());
+                                    return new Resultado("text", Convert.ToInt64(r1.valor) + r2.valor.ToString());
                                 case "integer":
-                                    return new Resultado("integer", Convert.ToInt32(r1.valor) + Convert.ToInt32(r2.valor));
+                                    return new Resultado("integer", Convert.ToInt64(r1.valor) + Convert.ToInt64(r2.valor));
                                 case "double":
-                                    return new Resultado("double", Convert.ToInt32(r1.valor) + Convert.ToDouble(r2.valor));
+                                    return new Resultado("double", Convert.ToInt64(r1.valor) + Convert.ToDouble(r2.valor));
                                 case "bool":
-                                    return new Resultado("integer", Convert.ToInt32(r1.valor) + Convert.ToInt32(r2.valor));
+                                    return new Resultado("integer", Convert.ToInt64(r1.valor) + Convert.ToInt64(r2.valor));
                                 case "date":
                                 case "datetime":
                                     agregarError("Semantico", "Operacion aritmetica + no complatible entre datos Integer y Date/DateTime", raiz.Span.Location.Line, raiz.Span.Location.Column);
@@ -137,11 +137,11 @@ namespace ServidorBDD.EjecucionUsql
                                 case "text":
                                     return new Resultado("text", Convert.ToDouble(r1.valor) + r2.valor.ToString());
                                 case "integer":
-                                    return new Resultado("double", Convert.ToDouble(r1.valor) + Convert.ToInt32(r2.valor));
+                                    return new Resultado("double", Convert.ToDouble(r1.valor) + Convert.ToInt64(r2.valor));
                                 case "double":
                                     return new Resultado("double", Convert.ToDouble(r1.valor) + Convert.ToDouble(r2.valor));
                                 case "bool":
-                                    return new Resultado("double", Convert.ToDouble(r1.valor) + Convert.ToInt32(r2.valor));
+                                    return new Resultado("double", Convert.ToDouble(r1.valor) + Convert.ToInt64(r2.valor));
                                 case "date":
                                 case "datetime":
                                     agregarError("Semantico", "Operacion aritmetica + no complatible entre datos Double y Date/DateTime", raiz.Span.Location.Line, raiz.Span.Location.Column);
@@ -152,13 +152,13 @@ namespace ServidorBDD.EjecucionUsql
                             switch (r2.tipo)
                             {
                                 case "text":
-                                    return new Resultado("text", Convert.ToInt32(r1.valor) + r2.valor.ToString());
+                                    return new Resultado("text", Convert.ToInt64(r1.valor) + r2.valor.ToString());
                                 case "integer":
-                                    return new Resultado("integer", Convert.ToInt32(r1.valor) + Convert.ToInt32(r2.valor));
+                                    return new Resultado("integer", Convert.ToInt64(r1.valor) + Convert.ToInt64(r2.valor));
                                 case "double":
-                                    return new Resultado("double", Convert.ToInt32(r1.valor) + Convert.ToDouble(r2.valor));
+                                    return new Resultado("double", Convert.ToInt64(r1.valor) + Convert.ToDouble(r2.valor));
                                 case "bool":
-                                    return new Resultado("integer", Convert.ToInt32(r1.valor) + Convert.ToInt32(r2.valor));
+                                    return new Resultado("integer", Convert.ToInt64(r1.valor) + Convert.ToInt64(r2.valor));
                                 case "date":
                                 case "datetime":
                                     agregarError("Semantico", "Operacion aritmetica + no complatible entre datos Bool y Date/DateTime", raiz.Span.Location.Line, raiz.Span.Location.Column);
@@ -220,11 +220,11 @@ namespace ServidorBDD.EjecucionUsql
                             switch (r2.tipo)
                             {
                                 case "integer":
-                                    return new Resultado("integer", Convert.ToInt32(r1.valor) - Convert.ToInt32(r2.valor));
+                                    return new Resultado("integer", Convert.ToInt64(r1.valor) - Convert.ToInt64(r2.valor));
                                 case "double":
-                                    return new Resultado("double", Convert.ToInt32(r1.valor) - Convert.ToDouble(r2.valor));
+                                    return new Resultado("double", Convert.ToInt64(r1.valor) - Convert.ToDouble(r2.valor));
                                 case "bool":
-                                    return new Resultado("integer", Convert.ToInt32(r1.valor) - Convert.ToInt32(r2.valor));
+                                    return new Resultado("integer", Convert.ToInt64(r1.valor) - Convert.ToInt64(r2.valor));
                                 case "text":
                                 case "date":
                                 case "datetime":
@@ -236,11 +236,11 @@ namespace ServidorBDD.EjecucionUsql
                             switch (r2.tipo)
                             {
                                 case "integer":
-                                    return new Resultado("double", Convert.ToDouble(r1.valor) - Convert.ToInt32(r2.valor));
+                                    return new Resultado("double", Convert.ToDouble(r1.valor) - Convert.ToInt64(r2.valor));
                                 case "double":
                                     return new Resultado("double", Convert.ToDouble(r1.valor) - Convert.ToDouble(r2.valor));
                                 case "bool":
-                                    return new Resultado("double", Convert.ToDouble(r1.valor) - Convert.ToInt32(r2.valor));
+                                    return new Resultado("double", Convert.ToDouble(r1.valor) - Convert.ToInt64(r2.valor));
                                 case "text":
                                 case "date":
                                 case "datetime":
@@ -253,11 +253,11 @@ namespace ServidorBDD.EjecucionUsql
                             switch (r2.tipo)
                             {
                                 case "integer":
-                                    return new Resultado("integer", Convert.ToInt32(r1.valor) - Convert.ToInt32(r2.valor));
+                                    return new Resultado("integer", Convert.ToInt64(r1.valor) - Convert.ToInt64(r2.valor));
                                 case "double":
-                                    return new Resultado("double", Convert.ToInt32(r1.valor) - Convert.ToDouble(r2.valor));
+                                    return new Resultado("double", Convert.ToInt64(r1.valor) - Convert.ToDouble(r2.valor));
                                 case "bool":
-                                    return new Resultado("double", Convert.ToInt32(r1.valor) - Convert.ToInt32(r2.valor));
+                                    return new Resultado("double", Convert.ToInt64(r1.valor) - Convert.ToInt64(r2.valor));
                                 case "text":
                                 case "date":
                                 case "datetime":
@@ -317,11 +317,11 @@ namespace ServidorBDD.EjecucionUsql
                             switch (r2.tipo)
                             {
                                 case "integer":
-                                    return new Resultado("integer", Convert.ToInt32(r1.valor) * Convert.ToInt32(r2.valor));
+                                    return new Resultado("integer", Convert.ToInt64(r1.valor) * Convert.ToInt64(r2.valor));
                                 case "double":
-                                    return new Resultado("double", Convert.ToInt32(r1.valor) * Convert.ToDouble(r2.valor));
+                                    return new Resultado("double", Convert.ToInt64(r1.valor) * Convert.ToDouble(r2.valor));
                                 case "bool":
-                                    return new Resultado("integer", Convert.ToInt32(r1.valor) * Convert.ToInt32(r2.valor));
+                                    return new Resultado("integer", Convert.ToInt64(r1.valor) * Convert.ToInt64(r2.valor));
                                 case "text":
                                 case "date":
                                 case "datetime":
@@ -333,11 +333,11 @@ namespace ServidorBDD.EjecucionUsql
                             switch (r2.tipo)
                             {
                                 case "integer":
-                                    return new Resultado("double", Convert.ToDouble(r1.valor) * Convert.ToInt32(r2.valor));
+                                    return new Resultado("double", Convert.ToDouble(r1.valor) * Convert.ToInt64(r2.valor));
                                 case "double":
                                     return new Resultado("double", Convert.ToDouble(r1.valor) * Convert.ToDouble(r2.valor));
                                 case "bool":
-                                    return new Resultado("double", Convert.ToDouble(r1.valor) * Convert.ToInt32(r2.valor));
+                                    return new Resultado("double", Convert.ToDouble(r1.valor) * Convert.ToInt64(r2.valor));
                                 case "text":
                                 case "date":
                                 case "datetime":
@@ -350,11 +350,11 @@ namespace ServidorBDD.EjecucionUsql
                             switch (r2.tipo)
                             {
                                 case "integer":
-                                    return new Resultado("integer", Convert.ToInt32(r1.valor) * Convert.ToInt32(r2.valor));
+                                    return new Resultado("integer", Convert.ToInt64(r1.valor) * Convert.ToInt64(r2.valor));
                                 case "double":
-                                    return new Resultado("double", Convert.ToInt32(r1.valor) * Convert.ToDouble(r2.valor));
+                                    return new Resultado("double", Convert.ToInt64(r1.valor) * Convert.ToDouble(r2.valor));
                                 case "bool":
-                                    return new Resultado("double", Convert.ToInt32(r1.valor) * Convert.ToInt32(r2.valor));
+                                    return new Resultado("double", Convert.ToInt64(r1.valor) * Convert.ToInt64(r2.valor));
                                 case "text":
                                 case "date":
                                 case "datetime":
@@ -456,7 +456,7 @@ namespace ServidorBDD.EjecucionUsql
                             switch (r2.tipo)
                             {
                                 case "integer":
-                                    return new Resultado("double", Convert.ToDouble(r1.valor) / Convert.ToInt32(r2.valor));
+                                    return new Resultado("double", Convert.ToDouble(r1.valor) / Convert.ToInt64(r2.valor));
                                 case "double":
                                     return new Resultado("double", Convert.ToDouble(r1.valor) / Convert.ToDouble(r2.valor));
                                 case "bool":
@@ -564,7 +564,7 @@ namespace ServidorBDD.EjecucionUsql
                             switch (r2.tipo)
                             {
                                 case "integer":
-                                    return new Resultado("double", Math.Pow(Convert.ToDouble(r1.valor), Convert.ToInt32(r2.valor)));
+                                    return new Resultado("double", Math.Pow(Convert.ToDouble(r1.valor), Convert.ToInt64(r2.valor)));
                                 case "double":
                                     return new Resultado("double", Math.Pow(Convert.ToDouble(r1.valor), Convert.ToDouble(r2.valor)));
                                 case "bool":
