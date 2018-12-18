@@ -16,9 +16,22 @@ namespace ServidorDB.estructurasDB
         }
         public campo getCampo(String id)
         {
+            String nombre = id;
+            if (nombre.ToLower().Contains("."))
+            {
+                String[] partes = nombre.Split('.');
+                id = partes[1];
+            }
+
             foreach (campo camp in campos)
             {
-                if (camp.id.Equals(id))
+                String nombre2 = camp.id;
+                if (nombre2.ToLower().Contains("."))
+                {
+                    String[] partes = nombre2.Split('.');
+                    nombre2 = partes[1];
+                }
+                if (nombre2.Equals(id))
                 {
                     return camp;
                 }

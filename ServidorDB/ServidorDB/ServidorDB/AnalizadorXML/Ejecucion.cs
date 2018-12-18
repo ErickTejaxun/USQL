@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Irony.Parsing;
+using ServidorDB.EjecucionUsql;
 using ServidorDB.estructurasDB;
 
 namespace ServidorDB.AnalizadorXML
@@ -148,8 +149,17 @@ namespace ServidorDB.AnalizadorXML
                         bool auto;
                         bool nulo;
                         bool primaria;
+                        bool unico;
                         String foranea;
                         ParseTreeNode nodoAtributo = nodoDef.ChildNodes[3];
+                        if (nodoAtributo.ChildNodes.Count<5)
+                        {
+                            Error error = new Error("Sintactico", "Error en definicion de campos de tabla "+nuevaTabla.nombre +" , hace falta un parametro.", nodo.ChildNodes[1].Token.Location.Line, nodo.ChildNodes[1].Token.Location.Column);
+                            Form1.errores.Add(error);
+                            Form1.Mensajes.Add(error.getMensaje());
+                            return listaTablas;
+                        }
+
                         #region Autoincremento
                         if (nodoAtributo.ChildNodes[0].ChildNodes[0].ChildNodes[0].Token.Text.Equals("1"))
                         {
@@ -190,7 +200,17 @@ namespace ServidorDB.AnalizadorXML
                             foranea = nodoAtributo.ChildNodes[3].ChildNodes[0].ChildNodes[0].Token.Text;
                         }
                         #endregion
-                        defCampo definicion = new defCampo(nombre,tipo,auto,nulo,primaria,foranea);
+                        #region unico
+                        if (nodoAtributo.ChildNodes[4].ChildNodes[0].ChildNodes[0].Token.Text.Equals("0"))
+                        {
+                            unico = false;
+                        }
+                        else
+                        {
+                            unico = false;
+                        }
+                        #endregion
+                        defCampo definicion = new defCampo(nombre,tipo,auto,nulo,primaria,foranea, unico);
                         nuevaTabla.definiciones.Add(definicion);
                     }
                     else

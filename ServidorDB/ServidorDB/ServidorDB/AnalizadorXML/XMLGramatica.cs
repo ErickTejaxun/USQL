@@ -451,7 +451,7 @@ namespace ServidorDB.AnalizadorXML
                            | abrir + KFOR + cerrar + VALOR + abrir + diagonal + KFOR + cerrar
                            | abrir + KFOR + cerrar + VALOR + abrir + diagonal + KFOR + cerrar
                            | abrir + KAUTO + cerrar + VALOR + abrir + diagonal + KAUTO + cerrar
-                           | abrir + KUNICO + cerrar + VALOR + abrir + diagonal + KUNICO + cerrar                           
+                           |abrir + KUNICO + cerrar + VALOR + abrir + diagonal + KUNICO + cerrar                          
                         ;
 
             #endregion
@@ -473,7 +473,7 @@ namespace ServidorDB.AnalizadorXML
             
             MarkPunctuation("<", "/", ">", "db","PROPIEDADES","CAMPO","rows","object", "procedure","tabla","attr",
                 "obj","row","ROWS", "PROPIEDADES","nulo","autoincrementable","primaria","foranea"
-                ,"params","src", "func", "base","nombredb","objetos","objeto");//para quitar hojas inutiles del arbol
+                ,"params","src", "func", "base","nombredb","objetos","objeto","unico");//para quitar hojas inutiles del arbol
             MarkTransient(LROWS,/* ATRIBUTO, */PROPIEDADES,NOBJETO,ROW);
             NonGrammarTerminals.Add(comentarioSimple); 
             NonGrammarTerminals.Add(comentarioMulti);

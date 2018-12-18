@@ -117,14 +117,77 @@ namespace ServidorDB.estructurasDB
                 nuevaTupla.addCampo(new campo("", result.valor,result.tipo));
             }
             int contador = 0;
-            List<defCampo> definiciones = getTabla(nombreTabla, linea, columna).definiciones;
+            Tabla tabActual= getTabla(nombreTabla, linea, columna);
+            List<defCampo> definiciones = tabActual.definiciones;
+            #region Verificamos que el número de valores coinicida con 
+            if (raizValores.ChildNodes.Count != definiciones.Count)
+            {
+                Error error = new Error("Semantico","El número de campos no coincide, se esperaban " + definiciones.Count + " campos y se han ingresado " + raizValores.ChildNodes.Count
+                    , raizValores.ChildNodes[0].Span.Location.Line, raizValores.ChildNodes[0].Span.Location.Column);
+                Form1.errores.Add(error);
+                Form1.Mensajes.Add(error.getMensaje());
+                return;
+            }
+            #endregion
+
+
+
             bool flag = true;  // Si es true se guarda, si es false no se guarda.
             for (contador = 0; contador<definiciones.Count; contador++ )
             {
-                if (nuevaTupla.campos[contador].tipo.ToLower().Equals(definiciones[contador].tipo.ToLower()))
+                if (nuevaTupla.campos[contador].tipo.ToLower().Equals(definiciones[contador].tipo.ToLower())
+                   || (nuevaTupla.campos[contador].tipo.ToLower().Equals("integer") && definiciones[contador].tipo.ToLower().Equals("bool")))
                 {
-                    nuevaTupla.campos[contador].id = definiciones[contador].nombre; // Nombre del campo
 
+                    /*Codigo para ver si los datos cumplen con la definicion*/
+                    nuevaTupla.campos[contador].id = definiciones[contador].nombre; // Nombre del campo
+                    #region Verificamos si es llave primaria
+                    if (definiciones[contador].primaria)
+                    {
+                        // Verificamos que no exista una igual.
+                        foreach(tupla tup in tabActual.tuplas)
+                        {
+                            campo tmpcampo = tup.getCampo(definiciones[contador].nombre);
+                            if (tmpcampo.valor.ToString().Equals(nuevaTupla.campos[contador].valor.ToString()))
+                            {
+                                flag = false;
+                                Error error = new Error("Ejecución", "Condicion de unico (Llave primaria) fallada " +nombreTabla +"."+ nuevaTupla.campos[contador].id,
+                                    raizValores.ChildNodes[contador].Span.Location.Line, raizValores.ChildNodes[contador].Span.Location.Column);
+                                Form1.errores.Add(error);
+                                Form1.Mensajes.Add(error.getMensaje());
+                            }
+                        }
+                    }
+                    #endregion
+                    #region Verificamos si es Unico
+                    if (definiciones[contador].unico)
+                    {
+                        // Verificamos que no exista una igual.
+                        foreach (tupla tup in tabActual.tuplas)
+                        {
+                            if (tup.getCampo(definiciones[contador].nombre).valor == nuevaTupla.campos[contador].valor)
+                            {
+                                flag = false;
+                                Error error = new Error("Ejecución", "Condicion de unico (Unico) fallada " + nombreTabla + "." + nuevaTupla.campos[contador].id,
+                                    raizValores.ChildNodes[contador].Span.Location.Line, raizValores.ChildNodes[contador].Span.Location.Column);
+                                Form1.errores.Add(error);
+                                Form1.Mensajes.Add(error.getMensaje());
+                            }
+                        }
+                    }
+                    #endregion
+                    #region Verificamos que exista la llave Foranea
+                    if(!definiciones[contador].foranea.Equals(""))
+                    {
+                        if (!existeTupla(definiciones[contador].foranea, nuevaTupla.campos[contador].id, nuevaTupla.campos[contador].valor, linea, columna))
+                        {
+                            flag = false;
+                            Error error = new Error("Semantico", "Error, no se encuentra la llave foranea " + definiciones[contador].foranea, raizValores.ChildNodes[contador].Span.Location.Line, raizValores.ChildNodes[contador].Span.Location.Column);
+                            Form1.errores.Add(error);
+                            Form1.Mensajes.Add(error.getMensaje());
+                        }
+                    }
+                    #endregion
                 }
                 else
                 {
@@ -146,6 +209,31 @@ namespace ServidorDB.estructurasDB
         public void insertar(String nombreTabla, ParseTreeNode raizCampos, ParseTreeNode raizValores)
         {
 
+        }
+
+        //Verifica si existe el registro (para verificar la llave foranea
+        public bool existeTupla(String nombreTabla, String nombreCampo, object valorPrimaria,  int linea, int columna)
+        {
+            String[] partes = nombreTabla.Split('.');
+            if (partes.Length==2) { nombreTabla = partes[0]; nombreCampo = partes[1]; }
+            
+            Tabla tab = getTabla(nombreTabla,linea,columna);
+            if (tab!=null)
+            {
+                foreach(tupla tp in tab.tuplas)
+                {
+
+                    if (tp.getCampo(nombreCampo.ToLower()).valor.ToString().Equals(valorPrimaria.ToString().ToLower()))
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        int n = 3;
+                    }
+                }
+            }
+            return false;
         }
 
 
@@ -243,18 +331,21 @@ namespace ServidorDB.estructurasDB
                     int autoinc = 0;
                     int nulo = 0;
                     int prim = 0;
+                    int unico = 0;
                     String kforanea = def.foranea;
                     if (def.auto) { autoinc = 1; } else { autoinc = 0; }
                     if (def.nulo) { nulo = 1; } else { nulo = 0; }
                     if (def.primaria) { prim = 1; } else { prim = 0; }
                     if (kforanea.Equals("")) { kforanea = "0"; }
+                    if (def.unico) { unico = 1; } else { unico = 0; }
                     cadena = cadena + "<campo>\n";
                     cadena = cadena + "\t<" + def.tipo+">" + def.nombre + "</" + def.tipo + ">\n";
                     cadena = cadena + "<propiedades>\n";                    
                     cadena = cadena + "\t<autoincrementable>" + autoinc + "</autoincrementable>\n";
                     cadena = cadena + "\t<nulo>" + nulo + "</nulo>\n";
                     cadena = cadena + "\t<primaria>" + prim + "</primaria>\n";
-                    cadena = cadena + "\t<foranea>" + kforanea + "</foranea>\n";
+                    cadena = cadena + "\t<foranea>" + kforanea + "</foranea>\n";                    
+                    cadena = cadena + "\t<unico>" + unico + "</unico>\n";
                     cadena = cadena + "</propiedades>\n";
                     cadena = cadena + "</campo>\n";
                 }
@@ -319,18 +410,18 @@ namespace ServidorDB.estructurasDB
                     if (cmp.valor is DateTime)
                     {
                         DateTime fecha = DateTime.Parse(cmp.valor.ToString());
-                        cadena = cadena + "<" + cmp.id.ToLower() + ">" + fecha.ToString("dd-MM-yyyy HH:mm:ss")
-                            + "</" + cmp.id.ToLower() + ">\n";
+                        cadena = cadena + "<" + quitarNombreTabla(cmp.id.ToLower())  + ">" + fecha.ToString("dd-MM-yyyy HH:mm:ss")
+                            + "</" + quitarNombreTabla(cmp.id.ToLower()) + ">\n";
                     }
                     else if (cmp.valor is String)
                     {
-                        cadena = cadena + "<" + cmp.id.ToLower() + ">\"" + cmp.valor.ToString()
-                            + "\"</" + cmp.id.ToLower() + ">\n";
+                        cadena = cadena + "<" + quitarNombreTabla(cmp.id.ToLower()) + ">\"" + cmp.valor.ToString()
+                            + "\"</" + quitarNombreTabla(cmp.id.ToLower()) + ">\n";
                     }
                     else
                     {
-                        cadena = cadena + "<" + cmp.id.ToLower() + ">" + cmp.valor.ToString()
-                        + "</" + cmp.id.ToLower() + ">\n";
+                        cadena = cadena + "<" + quitarNombreTabla(cmp.id.ToLower()) + ">" + cmp.valor.ToString()
+                        + "</" + quitarNombreTabla(cmp.id.ToLower()) + ">\n";
                     }
 
                 }
@@ -338,6 +429,18 @@ namespace ServidorDB.estructurasDB
             }
             guardarArchivo(tab.path, cadena);
             Form1.Mensajes.Add(cadena);
+        }
+        public String quitarNombreTabla(String tipo)
+        {
+            if (tipo.Contains("."))
+            {
+                String[] partes = tipo.Split('.');
+                return partes[1];
+            }
+            else
+            {
+                return tipo;
+            }
         }
 
         public Tabla getTabla(String nombreTabla, int linea, int columna)

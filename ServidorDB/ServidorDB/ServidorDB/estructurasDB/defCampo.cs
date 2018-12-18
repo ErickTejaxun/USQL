@@ -14,6 +14,7 @@ namespace ServidorDB.estructurasDB
         public bool nulo;
         public bool primaria;
         public String foranea;
+        public bool unico;
 
         public defCampo(String nombre, String tipo, bool auto, bool nulo, bool primaria, String foranea) // Constructor
         {
@@ -23,6 +24,16 @@ namespace ServidorDB.estructurasDB
             this.nulo = nulo;
             this.primaria = primaria;
             this.foranea = foranea;
+        }
+        public defCampo(String nombre, String tipo, bool auto, bool nulo, bool primaria, String foranea, bool unico) // Constructor
+        {
+            this.nombre = nombre;
+            this.tipo = tipo;
+            this.auto = auto;
+            this.nulo = nulo;
+            this.primaria = primaria;
+            this.foranea = foranea;
+            this.unico = unico;
         }
     }         
 }
