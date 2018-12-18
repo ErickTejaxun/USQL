@@ -88,7 +88,7 @@ namespace ServidorBDD.EjecucionUsql
                     return r1;
                 case "idacceso":
                     r1 = getValorCampo(raiz);
-                    break;
+                    return r1;
             }
 
             switch (raiz.ChildNodes[1].Token.Text)
@@ -689,13 +689,14 @@ namespace ServidorBDD.EjecucionUsql
                     {
                         if (cmp.id.ToLower().Contains(nombreCampo))
                         {
-                            //
+                            return new Resultado(cmp.tipo,cmp.valor);
                         }
                     }
                     else
                     {
                         if (cmp.id.ToLower().Contains("."+nombreCampo))
                         {
+                            return new Resultado(cmp.tipo, cmp.valor);
                         }
                     }
 
@@ -706,7 +707,8 @@ namespace ServidorBDD.EjecucionUsql
                 agregarError("Semantico", "Campo " + nombreCampo + " no existe en la tabla", raiz.Span.Location.Line, raiz.Span.Location.Column);
                 return new Resultado("Error",null);
             }
-            return null;
+            agregarError("Semantico", "Campo " + nombreCampo + " no existe en la tabla", raiz.Span.Location.Line, raiz.Span.Location.Column);
+            return new Resultado("Error", null);
         }
 
     }

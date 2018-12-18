@@ -80,6 +80,7 @@ namespace ServidorBDD.EjecucionUsql
         {
             Error error = new Error(tipo, descripcion, linea, columna);
             Form1.errores.Add(error);
+            Form1.Mensajes.Add(error.getMensaje());
         }
 
         #endregion fin area ejecucion

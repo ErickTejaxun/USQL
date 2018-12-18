@@ -187,6 +187,21 @@ namespace ServidorDB.estructurasDB
             }
             Logica rel = new Logica(tup);
             Resultado result = rel.operar(raiz);
+            if (result.tipo.Equals("bool") || result.tipo.Equals("integer")) {
+                if (result.valor.ToString().Equals("1"))
+                {
+                    return true;
+                }
+                else if (result.valor.ToString().Equals("0"))
+                {
+                    return false;
+                }
+                else {
+                    //guardar mensaje
+
+                    return false;
+                }
+            }
             return (bool)result.valor;
         }
         public List<tupla> filtrarResultados(List<String> listaCampos, List<tupla> cartesiano)
@@ -284,11 +299,11 @@ namespace ServidorDB.estructurasDB
                     tupla tpm = new tupla();
                     foreach (campo cmp in data.campo1.campos)
                     {
-                        tpm.addCampo(new campo(cmp.id, cmp.valor));
+                        tpm.addCampo(new campo(cmp.id, cmp.valor, cmp.tipo));
                     }
                     foreach (campo cmp in data.campo2.campos)
                     {
-                        tpm.addCampo(new campo(cmp.id, cmp.valor));
+                        tpm.addCampo(new campo(cmp.id, cmp.valor, cmp.tipo));
                     }
                     tablaCar.Add(tpm);
                 }
@@ -530,8 +545,6 @@ namespace ServidorDB.estructurasDB
             Form1.Mensajes.Add(new Error("Semantico", "El objeto "+ id + " no existe",linea,columna).getMensaje());
             return null;
         }
-
-
         public bool existeTabla(String id)
         {
             foreach (Tabla tab in tablas)

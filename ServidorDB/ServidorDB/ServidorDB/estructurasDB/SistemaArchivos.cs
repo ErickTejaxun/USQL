@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using ServidorDB.EjecucionUsql;
 using Irony.Parsing;
+using ServidorBDD.EjecucionUsql;
 
 namespace ServidorDB.estructurasDB
 {
@@ -81,6 +82,8 @@ namespace ServidorDB.estructurasDB
             }
             BD baseActual = getBase(); // Obtenemos la base actual
             String idTabla = raiz.ChildNodes[0].Token.Text; // ID de la tabla desde el arbol :v
+            int linea = raiz.ChildNodes[0].Token.Location.Line;
+            int columna = raiz.ChildNodes[0].Token.Location.Column;
             //Si no existe la base salimos
             if (!baseActual.existeTabla(idTabla))
             {
@@ -95,7 +98,7 @@ namespace ServidorDB.estructurasDB
             switch (raiz.ChildNodes.Count)
             {
                 case 2: // 0 idbase, 1  lista valores           
-                    insertar(idTabla, raiz.ChildNodes[1]);
+                    insertar(idTabla, raiz.ChildNodes[1],linea, columna);
                     break;
                 case 3: // 0 idbase, 1. Lista id campos, 2. lista valores
                     insertar(idTabla, raiz.ChildNodes[1], raiz.ChildNodes[2]);
@@ -103,19 +106,43 @@ namespace ServidorDB.estructurasDB
             }            
         }
 
-        public void insertar(String nombreTabla, ParseTreeNode raizValores)
+        //Metodo insertar cuando no hay una lista de campos
+        public void insertar(String nombreTabla, ParseTreeNode raizValores, int linea, int columna)
         {
             tupla nuevaTupla = new tupla();
             foreach (ParseTreeNode nodo in raizValores.ChildNodes)
-            {
-                /*
-                 * Logica opL = new Logica();
-                 * Resultado result = opL.operar(nodo);                 
-                 */
-                 
-                 //nuevaTupla.addCampo(new campo("", result.))
+            {                
+                 Logica opL = new Logica();
+                 Resultado result = opL.operar(nodo);
+                nuevaTupla.addCampo(new campo("", result.valor,result.tipo));
             }
+            int contador = 0;
+            List<defCampo> definiciones = getTabla(nombreTabla, linea, columna).definiciones;
+            bool flag = true;  // Si es true se guarda, si es false no se guarda.
+            for (contador = 0; contador<definiciones.Count; contador++ )
+            {
+                if (nuevaTupla.campos[contador].tipo.ToLower().Equals(definiciones[contador].tipo.ToLower()))
+                {
+                    nuevaTupla.campos[contador].id = definiciones[contador].nombre; // Nombre del campo
+
+                }
+                else
+                {
+                    flag = false;
+                    Error error = new Error("Semantico",
+                        "Se esperaba un dato de tipo "+ definiciones[contador].tipo + ", valor " + nuevaTupla.campos[contador].valor +" inválido",
+                        raizValores.ChildNodes[contador].Span.Location.Line, raizValores.ChildNodes[contador].Span.Location.Column);
+                    Form1.errores.Add(error);
+                    Form1.Mensajes.Add(error.getMensaje());
+                } 
+            }
+            if(flag)
+            {
+                getTabla(nombreTabla,linea,columna).tuplas.Add(nuevaTupla);
+            }
+            // Ahora ya tenemos la tupla nueva :v
         }
+        //Metodo insertar cuando hay una lista de campos
         public void insertar(String nombreTabla, ParseTreeNode raizCampos, ParseTreeNode raizValores)
         {
 
@@ -295,10 +322,15 @@ namespace ServidorDB.estructurasDB
                         cadena = cadena + "<" + cmp.id.ToLower() + ">" + fecha.ToString("dd-MM-yyyy HH:mm:ss")
                             + "</" + cmp.id.ToLower() + ">\n";
                     }
+                    else if (cmp.valor is String)
+                    {
+                        cadena = cadena + "<" + cmp.id.ToLower() + ">\"" + cmp.valor.ToString()
+                            + "\"</" + cmp.id.ToLower() + ">\n";
+                    }
                     else
                     {
                         cadena = cadena + "<" + cmp.id.ToLower() + ">" + cmp.valor.ToString()
-                            + "</" + cmp.id.ToLower() + ">\n";
+                        + "</" + cmp.id.ToLower() + ">\n";
                     }
 
                 }
@@ -308,6 +340,29 @@ namespace ServidorDB.estructurasDB
             Form1.Mensajes.Add(cadena);
         }
 
+        public Tabla getTabla(String nombreTabla, int linea, int columna)
+        {
+            if (getBase() != null)
+            {
+                foreach (Tabla tab in getBase().tablas)
+                {
+                    if (tab.nombre.ToLower().Equals(nombreTabla.ToLower()))
+                    {
+                        return tab;
+                    }
+                }
+                Error error = new Error("Ejecucion", "La tabla " + nombreTabla + " no existe en la base de datos " + baseActual, linea, columna);
+                Form1.errores.Add(error);
+                Form1.Mensajes.Add(error.getMensaje());
+            }
+            else
+            {
+                Error error = new Error("Ejecucion", "Se debe seleccionar una base de datos", linea, columna);
+                Form1.errores.Add(error);
+                Form1.Mensajes.Add(error.getMensaje());
+            }
+            return null;
+        }
 
         public void guardarArchivo(String path, String contenido)
         {                                   

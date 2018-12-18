@@ -18,10 +18,6 @@ namespace ServidorDB.AnalizadorXML
             this.raiz = raiz;
             formularioACtual = formulario;
         }
-        //public Ejecucion(ParseTreeNode raiz)
-        //{
-        //    this.raiz = raiz;
-        //}
         public void cargarBaseDatos(BD baseActual)
         {
             ParseTreeNode inicio = raiz.ChildNodes[0];
@@ -91,6 +87,7 @@ namespace ServidorDB.AnalizadorXML
                             cmp.valor = DateTime.Parse(nodoCampo.ChildNodes[1].ChildNodes[0].Token.Text
                                 +" "+ nodoCampo.ChildNodes[1].ChildNodes[1].Token.Text
                                 );
+                            cmp.tipo = "datetime";
                         }
                         else
                         {
@@ -98,15 +95,19 @@ namespace ServidorDB.AnalizadorXML
                             {
                                 case "integer":
                                     cmp.valor = Int32.Parse(nodoCampo.ChildNodes[1].ChildNodes[0].Token.Text);
+                                    cmp.tipo = "integer";
                                     break;
                                 case "cadena_literal":
-                                    cmp.valor = nodoCampo.ChildNodes[1].ChildNodes[0].Token.Text;
+                                    cmp.valor = nodoCampo.ChildNodes[1].ChildNodes[0].Token.Text.Replace("\"",""); 
+                                    cmp.tipo = "text";
                                     break;
                                 case "date":                                
                                     cmp.valor = DateTime.Parse(nodoCampo.ChildNodes[1].ChildNodes[0].Token.Text);
+                                    cmp.tipo = "date";
                                     break;
                                 case "double":
                                     cmp.valor = Double.Parse(nodoCampo.ChildNodes[1].ChildNodes[0].Token.Text);
+                                    cmp.tipo = "double";
                                     break;
                             }
                         }
