@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using ServidorDB.EjecucionUsql;
 using Irony.Parsing;
 using ServidorBDD.EjecucionUsql;
+using System.IO;
 
 namespace ServidorDB.estructurasDB
 {
@@ -42,7 +43,7 @@ namespace ServidorDB.estructurasDB
 
         public void setBaseActual(ParseTreeNode nodo)
         {
-            String nombreDB = nodo.Token.Text;
+            String nombreDB = nodo.Token.Text.ToLower();
             foreach (BD boss in basesdedatos)
             {
                 if (boss.nombre.ToLower().Equals(nombreDB))
@@ -427,16 +428,12 @@ namespace ServidorDB.estructurasDB
             Tabla tab = getTabla(nombreTabla,linea,columna);
             if (tab!=null)
             {
-                foreach(tupla tp in tab.tuplas)
+                foreach (tupla tp in tab.tuplas)
                 {
 
                     if (tp.getCampo(nombreCampo.ToLower()).valor.ToString().Equals(valorPrimaria.ToString().ToLower()))
                     {
                         return true;
-                    }
-                    else
-                    {
-                        int n = 3;
                     }
                 }
             }
@@ -614,23 +611,27 @@ namespace ServidorDB.estructurasDB
                 //("MM/dd/yyyy HH:mm:ss")
                 foreach (campo cmp in tp.campos)
                 {
-                    if (cmp.valor is DateTime)
+                    switch (cmp.tipo.ToLower())
                     {
-                        DateTime fecha = DateTime.Parse(cmp.valor.ToString());
-                        cadena = cadena + "<" + quitarNombreTabla(cmp.id.ToLower())  + ">" + fecha.ToString("dd-MM-yyyy HH:mm:ss")
+                        case "datetime":
+                            DateTime fecha = DateTime.Parse(cmp.valor.ToString());
+                            cadena = cadena + "<" + quitarNombreTabla(cmp.id.ToLower()) + ">" + fecha.ToString("dd-MM-yyyy HH:mm:ss")
+                                + "</" + quitarNombreTabla(cmp.id.ToLower()) + ">\n";
+                            break;
+                        case "date":
+                            fecha = DateTime.Parse(cmp.valor.ToString());
+                            cadena = cadena + "<" + quitarNombreTabla(cmp.id.ToLower()) + ">" + fecha.ToString("dd-MM-yyyy")
+                                + "</" + quitarNombreTabla(cmp.id.ToLower()) + ">\n";
+                            break;
+                        case "text":                            
+                            cadena = cadena + "<" + quitarNombreTabla(cmp.id.ToLower()) + ">\"" + cmp.valor
+                                + "\"</" + quitarNombreTabla(cmp.id.ToLower()) + ">\n";
+                            break;
+                        default:
+                            cadena = cadena + "<" + quitarNombreTabla(cmp.id.ToLower()) + ">" + cmp.valor
                             + "</" + quitarNombreTabla(cmp.id.ToLower()) + ">\n";
+                            break;
                     }
-                    else if (cmp.valor is String)
-                    {
-                        cadena = cadena + "<" + quitarNombreTabla(cmp.id.ToLower()) + ">\"" + cmp.valor.ToString()
-                            + "\"</" + quitarNombreTabla(cmp.id.ToLower()) + ">\n";
-                    }
-                    else
-                    {
-                        cadena = cadena + "<" + quitarNombreTabla(cmp.id.ToLower()) + ">" + cmp.valor.ToString()
-                        + "</" + quitarNombreTabla(cmp.id.ToLower()) + ">\n";
-                    }
-
                 }
                 cadena = cadena + "\n" + "</" + "row" + ">";
             }
@@ -652,6 +653,7 @@ namespace ServidorDB.estructurasDB
 
         public Tabla getTabla(String nombreTabla, int linea, int columna)
         {
+            nombreTabla = nombreTabla.ToLower();
             if (getBase() != null)
             {
                 foreach (Tabla tab in getBase().tablas)
@@ -674,11 +676,189 @@ namespace ServidorDB.estructurasDB
             return null;
         }
 
+        public bool existeTabla(String nombreTabla, int linea, int columna)
+        {
+            if (getBase() != null)
+            {
+                foreach (Tabla tab in getBase().tablas)
+                {
+                    if (tab.nombre.ToLower().Equals(nombreTabla.ToLower()))
+                    {
+                        return true;
+                    }
+                }
+
+            }
+            else
+            {
+                Error error = new Error("Ejecucion", "Se debe seleccionar una base de datos", linea, columna);
+                Form1.errores.Add(error);
+                Form1.Mensajes.Add(error.getMensaje());
+            }
+            return false;
+        }
+
         public void guardarArchivo(String path, String contenido)
         {                                   
-            System.IO.File.WriteAllText(path, contenido); // Almacenamos el archivo
+            String[] partes = path.Split('\\');
+            String directorio = "";
+            for (int cont = 0; cont < partes.Length - 1 ; cont++)
+            {
+                if (directorio.Equals(""))
+                {
+                    directorio = partes[cont];
+                }
+                else
+                {
+                    directorio = directorio +"\\" +partes[cont];
+                }
+            }
+
+            try
+            {
+                // Si existe el directorio.
+                if (Directory.Exists(directorio))
+                {                   
+                    System.IO.File.WriteAllText(path, contenido); // Almacenamos el archivo     
+                    return;
+                }
+
+                // Crear la carpeta
+                DirectoryInfo di = Directory.CreateDirectory(directorio);
+                System.IO.File.WriteAllText(path, contenido); // Almacenamos el archivo  
+                Form1.Mensajes.Add("El directorio fue creado con existo. " + Directory.GetCreationTime(path));                               
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+            finally { }
         }
         #endregion
+
+        public void crearBase(ParseTreeNode raiz)
+        {
+            if (raiz.ChildNodes.Count == 2)
+            {
+                String nombreNuevaBase = raiz.ChildNodes[1].Token.Text.ToLower();
+                bool flag = false; // Para saber si existe ya la base de datos.
+                foreach (BD boss in basesdedatos)
+                {
+                    if (boss.nombre.ToLower().Equals(nombreNuevaBase))
+                    {
+                        flag = true;
+                    }
+                }
+
+                if (!flag)
+                {
+                    String pathDB = "C:\\DB\\BD\\" + nombreNuevaBase + "\\DB.xml";
+                    String pathObjetos = "C:\\DB\\BD\\" + nombreNuevaBase + "\\objetos.xml";
+                    String pathProcedimientos = "C:\\DB\\BD\\" + nombreNuevaBase + "\\procedimientos.xml";
+                    BD nuevaBase = new BD(nombreNuevaBase, pathDB);
+                    nuevaBase.pathObjetos = pathObjetos;
+                    nuevaBase.pathProcedimientos = pathProcedimientos;
+                    basesdedatos.Add(nuevaBase);
+                    Form1.Mensajes.Add("Base de datos "+nombreNuevaBase +" ha sido creada con éxito.");
+                }
+                else
+                {
+                    Error error = new Error("Semantico", "La base de datos "+ nombreNuevaBase + " ya existe en el sistema.", raiz.ChildNodes[1].Span.Location.Line, raiz.ChildNodes[1].Span.Location.Column);
+                    Form1.errores.Add(error);
+                    Form1.Mensajes.Add(error.getMensaje());
+                }
+
+            }
+        }
+
+        public void crearTabla(ParseTreeNode raiz)
+        {
+            if (getBase()!=null)
+            {
+                String nombreNuevaTabla = raiz.ChildNodes[0].Token.Text;
+                String pathBase = getBase().path;
+                String[] partes = pathBase.Split('\\');
+                String pathTabla = "";
+                for (int cont = 0; cont < partes.Length - 1; cont++)
+                {
+                    if (pathTabla.Equals(""))
+                    {
+                        pathTabla = partes[cont];
+                    }
+                    else
+                    {
+                        pathTabla = pathTabla + "\\" + partes[cont];
+                    }
+                }
+                String nombreTabla = raiz.ChildNodes[0].Token.Text;
+                pathTabla = pathTabla + "\\" + nombreTabla +".xml";
+                Tabla nuevaTabla = new Tabla(nombreTabla,pathTabla);
+                // Verificamos si existe la tabla, si existe abortamos
+                if (!existeTabla(nombreTabla, raiz.ChildNodes[0].Span.Location.Line, raiz.ChildNodes[0].Span.Location.Column))
+                {
+                    foreach (ParseTreeNode nodoCampo in raiz.ChildNodes[1].ChildNodes)
+                    {
+                        String nombre;
+                        String tipo;
+                        bool auto = false;
+                        bool nulo = false;
+                        bool primaria = false;
+                        String foranea = "";
+                        bool unico = false;
+                        tipo = nodoCampo.ChildNodes[0].ChildNodes[0].Token.Text;
+                        nombre = nodoCampo.ChildNodes[1].Token.Text;
+                        foreach (ParseTreeNode nodoParametro in nodoCampo.ChildNodes[2].ChildNodes)
+                        {
+                            if (nodoParametro.ChildNodes.Count == 0)
+                            {
+                                switch (nodoParametro.Token.Text)
+                                {
+                                    case "llave_primaria":
+                                        primaria = true;
+                                        break;
+                                    case "autoincrementable":
+                                        auto = true;
+                                        break;
+                                    case "nulo":
+                                        nulo = true;
+                                        break;
+                                    case "no nulo":
+                                        nulo = false;
+                                        break;
+                                    case "unico":
+                                        unico = true;
+                                        break;
+                                }                                
+                            }
+                            else
+                            {                                                                      
+                                foranea = nodoParametro.ChildNodes[0].Token.Text;
+                                foranea = foranea + "." + nodoParametro.ChildNodes[1].Token.Text;
+                                break;
+                            }
+                        }
+                        defCampo nuevaDefinicion = new defCampo(nombre, tipo, auto, nulo, primaria, foranea,unico);
+                        nuevaTabla.definiciones.Add(nuevaDefinicion);
+                    }
+                    // Agregamos la nueva tabla.
+                    getBase().tablas.Add(nuevaTabla);
+                }
+                else
+                {
+                    Error error = new Error("Semantico", "La tabla "+nombreTabla +" ya existe en el sistema", raiz.ChildNodes[0].Span.Location.Line, raiz.ChildNodes[0].Span.Location.Column);
+                    Form1.errores.Add(error);
+                    Form1.Mensajes.Add(error.getMensaje());
+                }
+                // Recorremos la lista de definicion
+    
+            }
+            else
+            {
+                Error error = new Error("Semantico", "No se ha elegido una base de datos.",raiz.ChildNodes[0].Span.Location.Line, raiz.ChildNodes[0].Span.Location.Column);
+                Form1.errores.Add(error);
+                Form1.Mensajes.Add(error.getMensaje());
+            }
+        }
 
     }
 }

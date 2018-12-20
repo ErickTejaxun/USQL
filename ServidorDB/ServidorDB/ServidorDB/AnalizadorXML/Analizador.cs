@@ -26,8 +26,7 @@ namespace ServidorDB.AnalizadorXML
                 Genarbol(raiz);
                 generateGraph("ejemplo.txt");
                 return getErrores(arbol);            
-            }
-            
+            }            
             //return "1";
         }
 

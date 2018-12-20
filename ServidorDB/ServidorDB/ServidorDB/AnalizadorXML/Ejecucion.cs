@@ -39,7 +39,16 @@ namespace ServidorDB.AnalizadorXML
                     Form1.Mensajes.Add(tab.path);
                     cargarTuplas(tab);
                 }
-                
+
+            }
+            else if (inicio.ChildNodes.Count == 2)
+            {
+                aux = inicio.ChildNodes[0]; //  Procedimientos . Tomar el segundo hijo que trae el path
+                baseActual.procedimientos = cargarProcedimientos(aux.ChildNodes[1].Token.Text);
+                baseActual.pathProcedimientos = aux.ChildNodes[1].Token.Text;
+                aux = inicio.ChildNodes[1]; // Objetos. Tomar el segundo hijo que trae el path del archivo.
+                baseActual.objetos = cargarObjetos(aux.ChildNodes[1].Token.Text);
+                baseActual.pathObjetos = aux.ChildNodes[1].Token.Text;
             }
         }
         private void cargarTuplas(Tabla tabla)
@@ -71,66 +80,70 @@ namespace ServidorDB.AnalizadorXML
         }
         public void obtenerTuplas(ParseTreeNode raiz, Tabla tabla)
         {
-            raiz = raiz.ChildNodes[0];            
-            /*Recorremos la lista de tuplas/registros / :v*/
-            foreach (ParseTreeNode nodoTupla in raiz.ChildNodes)
+            if (raiz.ChildNodes.Count>0)
             {
-                tupla newtupla = new tupla();
-                /*Reocorremos la lista de atributos*/
-                foreach (ParseTreeNode nodoCampo in nodoTupla.ChildNodes)
+                raiz = raiz.ChildNodes[0];
+                /*Recorremos la lista de tuplas/registros / :v*/
+                foreach (ParseTreeNode nodoTupla in raiz.ChildNodes)
                 {
-                    campo cmp = new campo(nodoCampo.ChildNodes[0].Token.Text,
-                            nodoCampo.ChildNodes[1].ChildNodes[0].Token.Text);
-                    if (nodoCampo.ChildNodes[0].Token.Text.ToLower().Equals(nodoCampo.ChildNodes[2].Token.Text.ToLower()))
+                    tupla newtupla = new tupla();
+                    /*Reocorremos la lista de atributos*/
+                    foreach (ParseTreeNode nodoCampo in nodoTupla.ChildNodes)
                     {
-                        if (nodoCampo.ChildNodes[1].ChildNodes.Count == 2) // Si tiene dos nodos el nodo uno es la fecha y el segundo es la hora. Concatenar
+                        campo cmp = new campo(nodoCampo.ChildNodes[0].Token.Text,
+                                nodoCampo.ChildNodes[1].ChildNodes[0].Token.Text);
+                        if (nodoCampo.ChildNodes[0].Token.Text.ToLower().Equals(nodoCampo.ChildNodes[2].Token.Text.ToLower()))
                         {
-                            cmp.valor = DateTime.Parse(nodoCampo.ChildNodes[1].ChildNodes[0].Token.Text
-                                +" "+ nodoCampo.ChildNodes[1].ChildNodes[1].Token.Text
-                                );
-                            cmp.tipo = "datetime";
+                            if (nodoCampo.ChildNodes[1].ChildNodes.Count == 2) // Si tiene dos nodos el nodo uno es la fecha y el segundo es la hora. Concatenar
+                            {
+                                cmp.valor = DateTime.Parse(nodoCampo.ChildNodes[1].ChildNodes[0].Token.Text
+                                    + " " + nodoCampo.ChildNodes[1].ChildNodes[1].Token.Text
+                                    );
+                                cmp.tipo = "datetime";
+                            }
+                            else
+                            {
+                                switch (nodoCampo.ChildNodes[1].ChildNodes[0].Term.Name.ToLower())
+                                {
+                                    case "integer":
+                                        cmp.valor = Int64.Parse(nodoCampo.ChildNodes[1].ChildNodes[0].Token.Text);
+                                        cmp.tipo = "integer";
+                                        break;
+                                    case "cadena_literal":
+                                        cmp.valor = nodoCampo.ChildNodes[1].ChildNodes[0].Token.Text.Replace("\"", "");
+                                        cmp.tipo = "text";
+                                        break;
+                                    case "date":
+                                        cmp.valor = DateTime.Parse(nodoCampo.ChildNodes[1].ChildNodes[0].Token.Text);
+                                        cmp.tipo = "date";
+                                        break;
+                                    case "double":
+                                        cmp.valor = Double.Parse(nodoCampo.ChildNodes[1].ChildNodes[0].Token.Text);
+                                        cmp.tipo = "double";
+                                        break;
+                                }
+                            }
+                            /*Comprobamos la integridad de los datos*/
+                            newtupla.campos.Add(cmp);
+                            //if (tabla.integridadCampo(cmp, formularioACtual))
+                            //{
+                            //    newtupla.campos.Add(cmp);
+                            //}
+                            //else
+                            //{
+                            //    Form1.Mensajes.Add("Error en tipos de datos en el campo");
+                            //}
                         }
                         else
                         {
-                            switch (nodoCampo.ChildNodes[1].ChildNodes[0].Term.Name.ToLower())
-                            {
-                                case "integer":
-                                    cmp.valor = Int32.Parse(nodoCampo.ChildNodes[1].ChildNodes[0].Token.Text);
-                                    cmp.tipo = "integer";
-                                    break;
-                                case "cadena_literal":
-                                    cmp.valor = nodoCampo.ChildNodes[1].ChildNodes[0].Token.Text.Replace("\"",""); 
-                                    cmp.tipo = "text";
-                                    break;
-                                case "date":                                
-                                    cmp.valor = DateTime.Parse(nodoCampo.ChildNodes[1].ChildNodes[0].Token.Text);
-                                    cmp.tipo = "date";
-                                    break;
-                                case "double":
-                                    cmp.valor = Double.Parse(nodoCampo.ChildNodes[1].ChildNodes[0].Token.Text);
-                                    cmp.tipo = "double";
-                                    break;
-                            }
+                            Form1.Mensajes.Add("Error en etiquetas del archivo " + tabla.path + " En linea:" + (nodoCampo.ChildNodes[0].Token.Location.Line + 1)
+                                + " En columna:" + nodoCampo.ChildNodes[0].Token.Location.Column + " Registro no cargado.");
+                            continue;
                         }
-                        /*Comprobamos la integridad de los datos*/
-                        newtupla.campos.Add(cmp);
-                        //if (tabla.integridadCampo(cmp, formularioACtual))
-                        //{
-                        //    newtupla.campos.Add(cmp);
-                        //}
-                        //else
-                        //{
-                        //    Form1.Mensajes.Add("Error en tipos de datos en el campo");
-                        //}
                     }
-                    else
-                    {
-                        Form1.Mensajes.Add("Error en etiquetas del archivo " + tabla.path + " En linea:" + (nodoCampo.ChildNodes[0].Token.Location.Line + 1)
-                            + " En columna:" + nodoCampo.ChildNodes[0].Token.Location.Column + " Registro no cargado.");                        
-                        continue;
-                    }
+                    tabla.tuplas.Add(newtupla);
                 }
-                tabla.tuplas.Add(newtupla);
+
             }
         }
         public List<Tabla> cargarTablas(ParseTreeNode raiz)
@@ -240,12 +253,15 @@ namespace ServidorDB.AnalizadorXML
         public List<BD> recorrerArbolMaestro()
         {
             List<BD> listaBases = new List<BD>();
-            foreach (ParseTreeNode nodo in raiz.ChildNodes[0].ChildNodes)
+            if (raiz.ChildNodes.Count>0)// Verificamos si hay archivos
             {
-                if (nodo.ChildNodes.Count == 6)
+                foreach (ParseTreeNode nodo in raiz.ChildNodes[0].ChildNodes)
                 {
-                    BD baseNueva = new BD(nodo.ChildNodes[1].Token.Text, nodo.ChildNodes[4].Token.Text);
-                    listaBases.Add(baseNueva);
+                    if (nodo.ChildNodes.Count == 6)
+                    {
+                        BD baseNueva = new BD(nodo.ChildNodes[1].Token.Text, nodo.ChildNodes[4].Token.Text);
+                        listaBases.Add(baseNueva);
+                    }
                 }
             }
             return listaBases;
@@ -338,36 +354,42 @@ namespace ServidorDB.AnalizadorXML
         {
             List<Procedimiento> listaProcedimientos = new List<Procedimiento>();
 
-            foreach (ParseTreeNode nodo in raiz.ChildNodes[0].ChildNodes)
+            // Primero verificamos de que existan procedimientos
+            if (raiz.ChildNodes.Count > 0)
             {
-                Procedimiento nuevoProc = new Procedimiento("","");
-                //= new Procedimiento()
-                if (nodo.ChildNodes.Count == 7) // No tiene retorno
+                foreach (ParseTreeNode nodo in raiz.ChildNodes[0].ChildNodes)
                 {
-                    nuevoProc = new Procedimiento(nodo.ChildNodes[2].ChildNodes[0].Token.Text, "");
-                }
-                else if(nodo.ChildNodes.Count == 10 ) // tiene retorno
-                {
-                    nuevoProc = new Procedimiento(nodo.ChildNodes[2].ChildNodes[0].Token.Text, nodo.ChildNodes[7].Token.Text);
-                }
-                nuevoProc.codigoFuente = nodo.ChildNodes[5].Token.Text;
-
-                /*Ahora vamos a cargar los parametros*/
-                foreach (ParseTreeNode nodoParametro in nodo.ChildNodes[4].ChildNodes)
-                {
-                    if (nodoParametro.ChildNodes[0].Token.Text.ToLower().Equals
-                        (nodoParametro.ChildNodes[2].Token.Text.ToLower()))
+                    Procedimiento nuevoProc = new Procedimiento("", "");
+                    //= new Procedimiento()
+                    if (nodo.ChildNodes.Count == 7) // No tiene retorno
                     {
-                        Parametro parametro = new Parametro(nodoParametro.ChildNodes[0].Token.Text, nodoParametro.ChildNodes[1].ChildNodes[0].Token.Text);
-                        nuevoProc.listaParametros.Add(parametro);
+                        nuevoProc = new Procedimiento(nodo.ChildNodes[2].ChildNodes[0].Token.Text, "");
                     }
-                    else
+                    else if (nodo.ChildNodes.Count == 10) // tiene retorno
                     {
-                        Form1.Mensajes.Add("Procedimiento " + nuevoProc.nombre +" Error en esta etiqueta. Linea:" +nodoParametro.ChildNodes[0].Token.Location.Line 
-                            + " Columna:" + +nodoParametro.ChildNodes[0].Token.Location.Column);
-                    }                    
+                        nuevoProc = new Procedimiento(nodo.ChildNodes[2].ChildNodes[0].Token.Text, nodo.ChildNodes[7].Token.Text);
+                    }
+                    nuevoProc.codigoFuente = nodo.ChildNodes[5].Token.Text;
+                    /*Generamos el arbol de la funcion*/
+                    
+
+                    /*Ahora vamos a cargar los parametros*/
+                    foreach (ParseTreeNode nodoParametro in nodo.ChildNodes[4].ChildNodes)
+                    {
+                        if (nodoParametro.ChildNodes[0].Token.Text.ToLower().Equals
+                            (nodoParametro.ChildNodes[2].Token.Text.ToLower()))
+                        {
+                            Parametro parametro = new Parametro(nodoParametro.ChildNodes[0].Token.Text, nodoParametro.ChildNodes[1].ChildNodes[0].Token.Text);
+                            nuevoProc.listaParametros.Add(parametro);
+                        }
+                        else
+                        {
+                            Form1.Mensajes.Add("Procedimiento " + nuevoProc.nombre + " Error en esta etiqueta. Linea:" + nodoParametro.ChildNodes[0].Token.Location.Line
+                                + " Columna:" + +nodoParametro.ChildNodes[0].Token.Location.Column);
+                        }
+                    }
+                    listaProcedimientos.Add(nuevoProc);
                 }
-                listaProcedimientos.Add(nuevoProc);
             }
             return listaProcedimientos;
         }
@@ -375,27 +397,30 @@ namespace ServidorDB.AnalizadorXML
         {
             List<Objeto> listaObjetos = new List<Objeto>();
 
-            foreach (ParseTreeNode nodo in raiz.ChildNodes[0].ChildNodes)
+            if (raiz.ChildNodes.Count>0)
             {
-                /*Obtenemos el tipo del objeto*/
-                Objeto nuevoObjeto = new Objeto(nodo.ChildNodes[1].ChildNodes[0].Token.Text);
-
-                /*Obtenemos la lista de atributos*/
-                ParseTreeNode raizLista = nodo.ChildNodes[3].ChildNodes[0];
-                foreach (ParseTreeNode nodoCampo in raizLista.ChildNodes)
+                foreach (ParseTreeNode nodo in raiz.ChildNodes[0].ChildNodes)
                 {
-                    if (nodoCampo.ChildNodes[0].Token.Text.Equals
-                        (nodoCampo.ChildNodes[2].Token.Text))
+                    /*Obtenemos el tipo del objeto*/
+                    Objeto nuevoObjeto = new Objeto(nodo.ChildNodes[1].ChildNodes[0].Token.Text);
+
+                    /*Obtenemos la lista de atributos*/
+                    ParseTreeNode raizLista = nodo.ChildNodes[3].ChildNodes[0];
+                    foreach (ParseTreeNode nodoCampo in raizLista.ChildNodes)
                     {
-                        nuevoObjeto.atributos.Add(new Atributo(nodoCampo.ChildNodes[0].Token.Text.ToLower(), nodoCampo.ChildNodes[1].ChildNodes[0].Token.Text.ToLower(), null));
+                        if (nodoCampo.ChildNodes[0].Token.Text.Equals
+                            (nodoCampo.ChildNodes[2].Token.Text))
+                        {
+                            nuevoObjeto.atributos.Add(new Atributo(nodoCampo.ChildNodes[0].Token.Text.ToLower(), nodoCampo.ChildNodes[1].ChildNodes[0].Token.Text.ToLower(), null));
+                        }
+                        else
+                        {
+                            Form1.Mensajes.Add("Error en la etiquetas de declaracion de objeto en: linea " + nodoCampo.ChildNodes[0].Token.Location.Line
+                                + " Columna " + nodoCampo.ChildNodes[0].Token.Location.Column);
+                        }
                     }
-                    else
-                    {
-                        Form1.Mensajes.Add("Error en la etiquetas de declaracion de objeto en: linea " + nodoCampo.ChildNodes[0].Token.Location.Line
-                            +" Columna "+ nodoCampo.ChildNodes[0].Token.Location.Column);
-                    }
+                    listaObjetos.Add(nuevoObjeto);
                 }
-                listaObjetos.Add(nuevoObjeto);
             }
             return listaObjetos;
         }

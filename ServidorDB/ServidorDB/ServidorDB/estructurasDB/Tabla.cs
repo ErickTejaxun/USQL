@@ -58,7 +58,7 @@ namespace ServidorDB.estructurasDB
                             formActual.imprimirSalida("Error: El campo "+cmp.id + " es de tipo text y se ha intentado ingresar un " + tipo);
                             return false;
                         case "int":
-                            if (cmp.valor is Int32)
+                            if (cmp.valor is Int64)
                             {
                                 return true;
                             }

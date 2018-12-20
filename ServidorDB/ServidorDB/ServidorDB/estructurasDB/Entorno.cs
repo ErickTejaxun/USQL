@@ -13,6 +13,7 @@ namespace ServidorDB.Ejecucion
         public String id;
         public Object valor;
     }
+
     class Entorno
     {
         private Hashtable tabla;

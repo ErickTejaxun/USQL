@@ -19,7 +19,8 @@ namespace ServidorBDD.AnalisisUsql
 
             //tipo de dato}
             StringLiteral tipoText = new StringLiteral("Text", "\"");
-            NumberLiteral tipoInteger = new NumberLiteral("Integer");
+            //NumberLiteral tipoInteger = new NumberLiteral("Integer");            
+            RegexBasedTerminal tipoInteger = new RegexBasedTerminal("Integer", "[0-9]+");
             RegexBasedTerminal tipoDouble = new RegexBasedTerminal("Double", "[0-9]+[.][0-9]+");
             RegexBasedTerminal tipoDate = new RegexBasedTerminal("Date", "([0-9]){2}-([0-9]){2}-([0-9]){4}");
             RegexBasedTerminal tipoDateTime = new RegexBasedTerminal("DateTime", "([0-9]){2}-([0-9]){2}-([0-9]){4} ([0-9]){2}:([0-9]){2}:([0-9]){2}");
@@ -90,7 +91,8 @@ namespace ServidorBDD.AnalisisUsql
                         LISTA_DDL = new NonTerminal("LISTADDL"),
                         LISTA_PRC = new NonTerminal("LISTAPROC"),
                         RESTAURARBD = new NonTerminal("RESTAURARBD"),
-                        ATRIBUTO = new NonTerminal("ATRIBUTO");
+                        ATRIBUTO = new NonTerminal("ATRIBUTO"),
+                        FORANEA = new NonTerminal("FORANEA");
 
 
 
@@ -183,11 +185,15 @@ namespace ServidorBDD.AnalisisUsql
 
             COMPLEMENTOS.Rule = MakeStarRule(COMPLEMENTOS, COMPLEMENTO);
 
-            COMPLEMENTO.Rule = ToTerm("Nulo") | ToTerm("No Nulo")
+            COMPLEMENTO.Rule = 
+                  ToTerm("Nulo") 
+                | ToTerm("No Nulo")
                 | ToTerm("Autoincrementable")
                 | ToTerm("Llave_Primaria")
-                | ToTerm("Llave_Foranea") + id + id
+                | FORANEA
                 | ToTerm("Unico");
+
+            FORANEA.Rule = ToTerm("Llave_Foranea") + id + id;
 
             CREAROBJETO.Rule = ToTerm("Crear") + ToTerm("Objeto") + id + ToTerm("(") + LATRIBUTOS + ToTerm(")");
 
@@ -314,7 +320,7 @@ namespace ServidorBDD.AnalisisUsql
             this.MarkPunctuation("alterar", "tabla", "objeto", "usuario", "eliminar", "insertar", "en", "tabla");
             this.MarkPunctuation("insertar", "valores", "borrar", "seleccionar", "permisos", "declarar");
             this.MarkPunctuation("selecciona", "caso", "defecto", "para", "detener", "mientras", "backup", "restaurar", "contar", "<<", ">>", "De", "@", "=");
-            this.MarkPunctuation("donde", "ordenar_por");
+            this.MarkPunctuation("donde", "ordenar_por","Llave_Foranea");
             this.MarkTransient(SENTDDL, SENTPROC, SENTSPROC, COMPLEMENTO, SENTDDL, LPARAMETROS);
             //this.MarkTransient(CASO);
 

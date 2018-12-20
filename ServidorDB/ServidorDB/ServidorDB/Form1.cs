@@ -233,26 +233,6 @@ namespace ServidorDB
         {
             sistemaArchivos.commit();
             mostrarMensajes();
-            
-
-
-
-
-            //List<String> listaCampos = new List<String>();
-            //listaCampos.Add("clientes.nombre");
-            //listaCampos.Add("tipo.nombre");
-            //List<String> tablas = new List<String>();
-            //String campoOrdenacion = "clientes.nombre";
-            //int orden = 1;
-            //tablas.Add("tipo");
-            //tablas.Add("clientes");                        
-            //imprimirSalida("-----------------------------------------");
-            //imprimirSalida(sistemaArchivos.basesdedatos[0].seleccionar(listaCampos, tablas , null,campoOrdenacion, orden));
-            ///*
-            //(List<String> listaCampos, 
-            //    List<String> listaTablas, List<String> campos, ParseTreeNode raiz, String campoOrdenacion, int orden)             
-            // */
-            //imprimirSalida("-----------------------------------------");
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -299,6 +279,6 @@ namespace ServidorDB
                 imprimirSalida(e.tipo + "  " + e.descripcion + "  "+e.linea + "  " + e.columna);
             }
             imprimirSalida("--------------------------------------");
-        }        
+        }
     }
 }

@@ -227,6 +227,7 @@ namespace ServidorDB.AnalizadorXML
                         | FUNCIONES // Archivo de funciones
                         | PERMISOS // Archivo de usuario 
                         | PROCEDURE
+                        | Empty
                         ;
 
             #region Archivo de usuarios y permisos
@@ -390,10 +391,12 @@ namespace ServidorDB.AnalizadorXML
             #endregion
 
             #region Archivo DB
-            DB.Rule = PPROCEDURE+ // Datos procedimientos
-                      //PFUNCTION + // Datos funciones
+            DB.Rule = PPROCEDURE + // Datos procedimiento                                   
                       POBJECT + // Datos objetos
-                      LTABLA;  // Tablas
+                      LTABLA  // Tablas
+                      // Ahora cuando el archivo está vacio.
+|                    PPROCEDURE + // Datos procedimientos               
+                     POBJECT; // Datos objetos                        
 
             PFUNCTION.Rule =
                         abrir + ToTerm("FUNCTION") + cerrar +

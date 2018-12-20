@@ -32,6 +32,12 @@ namespace ServidorBDD.EjecucionUsql
                 String tipoAccion = hijo.Term.Name;
                 switch (tipoAccion)
                 {
+                    case "CREARDB":
+                        Form1.sistemaArchivos.crearBase(hijo);
+                        break;
+                    case "CREARTABLA":
+                        Form1.sistemaArchivos.crearTabla(hijo);
+                        break;
                     case "DECLARACION"://jose
                         Declaracion declaracion = new Declaracion();
                         Boolean estado = declaracion.declaracion(hijo);
