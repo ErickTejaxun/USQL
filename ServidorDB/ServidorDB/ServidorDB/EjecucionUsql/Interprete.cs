@@ -52,11 +52,17 @@ namespace ServidorBDD.EjecucionUsql
                         opL = new Logica();
                         Form1.Mensajes.Add(opL.operar(hijo.ChildNodes[0]).valor + "");
                         break;
+                    case "USUARIO":
+                        Form1.sistemaArchivos.crearUsuario(hijo);
+                        break;
                     case "ACTUALIZAR":
                         //Form1.sistemaArchivos.actualizacion(hijo);
                         break;
                     case "INSERTAR":
                         Form1.sistemaArchivos.insertar(hijo);
+                        break;
+                    case "ELIMINAR":
+                        Form1.sistemaArchivos.eliminar(hijo);
                         break;
                     case "CREAROBJETO"://jose
                         String nombreObjeto = hijo.ChildNodes[0].Token.Text;

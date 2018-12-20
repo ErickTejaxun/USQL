@@ -1284,7 +1284,20 @@ namespace ServidorBDD.EjecucionUsql
         private void agregarError(String tipo, String descripcion, int linea, int columna)
         {
             Error error = new Error(tipo, descripcion, linea, columna);
-            Form1.errores.Add(error);
+            bool existe = false;
+            foreach(Error err in Form1.errores)
+            {
+                if (err.getMensaje().Equals(error.getMensaje()))
+                {
+                    existe = true;
+                }
+            }
+            if (!existe)
+            {
+                Form1.errores.Add(error);
+                Form1.Mensajes.Add(error.getMensaje());
+            }
+            
         }
     }
 }

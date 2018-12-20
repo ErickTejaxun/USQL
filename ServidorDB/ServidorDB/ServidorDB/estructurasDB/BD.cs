@@ -202,6 +202,10 @@ namespace ServidorDB.estructurasDB
                     return false;
                 }
             }
+            if(result.tipo.ToLower().Equals("error"))
+            {
+                return false;
+            }
             return (bool)result.valor;
         }
         public List<tupla> filtrarResultados(List<String> listaCampos, List<tupla> cartesiano)

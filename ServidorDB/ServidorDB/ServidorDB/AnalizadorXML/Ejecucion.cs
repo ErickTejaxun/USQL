@@ -220,7 +220,7 @@ namespace ServidorDB.AnalizadorXML
                         }
                         else
                         {
-                            unico = false;
+                            unico = true;
                         }
                         #endregion
                         defCampo definicion = new defCampo(nombre,tipo,auto,nulo,primaria,foranea, unico);

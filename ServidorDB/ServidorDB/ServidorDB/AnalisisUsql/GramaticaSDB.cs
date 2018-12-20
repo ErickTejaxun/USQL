@@ -92,7 +92,11 @@ namespace ServidorBDD.AnalisisUsql
                         LISTA_PRC = new NonTerminal("LISTAPROC"),
                         RESTAURARBD = new NonTerminal("RESTAURARBD"),
                         ATRIBUTO = new NonTerminal("ATRIBUTO"),
-                        FORANEA = new NonTerminal("FORANEA");
+                        FORANEA = new NonTerminal("FORANEA"),
+                        ETABLA = new NonTerminal("ETABLA"),
+                        EBASE = new NonTerminal("EBASE"),
+                        EOBJETO = new NonTerminal("EOBJETO"),
+                        EUSER = new NonTerminal("EUSER");
 
 
 
@@ -226,10 +230,12 @@ namespace ServidorBDD.AnalisisUsql
 
             ALTERARUSUARIO.Rule = ToTerm("Alterar") + ToTerm("Usuario") + id + ToTerm("Cambiar") + ToTerm("Password") + ToTerm("=") + tipoText;
 
-            ELIMINAR.Rule = ToTerm("Eliminar") + ToTerm("Tabla") + id
-                           | ToTerm("Eliminar") + ToTerm("Base_Datos") + id
-                           | ToTerm("Eliminar") + ToTerm("Objeto") + id
-                           | ToTerm("Eliminar") + ToTerm("User") + id;
+            ELIMINAR.Rule =
+                        ETABLA | EBASE | EOBJETO | EUSER;
+            ETABLA.Rule = ToTerm("Eliminar") + ToTerm("Tabla") + id;
+            EBASE.Rule = ToTerm("Eliminar") + ToTerm("Base_Datos") + id;
+            EOBJETO.Rule = ToTerm("Eliminar") + ToTerm("Objeto") + id;
+            EUSER.Rule = ToTerm("Eliminar") + ToTerm("User") + id; ;
 
             //sentencias DML
             INSERTAR.Rule = ToTerm("Insertar") + ToTerm("En") + ToTerm("Tabla") + id + ToTerm("(") + LID + ToTerm(")") + ToTerm("Valores") + ToTerm("(") + LVALORES + ToTerm(")")

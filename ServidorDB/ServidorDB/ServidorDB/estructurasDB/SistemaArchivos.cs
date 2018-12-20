@@ -15,7 +15,7 @@ namespace ServidorDB.estructurasDB
         public List<BD> basesdedatos;
         public List<Usuario> usuarios;
         public String baseActual = "";
-        public String usuarioActual = "";
+        public String usuarioActual = "admin";
 
         public SistemaArchivos()
         {
@@ -69,6 +69,33 @@ namespace ServidorDB.estructurasDB
             return null;
         }
 
+        public BD getBase(String nombre)
+        {
+            foreach (BD db in basesdedatos)
+            {
+                if (db.nombre.ToLower().Equals(nombre.ToLower()))
+                {
+                    return db;
+                }
+            }
+            //Form1.Mensajes.Add("");
+            return null;
+        }
+
+        public bool getObjeto(String id)
+        {
+            if (getBase()!=null)
+            {
+                foreach (Objeto obj in getBase().objetos)
+                {
+                    if (obj.nombre.ToLower().Equals(id.ToLower()))
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
 
 
         #region INSERT
@@ -166,14 +193,29 @@ namespace ServidorDB.estructurasDB
                         // Verificamos que no exista una igual.
                         foreach (tupla tup in tabActual.tuplas)
                         {
-                            if (tup.getCampo(definiciones[contador].nombre).valor == nuevaTupla.campos[contador].valor)
+                            if (tup.getCampo(definiciones[contador].nombre).tipo.Equals("text"))
                             {
-                                flag = false;
-                                Error error = new Error("Ejecución", "Condicion de unico (Unico) fallada " + nombreTabla + "." + nuevaTupla.campos[contador].id,
-                                    raizValores.ChildNodes[contador].Span.Location.Line, raizValores.ChildNodes[contador].Span.Location.Column);
-                                Form1.errores.Add(error);
-                                Form1.Mensajes.Add(error.getMensaje());
+                                if (tup.getCampo(definiciones[contador].nombre).valor.Equals(nuevaTupla.campos[contador].valor))
+                                {
+                                    flag = false;
+                                    Error error = new Error("Ejecución", "Condicion de unico (Unico) fallada " + nombreTabla + "." + nuevaTupla.campos[contador].id,
+                                        raizValores.ChildNodes[contador].Span.Location.Line, raizValores.ChildNodes[contador].Span.Location.Column);
+                                    Form1.errores.Add(error);
+                                    Form1.Mensajes.Add(error.getMensaje());
+                                }
                             }
+                            else
+                            {
+                                if (tup.getCampo(definiciones[contador].nombre).valor == nuevaTupla.campos[contador].valor)
+                                {
+                                    flag = false;
+                                    Error error = new Error("Ejecución", "Condicion de unico (Unico) fallada " + nombreTabla + "." + nuevaTupla.campos[contador].id,
+                                        raizValores.ChildNodes[contador].Span.Location.Line, raizValores.ChildNodes[contador].Span.Location.Column);
+                                    Form1.errores.Add(error);
+                                    Form1.Mensajes.Add(error.getMensaje());
+                                }
+                            }
+
                         }
                     }
                     #endregion
@@ -430,10 +472,18 @@ namespace ServidorDB.estructurasDB
             {
                 foreach (tupla tp in tab.tuplas)
                 {
-
-                    if (tp.getCampo(nombreCampo.ToLower()).valor.ToString().Equals(valorPrimaria.ToString().ToLower()))
+                    if (tp.getCampo(nombreCampo.ToLower()) != null)
                     {
-                        return true;
+                        if (tp.getCampo(nombreCampo.ToLower()).valor.ToString().Equals(valorPrimaria.ToString().ToLower()))
+                        {
+                            return true;
+                        }
+                    }
+                    else
+                    {
+                        Error error = new Error("Semantico","El campo "+nombreCampo + "no existe en la tabla "+nombreTabla,linea, columna);
+                        Form1.errores.Add(error);
+                        Form1.Mensajes.Add(error.getMensaje());
                     }
                 }
             }
@@ -443,6 +493,192 @@ namespace ServidorDB.estructurasDB
 
         #endregion
 
+        #region DELETE
+        public void eliminar(ParseTreeNode raiz)
+        {
+            if (raiz.ChildNodes[0].ChildNodes.Count>0)
+            {
+                switch (raiz.ChildNodes[0].Term.Name.ToLower())
+                {
+                    case "ebase":
+                        eliminarBase(raiz.ChildNodes[0].ChildNodes[1].Token.Text.ToLower(), raiz.ChildNodes[0].ChildNodes[1].Token.Location.Line, raiz.ChildNodes[0].ChildNodes[1].Token.Location.Column);
+                        break;
+                    case "etabla":
+                        eliminarTabla(raiz.ChildNodes[0].ChildNodes[0].Token.Text.ToLower(), raiz.ChildNodes[0].ChildNodes[0].Token.Location.Line, raiz.ChildNodes[0].ChildNodes[0].Token.Location.Column);
+                        break;
+                    case "eobjeto":
+                        eliminarObjeto(raiz.ChildNodes[0].ChildNodes[0].Token.Text.ToLower(), raiz.ChildNodes[0].ChildNodes[0].Token.Location.Line, raiz.ChildNodes[0].ChildNodes[0].Token.Location.Column);
+                        break;
+                    case "euser":
+                        eliminarUsuario(raiz.ChildNodes[0].ChildNodes[1].Token.Text.ToLower(), raiz.ChildNodes[0].ChildNodes[1].Token.Location.Line, raiz.ChildNodes[0].ChildNodes[1].Token.Location.Column);
+                        break;
+                }
+            }
+        }
+
+        public void eliminarUsuario(String nombreUsuario, int linea, int columna)
+        {
+
+            if (!nombreUsuario.ToLower().Equals("admin"))
+            {
+                if (usuarioActual.ToLower().Equals("admin"))
+                {
+                    foreach (Usuario user in this.usuarios)
+                    {
+                        if (user.username.ToLower().Equals(nombreUsuario.ToLower()))
+                        {
+                            this.usuarios.Remove(user);
+                            Form1.Mensajes.Add("El usuario "+nombreUsuario + " ha sido eliminado exitosamente.");
+                            break;
+                        }
+                    }
+                    Error error = new Error("Semantico", "El usuario "+nombreUsuario + " no existe en el sistema.", linea, columna);
+                    Form1.errores.Add(error);
+                    Form1.Mensajes.Add(error.getMensaje());
+                }
+                else
+                {
+                    Error error = new Error("Semantico", "Sólo el administrador puede eliminar usuarios.", linea, columna);
+                    Form1.errores.Add(error);
+                    Form1.Mensajes.Add(error.getMensaje());
+                }
+            }
+            else
+            {
+                Error error = new Error("Semantico", "No se puede eliminar el usuario administrador.", linea, columna);
+                Form1.errores.Add(error);
+                Form1.Mensajes.Add(error.getMensaje());
+            }
+            commit();
+        }
+
+        public void eliminarBase(String nombreBase, int linea, int columna)
+        {
+            if (getBase(nombreBase) != null)
+            {
+                BD baseTemporal = getBase(nombreBase);
+                //Eliminamos los archivos.
+                eliminarDirectorio(baseTemporal.path);
+                // Ahora la quitamos de memoria.
+                for(int cont = 0; cont<basesdedatos.Count; cont++)
+                {
+                    if (basesdedatos[cont].nombre.ToLower().Equals(nombreBase))
+                    {
+                        basesdedatos.RemoveAt(cont);
+                        Form1.Mensajes.Add("La base de datos " + nombreBase + " ha sido eliminada." );
+                        break;
+                    }
+                }
+                commit();
+            }
+            else
+            {
+                Error error = new Error("Semantico","La base de datos "+ nombreBase +" no existe en el sistema." , linea, columna);
+                Form1.errores.Add(error);
+                Form1.Mensajes.Add(error.getMensaje());
+            }
+        }
+
+        public void eliminarTabla(String nombreTabla, int linea, int columna)
+        {
+            if (getBase() != null)
+            {
+                Tabla tablaTemporal = getTabla(nombreTabla, linea, columna);
+                if (tablaTemporal != null)
+                {
+                    //Eliminamos los archivos.
+                    eliminarDirectorio(tablaTemporal.path);
+                    // Ahora la quitamos de memoria.                                
+                    for (int cont = 0; cont < getBase().tablas.Count; cont++)
+                    {
+                        if (getBase().tablas[cont].nombre.ToLower().Equals(nombreTabla))
+                        {
+                            getBase().tablas.RemoveAt(cont);
+                            Form1.Mensajes.Add("La tabla" + nombreTabla + " ha sido eliminada de la base de datos " + getBase().nombre);
+                            break;
+                        }
+                    }
+                }              
+                commit();
+            }
+            else
+            {
+                Error error = new Error("Semantico", "No se ha seleccionado una base de datos.", linea, columna);
+                Form1.errores.Add(error);
+                Form1.Mensajes.Add(error.getMensaje());
+            }
+        }
+
+        public void eliminarObjeto(String nombreObjeto, int linea, int columna)
+        {
+            if (getBase() != null)
+            {
+                BD baseTemporal = getBase();
+                //Eliminamos los archivos.
+                eliminarDirectorio(baseTemporal.pathObjetos);
+                // Ahora la quitamos de memoria.   
+                if (getObjeto(nombreObjeto))
+                {
+                    for (int cont = 0; cont < baseTemporal.objetos.Count; cont++)
+                    {
+                        if (baseTemporal.objetos[cont].nombre.ToLower().Equals(nombreObjeto))
+                        {
+                            getBase().objetos.RemoveAt(cont);
+                            Form1.Mensajes.Add("El objeto" + nombreObjeto + " ha sido eliminado de la base de datos " + baseTemporal.nombre);
+                            break;
+                        }
+                    }
+                }
+                else
+                {
+                    Error error = new Error("Semantico", "El objeto "+ nombreObjeto + " no existe en la base de datos.", linea, columna);
+                    Form1.errores.Add(error);
+                    Form1.Mensajes.Add(error.getMensaje());
+                }
+                commit();
+            }
+            else
+            {
+                Error error = new Error("Semantico", "La base de datos " + nombreObjeto + " no existe en el sistema.", linea, columna);
+                Form1.errores.Add(error);
+                Form1.Mensajes.Add(error.getMensaje());
+            }
+        }
+
+        public void eliminarDirectorio(String path)
+        {
+            String[] partes = path.Split('\\');
+            String directorio = "";
+            for (int cont = 0; cont < partes.Length - 1; cont++)
+            {
+                if (directorio.Equals(""))
+                {
+                    directorio = partes[cont];
+                }
+                else
+                {
+                    directorio = directorio + "\\" + partes[cont];
+                }
+            }
+
+            try
+            {
+                // Si existe el directorio.
+                if (Directory.Exists(directorio))
+                {
+                    //System.IO.File.Delete(directorio,true);
+                    Directory.Delete(directorio, true);
+                    Form1.Mensajes.Add("El directorio fue eliminado con existo. " + Directory.GetCreationTime(path));
+                    return;
+                }                
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+            finally { }
+        }
+        #endregion
         #region Codigo para guardar en disco todas las chivas.
         public void commit()
         {
@@ -486,7 +722,7 @@ namespace ServidorDB.estructurasDB
             {
                 cadenaUsuarios = cadenaUsuarios + "<usuario>\n";
                 cadenaUsuarios = cadenaUsuarios + "<nombre>" + user.username + "</nombre>\n";
-                cadenaUsuarios = cadenaUsuarios + "<password>" + user.password + "</password>\n";
+                cadenaUsuarios = cadenaUsuarios + "<password>\"" + user.password + "\"</password>\n";
                 foreach (Permiso permiso in user.permisos)
                 {
                     if (permiso.listaObjetos.Count>0)
@@ -663,13 +899,13 @@ namespace ServidorDB.estructurasDB
                         return tab;
                     }
                 }
-                Error error = new Error("Ejecucion", "La tabla " + nombreTabla + " no existe en la base de datos " + baseActual, linea, columna);
+                Error error = new Error("Semantico", "La tabla " + nombreTabla + " no existe en la base de datos " + baseActual, linea, columna);
                 Form1.errores.Add(error);
                 Form1.Mensajes.Add(error.getMensaje());
             }
             else
             {
-                Error error = new Error("Ejecucion", "Se debe seleccionar una base de datos", linea, columna);
+                Error error = new Error("Semantico", "Se debe seleccionar una base de datos", linea, columna);
                 Form1.errores.Add(error);
                 Form1.Mensajes.Add(error.getMensaje());
             }
@@ -811,7 +1047,7 @@ namespace ServidorDB.estructurasDB
                         {
                             if (nodoParametro.ChildNodes.Count == 0)
                             {
-                                switch (nodoParametro.Token.Text)
+                                switch (nodoParametro.Token.Text.ToLower())
                                 {
                                     case "llave_primaria":
                                         primaria = true;
@@ -857,6 +1093,39 @@ namespace ServidorDB.estructurasDB
                 Error error = new Error("Semantico", "No se ha elegido una base de datos.",raiz.ChildNodes[0].Span.Location.Line, raiz.ChildNodes[0].Span.Location.Column);
                 Form1.errores.Add(error);
                 Form1.Mensajes.Add(error.getMensaje());
+            }
+        }
+
+        public void crearUsuario(ParseTreeNode raiz)
+        {
+            if (raiz.ChildNodes.Count==4)
+            {
+                if (usuarioActual.ToLower().Equals("admin"))
+                {
+                    String username = raiz.ChildNodes[0].Token.Text;
+                    String password = raiz.ChildNodes[3].Token.Text;
+                    foreach (Usuario user in usuarios)
+                    {
+                        if (user.username.ToLower().Equals(username.ToLower()))
+                        {
+                            Error error = new Error("Semantico", "El usuario " + username + " ya existe en el sistema.", raiz.ChildNodes[0].Token.Location.Line, raiz.ChildNodes[0].Token.Location.Column);
+                            Form1.errores.Add(error);
+                            Form1.Mensajes.Add(error.getMensaje());
+                            return;
+                        }
+                    }
+                    Usuario newUser = new Usuario(username, password);                    
+                    usuarios.Add(newUser);
+                    Form1.Mensajes.Add("Nuevo usuario "+username +" registrado con éxito.");
+                    commit();
+
+                }
+                else
+                {
+                    Error error = new Error("Semantico", "Solamente el usuario administrador puede registrar nuevos usuarios.", raiz.ChildNodes[0].Token.Location.Line, raiz.ChildNodes[0].Token.Location.Column);
+                    Form1.errores.Add(error);
+                    Form1.Mensajes.Add(error.getMensaje());
+                }
             }
         }
 
