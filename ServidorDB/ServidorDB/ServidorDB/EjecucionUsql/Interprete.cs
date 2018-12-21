@@ -67,6 +67,9 @@ namespace ServidorBDD.EjecucionUsql
                     case "ALTERARUSUARIO":
                         Form1.sistemaArchivos.alterarUsuario(hijo);
                         break;
+                    case "BORRAR": // Borrar registro en la tupla
+                        Form1.sistemaArchivos.borrar(hijo);
+                        break;
                     case "INSERTAR":
                         Form1.sistemaArchivos.insertar(hijo);
                         break;

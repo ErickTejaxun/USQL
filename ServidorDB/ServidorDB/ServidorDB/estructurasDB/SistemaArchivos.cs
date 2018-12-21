@@ -1128,7 +1128,43 @@ namespace ServidorDB.estructurasDB
                 }
             }
         }
-
+        #region BORRAR TUPLA
+        public void borrar(ParseTreeNode raiz)
+        {
+            if (getBase()!=null)
+            {
+                String nombreTabla = raiz.ChildNodes[0].Token.Text.ToLower();
+                Tabla tabActual = getTabla(nombreTabla, raiz.ChildNodes[0].Token.Location.Line, raiz.ChildNodes[0].Token.Location.Column);
+                if (tabActual!=null)
+                {
+                    // Tenemos dos casos, con un sólo hijo : Borrar todo, con dos hijos borrar si se cumple la condicion
+                    if (raiz.ChildNodes.Count == 1)
+                    {
+                        tabActual.tuplas = new List<tupla>();
+                    }
+                    else
+                    {
+                        ParseTreeNode condicion = raiz.ChildNodes[1];
+                        for(int x =0; x<tabActual.tuplas.Count; x++)
+                        {
+                            Logica opL = new Logica(tabActual.tuplas[x]);
+                            Resultado result = opL.operar(condicion);
+                            if (!result.tipo.ToLower().Equals("error"))
+                            {
+                                if (result.tipo.ToLower().Equals("bool") && result.valor.ToString().Equals("1")
+                                    || result.tipo.ToLower().Equals("integer") && result.valor.ToString().Equals("1"))
+                                {
+                                    // Eliminamos la tupla
+                                    tabActual.tuplas.RemoveAt(x);
+                                    x--;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        #endregion
         #region ALTERAR USUARIO
         public void alterarUsuario(ParseTreeNode raiz)
         {
@@ -1272,6 +1308,7 @@ namespace ServidorDB.estructurasDB
                                 if (obj.atributos[y].id.ToLower().Equals(atributosAQuitar[x]))
                                 {
                                     obj.atributos.RemoveAt(y);
+                                    y--;
                                 }
                             }
 
@@ -1435,6 +1472,7 @@ namespace ServidorDB.estructurasDB
                                 if (cmp.id.ToLower().Equals(nombreTabla +"."+ nombre.ToLower()))
                                 {
                                     tablaActual.tuplas[x].campos.RemoveAt(y);
+                                    y--;
                                 }                                
                             }
                         }

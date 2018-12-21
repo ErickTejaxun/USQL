@@ -244,7 +244,9 @@ namespace ServidorBDD.AnalisisUsql
             ACTUALIZAR.Rule = ToTerm("Actualizar") + ToTerm("Tabla") + id + ToTerm("(") + LID + ToTerm(")") + ToTerm("Valores") + ToTerm("(") + LVALORES + ToTerm(")") + ToTerm("Donde") + EXPL
                             | ToTerm("Actualizar") + ToTerm("Tabla") + id + ToTerm("(") + LID + ToTerm(")") + ToTerm("Valores") + ToTerm("(") + LVALORES + ToTerm(")");
 
-            BORRAR.Rule = ToTerm("Borrar") + ToTerm("En") + ToTerm("Tabla") + id + ToTerm("Donde") + EXPL;
+            BORRAR.Rule = ToTerm("Borrar") + ToTerm("En") + ToTerm("Tabla") + id + ToTerm("Donde") + EXPL
+                           | ToTerm("Borrar") + ToTerm("En") + ToTerm("Tabla") + id
+                            ;
 
             SELECCIONAR.Rule = ToTerm("Seleccionar") + LID + ToTerm("De") + LID + COMPSELECCIONAR
                               | ToTerm("Seleccionar") + ToTerm("*") + ToTerm("De") + LID + COMPSELECCIONAR;
