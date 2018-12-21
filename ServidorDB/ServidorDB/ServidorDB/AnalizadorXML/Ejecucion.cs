@@ -26,11 +26,11 @@ namespace ServidorDB.AnalizadorXML
             if (inicio.ChildNodes.Count == 3)
             {
                 aux = inicio.ChildNodes[0]; //  Procedimientos . Tomar el segundo hijo que trae el path
-                baseActual.procedimientos = cargarProcedimientos(aux.ChildNodes[1].Token.Text);
-                baseActual.pathProcedimientos = aux.ChildNodes[1].Token.Text;
+                baseActual.procedimientos = cargarProcedimientos(aux.ChildNodes[1].Token.Text.Replace("\"",""));
+                baseActual.pathProcedimientos = aux.ChildNodes[1].Token.Text.Replace("\"","");
                 aux = inicio.ChildNodes[1]; // Objetos. Tomar el segundo hijo que trae el path del archivo.
-                baseActual.objetos = cargarObjetos(aux.ChildNodes[1].Token.Text);
-                baseActual.pathObjetos = aux.ChildNodes[1].Token.Text;
+                baseActual.objetos = cargarObjetos(aux.ChildNodes[1].Token.Text.Replace("\"",""));
+                baseActual.pathObjetos = aux.ChildNodes[1].Token.Text.Replace("\"","");
                 aux = inicio.ChildNodes[2]; // Tablas. 
                 baseActual.tablas = cargarTablas(aux);
                 /*Cargar tuplas para cada tabla*/
@@ -44,11 +44,11 @@ namespace ServidorDB.AnalizadorXML
             else if (inicio.ChildNodes.Count == 2)
             {
                 aux = inicio.ChildNodes[0]; //  Procedimientos . Tomar el segundo hijo que trae el path
-                baseActual.procedimientos = cargarProcedimientos(aux.ChildNodes[1].Token.Text);
-                baseActual.pathProcedimientos = aux.ChildNodes[1].Token.Text;
+                baseActual.procedimientos = cargarProcedimientos(aux.ChildNodes[1].Token.Text.Replace("\"",""));
+                baseActual.pathProcedimientos = aux.ChildNodes[1].Token.Text.Replace("\"","");
                 aux = inicio.ChildNodes[1]; // Objetos. Tomar el segundo hijo que trae el path del archivo.
-                baseActual.objetos = cargarObjetos(aux.ChildNodes[1].Token.Text);
-                baseActual.pathObjetos = aux.ChildNodes[1].Token.Text;
+                baseActual.objetos = cargarObjetos(aux.ChildNodes[1].Token.Text.Replace("\"",""));
+                baseActual.pathObjetos = aux.ChildNodes[1].Token.Text.Replace("\"","");
             }
         }
         private void cargarTuplas(Tabla tabla)
@@ -90,14 +90,14 @@ namespace ServidorDB.AnalizadorXML
                     /*Reocorremos la lista de atributos*/
                     foreach (ParseTreeNode nodoCampo in nodoTupla.ChildNodes)
                     {
-                        campo cmp = new campo(nodoCampo.ChildNodes[0].Token.Text,
-                                nodoCampo.ChildNodes[1].ChildNodes[0].Token.Text);
-                        if (nodoCampo.ChildNodes[0].Token.Text.ToLower().Equals(nodoCampo.ChildNodes[2].Token.Text.ToLower()))
+                        campo cmp = new campo(nodoCampo.ChildNodes[0].Token.Text.Replace("\"",""),
+                                nodoCampo.ChildNodes[1].ChildNodes[0].Token.Text.Replace("\"",""));
+                        if (nodoCampo.ChildNodes[0].Token.Text.Replace("\"","").ToLower().Equals(nodoCampo.ChildNodes[2].Token.Text.Replace("\"","").ToLower()))
                         {
                             if (nodoCampo.ChildNodes[1].ChildNodes.Count == 2) // Si tiene dos nodos el nodo uno es la fecha y el segundo es la hora. Concatenar
                             {
-                                cmp.valor = DateTime.Parse(nodoCampo.ChildNodes[1].ChildNodes[0].Token.Text
-                                    + " " + nodoCampo.ChildNodes[1].ChildNodes[1].Token.Text
+                                cmp.valor = DateTime.Parse(nodoCampo.ChildNodes[1].ChildNodes[0].Token.Text.Replace("\"","")
+                                    + " " + nodoCampo.ChildNodes[1].ChildNodes[1].Token.Text.Replace("\"","")
                                     );
                                 cmp.tipo = "datetime";
                             }
@@ -106,19 +106,19 @@ namespace ServidorDB.AnalizadorXML
                                 switch (nodoCampo.ChildNodes[1].ChildNodes[0].Term.Name.ToLower())
                                 {
                                     case "integer":
-                                        cmp.valor = Int64.Parse(nodoCampo.ChildNodes[1].ChildNodes[0].Token.Text);
+                                        cmp.valor = Int64.Parse(nodoCampo.ChildNodes[1].ChildNodes[0].Token.Text.Replace("\"",""));
                                         cmp.tipo = "integer";
                                         break;
                                     case "cadena_literal":
-                                        cmp.valor = nodoCampo.ChildNodes[1].ChildNodes[0].Token.Text.Replace("\"", "");
+                                        cmp.valor = nodoCampo.ChildNodes[1].ChildNodes[0].Token.Text.Replace("\"","").Replace("\"", "");
                                         cmp.tipo = "text";
                                         break;
                                     case "date":
-                                        cmp.valor = DateTime.Parse(nodoCampo.ChildNodes[1].ChildNodes[0].Token.Text);
+                                        cmp.valor = DateTime.Parse(nodoCampo.ChildNodes[1].ChildNodes[0].Token.Text.Replace("\"",""));
                                         cmp.tipo = "date";
                                         break;
                                     case "double":
-                                        cmp.valor = Double.Parse(nodoCampo.ChildNodes[1].ChildNodes[0].Token.Text);
+                                        cmp.valor = Double.Parse(nodoCampo.ChildNodes[1].ChildNodes[0].Token.Text.Replace("\"",""));
                                         cmp.tipo = "double";
                                         break;
                                 }
@@ -151,14 +151,14 @@ namespace ServidorDB.AnalizadorXML
             List<Tabla> listaTablas = new List<Tabla>();
             foreach (ParseTreeNode nodo in raiz.ChildNodes)
             {
-                Tabla nuevaTabla = new Tabla(nodo.ChildNodes[1].Token.Text, nodo.ChildNodes[4].Token.Text);                
+                Tabla nuevaTabla = new Tabla(nodo.ChildNodes[1].Token.Text.Replace("\"",""), nodo.ChildNodes[4].Token.Text.Replace("\"",""));                
                 /*Ahora recorremos la lista de definicion de campos*/
                 foreach (ParseTreeNode nodoDef in nodo.ChildNodes[6].ChildNodes)
                 {
-                    if (nodoDef.ChildNodes[0].Token.Text.ToLower().Equals(nodoDef.ChildNodes[2].Token.Text.ToLower()))
+                    if (nodoDef.ChildNodes[0].Token.Text.Replace("\"","").ToLower().Equals(nodoDef.ChildNodes[2].Token.Text.Replace("\"","").ToLower()))
                     {
-                        String nombre = nodoDef.ChildNodes[1].Token.Text;
-                        String tipo = nodoDef.ChildNodes[0].Token.Text;                        
+                        String nombre = nodoDef.ChildNodes[1].Token.Text.Replace("\"","");
+                        String tipo = nodoDef.ChildNodes[0].Token.Text.Replace("\"","");                        
                         bool auto;
                         bool nulo;
                         bool primaria;
@@ -174,7 +174,7 @@ namespace ServidorDB.AnalizadorXML
                         }
 
                         #region Autoincremento
-                        if (nodoAtributo.ChildNodes[0].ChildNodes[0].ChildNodes[0].Token.Text.Equals("1"))
+                        if (nodoAtributo.ChildNodes[0].ChildNodes[0].ChildNodes[0].Token.Text.Replace("\"","").Equals("1"))
                         {
                             auto = true;
                         }
@@ -184,7 +184,7 @@ namespace ServidorDB.AnalizadorXML
                         }
                         #endregion
                         #region Nulo
-                        if (nodoAtributo.ChildNodes[1].ChildNodes[0].ChildNodes[0].Token.Text.Equals("1"))
+                        if (nodoAtributo.ChildNodes[1].ChildNodes[0].ChildNodes[0].Token.Text.Replace("\"","").Equals("1"))
                         {
                             nulo = true;
                         }
@@ -194,7 +194,7 @@ namespace ServidorDB.AnalizadorXML
                         }
                         #endregion
                         #region Llave primaria
-                        if (nodoAtributo.ChildNodes[2].ChildNodes[0].ChildNodes[0].Token.Text.Equals("1"))
+                        if (nodoAtributo.ChildNodes[2].ChildNodes[0].ChildNodes[0].Token.Text.Replace("\"","").Equals("1"))
                         {
                             primaria = true;
                         }
@@ -204,17 +204,17 @@ namespace ServidorDB.AnalizadorXML
                         }
                         #endregion
                         #region Llave foranea
-                        if (nodoAtributo.ChildNodes[3].ChildNodes[0].ChildNodes[0].Token.Text.Equals("0"))
+                        if (nodoAtributo.ChildNodes[3].ChildNodes[0].ChildNodes[0].Token.Text.Replace("\"","").Equals("0"))
                         {
                             foranea = "";
                         }
                         else
                         {
-                            foranea = nodoAtributo.ChildNodes[3].ChildNodes[0].ChildNodes[0].Token.Text;
+                            foranea = nodoAtributo.ChildNodes[3].ChildNodes[0].ChildNodes[0].Token.Text.Replace("\"","");
                         }
                         #endregion
                         #region unico
-                        if (nodoAtributo.ChildNodes[4].ChildNodes[0].ChildNodes[0].Token.Text.Equals("0"))
+                        if (nodoAtributo.ChildNodes[4].ChildNodes[0].ChildNodes[0].Token.Text.Replace("\"","").Equals("0"))
                         {
                             unico = false;
                         }
@@ -259,7 +259,7 @@ namespace ServidorDB.AnalizadorXML
                 {
                     if (nodo.ChildNodes.Count == 6)
                     {
-                        BD baseNueva = new BD(nodo.ChildNodes[1].Token.Text, nodo.ChildNodes[4].Token.Text);
+                        BD baseNueva = new BD(nodo.ChildNodes[1].Token.Text.Replace("\"",""), nodo.ChildNodes[4].Token.Text.Replace("\"",""));
                         listaBases.Add(baseNueva);
                     }
                 }
@@ -273,16 +273,16 @@ namespace ServidorDB.AnalizadorXML
             {
                 if (nodo.ChildNodes.Count > 7) 
                 {
-                    Usuario usuario = new Usuario(nodo.ChildNodes[2].ChildNodes[0].Token.Text, nodo.ChildNodes[5].ChildNodes[0].Token.Text);                    
+                    Usuario usuario = new Usuario(nodo.ChildNodes[2].ChildNodes[0].Token.Text.Replace("\"",""), nodo.ChildNodes[5].ChildNodes[0].Token.Text.Replace("\"",""));                    
                     if (nodo.ChildNodes.Count == 9) // No tiene lista de permisos
                     {
                         ParseTreeNode raizPermisos = nodo.ChildNodes[7];
                         foreach (ParseTreeNode tmp in raizPermisos.ChildNodes)
                         {
-                            Permiso perm = new Permiso(tmp.ChildNodes[0].Token.Text);
+                            Permiso perm = new Permiso(tmp.ChildNodes[0].Token.Text.Replace("\"",""));
                             foreach (ParseTreeNode nodoObjeto in tmp.ChildNodes[1].ChildNodes)
                             {
-                                perm.listaObjetos.Add(nodoObjeto.Token.Text);
+                                perm.listaObjetos.Add(nodoObjeto.Token.Text.Replace("\"",""));
                             }
                             usuario.permisos.Add(perm);
                         }
@@ -363,23 +363,23 @@ namespace ServidorDB.AnalizadorXML
                     //= new Procedimiento()
                     if (nodo.ChildNodes.Count == 7) // No tiene retorno
                     {
-                        nuevoProc = new Procedimiento(nodo.ChildNodes[2].ChildNodes[0].Token.Text, "");
+                        nuevoProc = new Procedimiento(nodo.ChildNodes[2].ChildNodes[0].Token.Text.Replace("\"",""), "");
                     }
                     else if (nodo.ChildNodes.Count == 10) // tiene retorno
                     {
-                        nuevoProc = new Procedimiento(nodo.ChildNodes[2].ChildNodes[0].Token.Text, nodo.ChildNodes[7].Token.Text);
+                        nuevoProc = new Procedimiento(nodo.ChildNodes[2].ChildNodes[0].Token.Text.Replace("\"",""), nodo.ChildNodes[7].Token.Text.Replace("\"",""));
                     }
-                    nuevoProc.codigoFuente = nodo.ChildNodes[5].Token.Text;
+                    nuevoProc.codigoFuente = nodo.ChildNodes[5].Token.Text.Replace("\"","");
                     /*Generamos el arbol de la funcion*/
                     
 
                     /*Ahora vamos a cargar los parametros*/
                     foreach (ParseTreeNode nodoParametro in nodo.ChildNodes[4].ChildNodes)
                     {
-                        if (nodoParametro.ChildNodes[0].Token.Text.ToLower().Equals
-                            (nodoParametro.ChildNodes[2].Token.Text.ToLower()))
+                        if (nodoParametro.ChildNodes[0].Token.Text.Replace("\"","").ToLower().Equals
+                            (nodoParametro.ChildNodes[2].Token.Text.Replace("\"","").ToLower()))
                         {
-                            Parametro parametro = new Parametro(nodoParametro.ChildNodes[0].Token.Text, nodoParametro.ChildNodes[1].ChildNodes[0].Token.Text);
+                            Parametro parametro = new Parametro(nodoParametro.ChildNodes[0].Token.Text.Replace("\"",""), nodoParametro.ChildNodes[1].ChildNodes[0].Token.Text.Replace("\"",""));
                             nuevoProc.listaParametros.Add(parametro);
                         }
                         else
@@ -402,16 +402,16 @@ namespace ServidorDB.AnalizadorXML
                 foreach (ParseTreeNode nodo in raiz.ChildNodes[0].ChildNodes)
                 {
                     /*Obtenemos el tipo del objeto*/
-                    Objeto nuevoObjeto = new Objeto(nodo.ChildNodes[1].ChildNodes[0].Token.Text);
+                    Objeto nuevoObjeto = new Objeto(nodo.ChildNodes[1].ChildNodes[0].Token.Text.Replace("\"",""));
 
                     /*Obtenemos la lista de atributos*/
                     ParseTreeNode raizLista = nodo.ChildNodes[3].ChildNodes[0];
                     foreach (ParseTreeNode nodoCampo in raizLista.ChildNodes)
                     {
-                        if (nodoCampo.ChildNodes[0].Token.Text.Equals
-                            (nodoCampo.ChildNodes[2].Token.Text))
+                        if (nodoCampo.ChildNodes[0].Token.Text.Replace("\"","").Equals
+                            (nodoCampo.ChildNodes[2].Token.Text.Replace("\"","")))
                         {
-                            nuevoObjeto.atributos.Add(new Atributo(nodoCampo.ChildNodes[0].Token.Text.ToLower(), nodoCampo.ChildNodes[1].ChildNodes[0].Token.Text.ToLower(), null));
+                            nuevoObjeto.atributos.Add(new Atributo(nodoCampo.ChildNodes[0].Token.Text.Replace("\"","").ToLower(), nodoCampo.ChildNodes[1].ChildNodes[0].Token.Text.Replace("\"","").ToLower(), null));
                         }
                         else
                         {

@@ -109,7 +109,7 @@ namespace ServidorDB.estructurasDB
                 return;
             }
             BD baseActual = getBase(); // Obtenemos la base actual
-            String idTabla = raiz.ChildNodes[0].Token.Text; // ID de la tabla desde el arbol :v
+            String idTabla = raiz.ChildNodes[0].Token.Text.Replace("\"",""); // ID de la tabla desde el arbol :v
             int linea = raiz.ChildNodes[0].Token.Location.Line;
             int columna = raiz.ChildNodes[0].Token.Location.Column;
             //Si no existe la base salimos
@@ -1011,7 +1011,7 @@ namespace ServidorDB.estructurasDB
         {
             if (getBase()!=null)
             {
-                String nombreNuevaTabla = raiz.ChildNodes[0].Token.Text;
+                String nombreNuevaTabla = raiz.ChildNodes[0].Token.Text.Replace("\"","");
                 String pathBase = getBase().path;
                 String[] partes = pathBase.Split('\\');
                 String pathTabla = "";
@@ -1026,7 +1026,7 @@ namespace ServidorDB.estructurasDB
                         pathTabla = pathTabla + "\\" + partes[cont];
                     }
                 }
-                String nombreTabla = raiz.ChildNodes[0].Token.Text;
+                String nombreTabla = raiz.ChildNodes[0].Token.Text.Replace("\"","");
                 pathTabla = pathTabla + "\\" + nombreTabla +".xml";
                 Tabla nuevaTabla = new Tabla(nombreTabla,pathTabla);
                 // Verificamos si existe la tabla, si existe abortamos
@@ -1041,8 +1041,8 @@ namespace ServidorDB.estructurasDB
                         bool primaria = false;
                         String foranea = "";
                         bool unico = false;
-                        tipo = nodoCampo.ChildNodes[0].ChildNodes[0].Token.Text;
-                        nombre = nodoCampo.ChildNodes[1].Token.Text;
+                        tipo = nodoCampo.ChildNodes[0].ChildNodes[0].Token.Text.Replace("\"","");
+                        nombre = nodoCampo.ChildNodes[1].Token.Text.Replace("\"","");
                         foreach (ParseTreeNode nodoParametro in nodoCampo.ChildNodes[2].ChildNodes)
                         {
                             if (nodoParametro.ChildNodes.Count == 0)
@@ -1068,8 +1068,8 @@ namespace ServidorDB.estructurasDB
                             }
                             else
                             {                                                                      
-                                foranea = nodoParametro.ChildNodes[0].Token.Text;
-                                foranea = foranea + "." + nodoParametro.ChildNodes[1].Token.Text;
+                                foranea = nodoParametro.ChildNodes[0].Token.Text.Replace("\"","");
+                                foranea = foranea + "." + nodoParametro.ChildNodes[1].Token.Text.Replace("\"","");
                                 break;
                             }
                         }
@@ -1102,8 +1102,8 @@ namespace ServidorDB.estructurasDB
             {
                 if (usuarioActual.ToLower().Equals("admin"))
                 {
-                    String username = raiz.ChildNodes[0].Token.Text;
-                    String password = raiz.ChildNodes[3].Token.Text;
+                    String username = raiz.ChildNodes[0].Token.Text.Replace("\"","");
+                    String password = raiz.ChildNodes[3].Token.Text.Replace("\"","");
                     foreach (Usuario user in usuarios)
                     {
                         if (user.username.ToLower().Equals(username.ToLower()))
@@ -1128,6 +1128,103 @@ namespace ServidorDB.estructurasDB
                 }
             }
         }
+
+
+        #region ACTUALIZAR
+        public void actualizar(ParseTreeNode raiz)
+        {
+            if (getBase()!=null)
+            {
+                if (raiz.ChildNodes.Count == 5)
+                {
+                    // Primero verificamos que el número de campos coincida con el número de valores.
+                    if (raiz.ChildNodes[2].ChildNodes.Count == raiz.ChildNodes[3].ChildNodes.Count)
+                    {
+                        String nombreTabla = raiz.ChildNodes[1].Token.Text.ToLower();//Nombre de la tabla
+                        List<String> listaEtiquetas = new List<String>();
+                        //Obtenemos los parametros a modificar
+                        foreach (ParseTreeNode nodo in raiz.ChildNodes[2].ChildNodes)
+                        {
+                            listaEtiquetas.Add(nodo.ChildNodes[0].Token.Text.ToLower());
+                        }
+                        List<campo> listaCampos = new List<campo>();
+                        //Obtenemos la lista de valores.                    
+                        for (int cont = 0; cont < raiz.ChildNodes[3].ChildNodes.Count; cont++)
+                        {
+                            ParseTreeNode nodo = raiz.ChildNodes[3].ChildNodes[cont];
+                            Logica opL = new Logica();
+                            Resultado result = opL.operar(nodo);
+                            listaCampos.Add(new campo(listaEtiquetas[cont], result.valor, result.tipo));
+                        }
+                        // Ahora ya tenemos una lista de campos
+                        if (getTabla(nombreTabla, raiz.ChildNodes[1].Token.Location.Line, raiz.ChildNodes[1].Token.Location.Column) != null)
+                        {
+                            Tabla tabActual = getTabla(nombreTabla, raiz.ChildNodes[1].Token.Location.Line, raiz.ChildNodes[1].Token.Location.Column);
+                            bool flag = false;
+                            foreach(defCampo definicion in tabActual.definiciones)
+                            {
+                                for( int x = 0; x < listaCampos.Count; x++)
+                                {
+                                    campo cmp = listaCampos[x];
+                                    if (definicion.nombre.ToLower().Equals(cmp.id.ToLower()))
+                                    {
+                                        if(!definicion.tipo.ToLower().Equals(cmp.tipo.ToLower()))
+                                        {
+                                            Error error = new Error("Semantico", "Se esperaba un valor de tipo " + definicion.tipo.ToLower() + " y se ha recibido uno de tipo " + cmp.tipo.ToLower(),
+                                               raiz.ChildNodes[3].ChildNodes[x].Token.Location.Line, raiz.ChildNodes[3].ChildNodes[x].Token.Location.Column);
+                                            Form1.errores.Add(error);
+                                            Form1.Mensajes.Add(error.getMensaje());
+                                            flag = true;
+                                        }
+                                    }
+                                }
+                            }
+                            if (flag) { return; } // Si hay errores de tipos, salimos.
+                            foreach (tupla tup in getTabla(nombreTabla, raiz.ChildNodes[1].Token.Location.Line, raiz.ChildNodes[1].Token.Location.Column).tuplas)
+                            {
+                                Logica opL = new Logica(tup);
+                                Resultado result = opL.operar(raiz.ChildNodes[4]);
+                                if (!result.tipo.ToLower().Equals("error"))
+                                {
+                                    if (result.tipo.ToLower().Equals("bool") && result.valor.ToString().Equals("1")
+                                        || result.tipo.ToLower().Equals("integer") && result.valor.ToString().Equals("1"))
+                                    {
+                                        // Hacemos la actualización
+                                        foreach (campo campoTemp in tup.campos)
+                                        {
+                                            foreach (campo nuevoCampo in listaCampos)
+                                            {
+                                                if (campoTemp.id.ToLower().Equals(nuevoCampo.id.ToLower()))
+                                                {
+                                                    campoTemp.valor = nuevoCampo.valor;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            Form1.Mensajes.Add("Actualización realizada con éxito. :v");
+                        }
+                        else
+                        {
+                            Error error = new Error("Semantico", "La tabla " + nombreTabla + " no existe en la base " + getBase().nombre,
+                                raiz.ChildNodes[2].ChildNodes[0].Token.Location.Line, raiz.ChildNodes[2].ChildNodes[0].Token.Location.Column);
+                            Form1.errores.Add(error);
+                            Form1.Mensajes.Add(error.getMensaje());
+                        }
+
+                    }
+                    else
+                    {
+                        Error error = new Error("Semantico", "El número de parametros no coincide con el número de valores indicados.",
+                            raiz.ChildNodes[2].ChildNodes[0].Token.Location.Line, raiz.ChildNodes[2].ChildNodes[0].Token.Location.Column);
+                        Form1.errores.Add(error);
+                        Form1.Mensajes.Add(error.getMensaje());
+                    }
+                }
+            }
+        }
+        #endregion
 
     }
 }

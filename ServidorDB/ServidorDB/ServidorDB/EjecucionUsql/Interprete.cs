@@ -56,7 +56,7 @@ namespace ServidorBDD.EjecucionUsql
                         Form1.sistemaArchivos.crearUsuario(hijo);
                         break;
                     case "ACTUALIZAR":
-                        //Form1.sistemaArchivos.actualizacion(hijo);
+                        Form1.sistemaArchivos.actualizar(hijo);
                         break;
                     case "INSERTAR":
                         Form1.sistemaArchivos.insertar(hijo);

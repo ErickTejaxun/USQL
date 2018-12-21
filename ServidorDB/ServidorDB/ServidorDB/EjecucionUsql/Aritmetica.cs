@@ -694,7 +694,8 @@ namespace ServidorBDD.EjecucionUsql
                     }
                     else
                     {
-                        if (cmp.id.ToLower().Contains("."+nombreCampo))
+                        //if (cmp.id.ToLower().Contains("."+nombreCampo))
+                        if (cmp.id.ToLower().Contains(nombreCampo))
                         {
                             return new Resultado(cmp.tipo, cmp.valor);
                         }
