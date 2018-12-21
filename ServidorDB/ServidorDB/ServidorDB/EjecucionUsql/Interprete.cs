@@ -58,6 +58,15 @@ namespace ServidorBDD.EjecucionUsql
                     case "ACTUALIZAR":
                         Form1.sistemaArchivos.actualizar(hijo);
                         break;
+                    case "ALTERARTABLA":
+                        Form1.sistemaArchivos.alterarTabla(hijo);
+                        break;
+                    case "ALTERAROBJETO":
+                        Form1.sistemaArchivos.alterarObjeto(hijo);
+                        break;
+                    case "ALTERARUSUARIO":
+                        Form1.sistemaArchivos.alterarUsuario(hijo);
+                        break;
                     case "INSERTAR":
                         Form1.sistemaArchivos.insertar(hijo);
                         break;

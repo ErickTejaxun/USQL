@@ -84,7 +84,7 @@ namespace ServidorDB.estructurasDB
 
         public bool getObjeto(String id)
         {
-            if (getBase()!=null)
+            if (getBase() != null)
             {
                 foreach (Objeto obj in getBase().objetos)
                 {
@@ -101,15 +101,15 @@ namespace ServidorDB.estructurasDB
         #region INSERT
         public void insertar(ParseTreeNode raiz)
         {
-            if(getBase()==null)
+            if (getBase() == null)
             {
-                Error error = new Error("Ejecucion","No se ha seleccionado alguna base de datos.",0,0);
+                Error error = new Error("Ejecucion", "No se ha seleccionado alguna base de datos.", 0, 0);
                 Form1.errores.Add(error);
                 Form1.Mensajes.Add(error.getMensaje());
                 return;
             }
             BD baseActual = getBase(); // Obtenemos la base actual
-            String idTabla = raiz.ChildNodes[0].Token.Text.Replace("\"",""); // ID de la tabla desde el arbol :v
+            String idTabla = raiz.ChildNodes[0].Token.Text.Replace("\"", ""); // ID de la tabla desde el arbol :v
             int linea = raiz.ChildNodes[0].Token.Location.Line;
             int columna = raiz.ChildNodes[0].Token.Location.Column;
             //Si no existe la base salimos
@@ -122,16 +122,16 @@ namespace ServidorDB.estructurasDB
                 Form1.errores.Add(error);
                 Form1.Mensajes.Add(error.getMensaje());
                 return;
-            }            
+            }
             switch (raiz.ChildNodes.Count)
             {
                 case 2: // 0 idbase, 1  lista valores           
-                    insertar(idTabla, raiz.ChildNodes[1],linea, columna);
+                    insertar(idTabla, raiz.ChildNodes[1], linea, columna);
                     break;
                 case 3: // 0 idbase, 1. Lista id campos, 2. lista valores
                     insertar(idTabla, raiz.ChildNodes[1], raiz.ChildNodes[2], linea, columna);
-                    break;               
-            }            
+                    break;
+            }
         }
 
         //Metodo insertar cuando no hay una lista de campos
@@ -139,18 +139,18 @@ namespace ServidorDB.estructurasDB
         {
             tupla nuevaTupla = new tupla();
             foreach (ParseTreeNode nodo in raizValores.ChildNodes)
-            {                
-                 Logica opL = new Logica();
-                 Resultado result = opL.operar(nodo);
-                nuevaTupla.addCampo(new campo("", result.valor,result.tipo));
+            {
+                Logica opL = new Logica();
+                Resultado result = opL.operar(nodo);
+                nuevaTupla.addCampo(new campo("", result.valor, result.tipo));
             }
             int contador = 0;
-            Tabla tabActual= getTabla(nombreTabla, linea, columna);
+            Tabla tabActual = getTabla(nombreTabla, linea, columna);
             List<defCampo> definiciones = tabActual.definiciones;
             #region Verificamos que el número de valores coinicida con 
             if (raizValores.ChildNodes.Count != definiciones.Count)
             {
-                Error error = new Error("Semantico","El número de campos no coincide, se esperaban " + definiciones.Count + " campos y se han ingresado " + raizValores.ChildNodes.Count
+                Error error = new Error("Semantico", "El número de campos no coincide, se esperaban " + definiciones.Count + " campos y se han ingresado " + raizValores.ChildNodes.Count
                     , raizValores.ChildNodes[0].Span.Location.Line, raizValores.ChildNodes[0].Span.Location.Column);
                 Form1.errores.Add(error);
                 Form1.Mensajes.Add(error.getMensaje());
@@ -161,7 +161,7 @@ namespace ServidorDB.estructurasDB
 
 
             bool flag = true;  // Si es true se guarda, si es false no se guarda.
-            for (contador = 0; contador<definiciones.Count; contador++ )
+            for (contador = 0; contador < definiciones.Count; contador++)
             {
                 if (nuevaTupla.campos[contador].tipo.ToLower().Equals(definiciones[contador].tipo.ToLower())
                    || (nuevaTupla.campos[contador].tipo.ToLower().Equals("integer") && definiciones[contador].tipo.ToLower().Equals("bool")))
@@ -173,13 +173,13 @@ namespace ServidorDB.estructurasDB
                     if (definiciones[contador].primaria)
                     {
                         // Verificamos que no exista una igual.
-                        foreach(tupla tup in tabActual.tuplas)
+                        foreach (tupla tup in tabActual.tuplas)
                         {
                             campo tmpcampo = tup.getCampo(definiciones[contador].nombre);
                             if (tmpcampo.valor.ToString().Equals(nuevaTupla.campos[contador].valor.ToString()))
                             {
                                 flag = false;
-                                Error error = new Error("Ejecución", "Condicion de unico (Llave primaria) fallada " +nombreTabla +"."+ nuevaTupla.campos[contador].id,
+                                Error error = new Error("Ejecución", "Condicion de unico (Llave primaria) fallada " + nombreTabla + "." + nuevaTupla.campos[contador].id,
                                     raizValores.ChildNodes[contador].Span.Location.Line, raizValores.ChildNodes[contador].Span.Location.Column);
                                 Form1.errores.Add(error);
                                 Form1.Mensajes.Add(error.getMensaje());
@@ -220,7 +220,7 @@ namespace ServidorDB.estructurasDB
                     }
                     #endregion
                     #region Verificamos que exista la llave Foranea
-                    if(!definiciones[contador].foranea.Equals(""))
+                    if (!definiciones[contador].foranea.Equals(""))
                     {
                         if (!existeTupla(definiciones[contador].foranea, nuevaTupla.campos[contador].id, nuevaTupla.campos[contador].valor, linea, columna))
                         {
@@ -236,33 +236,33 @@ namespace ServidorDB.estructurasDB
                 {
                     flag = false;
                     Error error = new Error("Semantico",
-                        "Se esperaba un dato de tipo "+ definiciones[contador].tipo + ", valor " + nuevaTupla.campos[contador].valor +" inválido",
+                        "Se esperaba un dato de tipo " + definiciones[contador].tipo + ", valor " + nuevaTupla.campos[contador].valor + " inválido",
                         raizValores.ChildNodes[contador].Span.Location.Line, raizValores.ChildNodes[contador].Span.Location.Column);
                     Form1.errores.Add(error);
                     Form1.Mensajes.Add(error.getMensaje());
-                } 
+                }
             }
-            if(flag)
+            if (flag)
             {
-                getTabla(nombreTabla,linea,columna).tuplas.Add(nuevaTupla);
+                getTabla(nombreTabla, linea, columna).tuplas.Add(nuevaTupla);
             }
             // Ahora ya tenemos la tupla nueva :v
         }
         //Metodo insertar cuando hay una lista de campos
         public void insertar(String nombreTabla, ParseTreeNode raizCampos, ParseTreeNode raizValores, int linea, int columna)
-        {            
+        {
             tupla nuevaTupla = new tupla(); // La nueva tupla a ingresar.
-            int contador = 0;            
+            int contador = 0;
             Tabla tabActual = getTabla(nombreTabla, linea, columna);
             List<defCampo> definiciones = tabActual.definiciones;
             foreach (defCampo def in definiciones)
             {
-                campo nuevoCampo =null;
+                campo nuevoCampo = null;
                 switch (def.tipo)
                 {
                     case "text":
                         nuevoCampo = new campo(def.nombre, "", def.tipo);
-                        nuevoCampo.tablaId = "nulo";                        
+                        nuevoCampo.tablaId = "nulo";
                         break;
                     case "integer":
                         nuevoCampo = new campo(def.nombre, 0, def.tipo);
@@ -270,10 +270,10 @@ namespace ServidorDB.estructurasDB
                         break;
                     case "bool":
                         nuevoCampo = new campo(def.nombre, 0, def.tipo);
-                        nuevoCampo.tablaId = "nulo";                        
+                        nuevoCampo.tablaId = "nulo";
                         break;
                     case "date":
-                        DateTime hoy = DateTime.Today;                        
+                        DateTime hoy = DateTime.Today;
                         nuevoCampo = new campo(def.nombre, hoy.ToString("dd-MM-yyyy"), def.tipo);
                         nuevoCampo.tablaId = "nulo";
                         break;
@@ -288,11 +288,11 @@ namespace ServidorDB.estructurasDB
 
             // Setear los valores que trae la lista.
             List<String> listaEtiquetas = new List<String>();
-            for(contador = 0; contador<raizValores.ChildNodes.Count; contador++)
+            for (contador = 0; contador < raizValores.ChildNodes.Count; contador++)
             {
                 Logica opL = new Logica();
                 Resultado result = opL.operar(raizValores.ChildNodes[contador]);
-                nuevaTupla.getCampo(raizCampos.ChildNodes[contador].ChildNodes[0].Token.Text).valor=result.valor;
+                nuevaTupla.getCampo(raizCampos.ChildNodes[contador].ChildNodes[0].Token.Text).valor = result.valor;
                 nuevaTupla.getCampo(raizCampos.ChildNodes[contador].ChildNodes[0].Token.Text).tablaId = ""; // Con esto sabremos que no es nulo.
                 listaEtiquetas.Add(raizCampos.ChildNodes[contador].ChildNodes[0].Token.Text);
             }
@@ -405,10 +405,10 @@ namespace ServidorDB.estructurasDB
                                 else
                                 {
                                     break;
-                                }                                
+                                }
                             }
-                            Error error = new Error("Semantico", "Error, no se encuentra la llave foranea " + definiciones[contador].foranea, 
-                                raizValores.ChildNodes[contador2].Span.Location.Line, 
+                            Error error = new Error("Semantico", "Error, no se encuentra la llave foranea " + definiciones[contador].foranea,
+                                raizValores.ChildNodes[contador2].Span.Location.Line,
                                 raizValores.ChildNodes[contador2].Span.Location.Column);
                             Form1.errores.Add(error);
                             Form1.Mensajes.Add(error.getMensaje());
@@ -417,7 +417,7 @@ namespace ServidorDB.estructurasDB
                     #region Verificación de nulo
                     if (!definiciones[contador].nulo)
                     {
-                        if(nuevaTupla.campos[contador].tablaId.ToLower().Equals("nulo"))
+                        if (nuevaTupla.campos[contador].tablaId.ToLower().Equals("nulo"))
                         {
                             flag = false;
                             int contador2 = 0;
@@ -462,13 +462,13 @@ namespace ServidorDB.estructurasDB
         }
 
         //Verifica si existe el registro (para verificar la llave foranea
-        public bool existeTupla(String nombreTabla, String nombreCampo, object valorPrimaria,  int linea, int columna)
+        public bool existeTupla(String nombreTabla, String nombreCampo, object valorPrimaria, int linea, int columna)
         {
             String[] partes = nombreTabla.Split('.');
-            if (partes.Length==2) { nombreTabla = partes[0]; nombreCampo = partes[1]; }
-            
-            Tabla tab = getTabla(nombreTabla,linea,columna);
-            if (tab!=null)
+            if (partes.Length == 2) { nombreTabla = partes[0]; nombreCampo = partes[1]; }
+
+            Tabla tab = getTabla(nombreTabla, linea, columna);
+            if (tab != null)
             {
                 foreach (tupla tp in tab.tuplas)
                 {
@@ -481,7 +481,7 @@ namespace ServidorDB.estructurasDB
                     }
                     else
                     {
-                        Error error = new Error("Semantico","El campo "+nombreCampo + "no existe en la tabla "+nombreTabla,linea, columna);
+                        Error error = new Error("Semantico", "El campo " + nombreCampo + "no existe en la tabla " + nombreTabla, linea, columna);
                         Form1.errores.Add(error);
                         Form1.Mensajes.Add(error.getMensaje());
                     }
@@ -496,7 +496,7 @@ namespace ServidorDB.estructurasDB
         #region DELETE
         public void eliminar(ParseTreeNode raiz)
         {
-            if (raiz.ChildNodes[0].ChildNodes.Count>0)
+            if (raiz.ChildNodes[0].ChildNodes.Count > 0)
             {
                 switch (raiz.ChildNodes[0].Term.Name.ToLower())
                 {
@@ -528,11 +528,11 @@ namespace ServidorDB.estructurasDB
                         if (user.username.ToLower().Equals(nombreUsuario.ToLower()))
                         {
                             this.usuarios.Remove(user);
-                            Form1.Mensajes.Add("El usuario "+nombreUsuario + " ha sido eliminado exitosamente.");
+                            Form1.Mensajes.Add("El usuario " + nombreUsuario + " ha sido eliminado exitosamente.");
                             break;
                         }
                     }
-                    Error error = new Error("Semantico", "El usuario "+nombreUsuario + " no existe en el sistema.", linea, columna);
+                    Error error = new Error("Semantico", "El usuario " + nombreUsuario + " no existe en el sistema.", linea, columna);
                     Form1.errores.Add(error);
                     Form1.Mensajes.Add(error.getMensaje());
                 }
@@ -560,12 +560,12 @@ namespace ServidorDB.estructurasDB
                 //Eliminamos los archivos.
                 eliminarDirectorio(baseTemporal.path);
                 // Ahora la quitamos de memoria.
-                for(int cont = 0; cont<basesdedatos.Count; cont++)
+                for (int cont = 0; cont < basesdedatos.Count; cont++)
                 {
                     if (basesdedatos[cont].nombre.ToLower().Equals(nombreBase))
                     {
                         basesdedatos.RemoveAt(cont);
-                        Form1.Mensajes.Add("La base de datos " + nombreBase + " ha sido eliminada." );
+                        Form1.Mensajes.Add("La base de datos " + nombreBase + " ha sido eliminada.");
                         break;
                     }
                 }
@@ -573,7 +573,7 @@ namespace ServidorDB.estructurasDB
             }
             else
             {
-                Error error = new Error("Semantico","La base de datos "+ nombreBase +" no existe en el sistema." , linea, columna);
+                Error error = new Error("Semantico", "La base de datos " + nombreBase + " no existe en el sistema.", linea, columna);
                 Form1.errores.Add(error);
                 Form1.Mensajes.Add(error.getMensaje());
             }
@@ -598,7 +598,7 @@ namespace ServidorDB.estructurasDB
                             break;
                         }
                     }
-                }              
+                }
                 commit();
             }
             else
@@ -631,7 +631,7 @@ namespace ServidorDB.estructurasDB
                 }
                 else
                 {
-                    Error error = new Error("Semantico", "El objeto "+ nombreObjeto + " no existe en la base de datos.", linea, columna);
+                    Error error = new Error("Semantico", "El objeto " + nombreObjeto + " no existe en la base de datos.", linea, columna);
                     Form1.errores.Add(error);
                     Form1.Mensajes.Add(error.getMensaje());
                 }
@@ -670,7 +670,7 @@ namespace ServidorDB.estructurasDB
                     Directory.Delete(directorio, true);
                     Form1.Mensajes.Add("El directorio fue eliminado con existo. " + Directory.GetCreationTime(path));
                     return;
-                }                
+                }
             }
             catch (Exception e)
             {
@@ -693,7 +693,7 @@ namespace ServidorDB.estructurasDB
                 */
                 cadenaMaestro = cadenaMaestro + "<db>\n";
                 cadenaMaestro = cadenaMaestro + "\t<nombre>" + boss.nombre + "</nombre>\n";
-                cadenaMaestro = cadenaMaestro + "\t<path>" + boss.path + "</path>\n";                
+                cadenaMaestro = cadenaMaestro + "\t<path>" + boss.path + "</path>\n";
                 cadenaMaestro = cadenaMaestro + "</db>\n";
 
                 //Guardamos las tablas.
@@ -707,10 +707,10 @@ namespace ServidorDB.estructurasDB
                 commitProcedimientos(boss.pathProcedimientos, boss.procedimientos);
 
                 // Ahora obtenemos la data de las definiciones de las tablas.
-                commitDefinicion(boss);            
+                commitDefinicion(boss);
             }
             //Guardamos el maestro.
-            guardarArchivo("C:\\DB\\maestro.xml",cadenaMaestro);
+            guardarArchivo("C:\\DB\\maestro.xml", cadenaMaestro);
 
             /*Ahora guardamos los usuarios*/
             commitUsuarios("C:\\DB\\usuarios.xml");
@@ -725,7 +725,7 @@ namespace ServidorDB.estructurasDB
                 cadenaUsuarios = cadenaUsuarios + "<password>\"" + user.password + "\"</password>\n";
                 foreach (Permiso permiso in user.permisos)
                 {
-                    if (permiso.listaObjetos.Count>0)
+                    if (permiso.listaObjetos.Count > 0)
                     {
                         cadenaUsuarios = cadenaUsuarios + "<base>\n";
                         cadenaUsuarios = cadenaUsuarios + "<nombredb>" + permiso.nombreDB + "</nombredb>\n";
@@ -748,7 +748,7 @@ namespace ServidorDB.estructurasDB
             String definiciones = "";
             String definicionesTablas = getDeficiones(baseActual.tablas);
             definiciones = definiciones + "<procedure>\n";
-            definiciones = definiciones + "\t<path>" +baseActual.pathProcedimientos +"</path>\n";
+            definiciones = definiciones + "\t<path>" + baseActual.pathProcedimientos + "</path>\n";
             definiciones = definiciones + "</procedure>\n";
             definiciones = definiciones + "<object>\n";
             definiciones = definiciones + "\t<path>" + baseActual.pathObjetos + "</path>\n";
@@ -763,9 +763,9 @@ namespace ServidorDB.estructurasDB
             foreach (Tabla tab in listaTablas)
             {
                 cadena = cadena + "<tabla>\n";
-                cadena = cadena + "<nombre>"+tab.nombre+"</nombre>\n";
-                cadena = cadena + "<path>" + tab.path+ "</path>\n";
-                cadena = cadena + "<rows>\n";                
+                cadena = cadena + "<nombre>" + tab.nombre + "</nombre>\n";
+                cadena = cadena + "<path>" + tab.path + "</path>\n";
+                cadena = cadena + "<rows>\n";
                 foreach (defCampo def in tab.definiciones)
                 {
                     int autoinc = 0;
@@ -779,12 +779,12 @@ namespace ServidorDB.estructurasDB
                     if (kforanea.Equals("")) { kforanea = "0"; }
                     if (def.unico) { unico = 1; } else { unico = 0; }
                     cadena = cadena + "<campo>\n";
-                    cadena = cadena + "\t<" + def.tipo+">" + def.nombre + "</" + def.tipo + ">\n";
-                    cadena = cadena + "<propiedades>\n";                    
+                    cadena = cadena + "\t<" + def.tipo + ">" + def.nombre + "</" + def.tipo + ">\n";
+                    cadena = cadena + "<propiedades>\n";
                     cadena = cadena + "\t<autoincrementable>" + autoinc + "</autoincrementable>\n";
                     cadena = cadena + "\t<nulo>" + nulo + "</nulo>\n";
                     cadena = cadena + "\t<primaria>" + prim + "</primaria>\n";
-                    cadena = cadena + "\t<foranea>" + kforanea + "</foranea>\n";                    
+                    cadena = cadena + "\t<foranea>" + kforanea + "</foranea>\n";
                     cadena = cadena + "\t<unico>" + unico + "</unico>\n";
                     cadena = cadena + "</propiedades>\n";
                     cadena = cadena + "</campo>\n";
@@ -830,7 +830,7 @@ namespace ServidorDB.estructurasDB
                 foreach (Atributo atrib in objt.atributos)
                 {
                     cadena = cadena + "<" + atrib.tipo + ">" + atrib.id
-                        + "</" + atrib.tipo + ">\n" ;
+                        + "</" + atrib.tipo + ">\n";
                 }
                 cadena = cadena + "\t</attr>\n";
                 cadena = cadena + "\t</obj>\n";
@@ -859,7 +859,7 @@ namespace ServidorDB.estructurasDB
                             cadena = cadena + "<" + quitarNombreTabla(cmp.id.ToLower()) + ">" + fecha.ToString("dd-MM-yyyy")
                                 + "</" + quitarNombreTabla(cmp.id.ToLower()) + ">\n";
                             break;
-                        case "text":                            
+                        case "text":
                             cadena = cadena + "<" + quitarNombreTabla(cmp.id.ToLower()) + ">\"" + cmp.valor
                                 + "\"</" + quitarNombreTabla(cmp.id.ToLower()) + ">\n";
                             break;
@@ -935,10 +935,10 @@ namespace ServidorDB.estructurasDB
         }
 
         public void guardarArchivo(String path, String contenido)
-        {                                   
+        {
             String[] partes = path.Split('\\');
             String directorio = "";
-            for (int cont = 0; cont < partes.Length - 1 ; cont++)
+            for (int cont = 0; cont < partes.Length - 1; cont++)
             {
                 if (directorio.Equals(""))
                 {
@@ -946,7 +946,7 @@ namespace ServidorDB.estructurasDB
                 }
                 else
                 {
-                    directorio = directorio +"\\" +partes[cont];
+                    directorio = directorio + "\\" + partes[cont];
                 }
             }
 
@@ -954,7 +954,7 @@ namespace ServidorDB.estructurasDB
             {
                 // Si existe el directorio.
                 if (Directory.Exists(directorio))
-                {                   
+                {
                     System.IO.File.WriteAllText(path, contenido); // Almacenamos el archivo     
                     return;
                 }
@@ -962,7 +962,7 @@ namespace ServidorDB.estructurasDB
                 // Crear la carpeta
                 DirectoryInfo di = Directory.CreateDirectory(directorio);
                 System.IO.File.WriteAllText(path, contenido); // Almacenamos el archivo  
-                Form1.Mensajes.Add("El directorio fue creado con existo. " + Directory.GetCreationTime(path));                               
+                Form1.Mensajes.Add("El directorio fue creado con existo. " + Directory.GetCreationTime(path));
             }
             catch (Exception e)
             {
@@ -995,11 +995,11 @@ namespace ServidorDB.estructurasDB
                     nuevaBase.pathObjetos = pathObjetos;
                     nuevaBase.pathProcedimientos = pathProcedimientos;
                     basesdedatos.Add(nuevaBase);
-                    Form1.Mensajes.Add("Base de datos "+nombreNuevaBase +" ha sido creada con éxito.");
+                    Form1.Mensajes.Add("Base de datos " + nombreNuevaBase + " ha sido creada con éxito.");
                 }
                 else
                 {
-                    Error error = new Error("Semantico", "La base de datos "+ nombreNuevaBase + " ya existe en el sistema.", raiz.ChildNodes[1].Span.Location.Line, raiz.ChildNodes[1].Span.Location.Column);
+                    Error error = new Error("Semantico", "La base de datos " + nombreNuevaBase + " ya existe en el sistema.", raiz.ChildNodes[1].Span.Location.Line, raiz.ChildNodes[1].Span.Location.Column);
                     Form1.errores.Add(error);
                     Form1.Mensajes.Add(error.getMensaje());
                 }
@@ -1009,9 +1009,9 @@ namespace ServidorDB.estructurasDB
 
         public void crearTabla(ParseTreeNode raiz)
         {
-            if (getBase()!=null)
+            if (getBase() != null)
             {
-                String nombreNuevaTabla = raiz.ChildNodes[0].Token.Text.Replace("\"","");
+                String nombreNuevaTabla = raiz.ChildNodes[0].Token.Text.Replace("\"", "");
                 String pathBase = getBase().path;
                 String[] partes = pathBase.Split('\\');
                 String pathTabla = "";
@@ -1026,9 +1026,9 @@ namespace ServidorDB.estructurasDB
                         pathTabla = pathTabla + "\\" + partes[cont];
                     }
                 }
-                String nombreTabla = raiz.ChildNodes[0].Token.Text.Replace("\"","");
-                pathTabla = pathTabla + "\\" + nombreTabla +".xml";
-                Tabla nuevaTabla = new Tabla(nombreTabla,pathTabla);
+                String nombreTabla = raiz.ChildNodes[0].Token.Text.Replace("\"", "");
+                pathTabla = pathTabla + "\\" + nombreTabla + ".xml";
+                Tabla nuevaTabla = new Tabla(nombreTabla, pathTabla);
                 // Verificamos si existe la tabla, si existe abortamos
                 if (!existeTabla(nombreTabla, raiz.ChildNodes[0].Span.Location.Line, raiz.ChildNodes[0].Span.Location.Column))
                 {
@@ -1041,8 +1041,8 @@ namespace ServidorDB.estructurasDB
                         bool primaria = false;
                         String foranea = "";
                         bool unico = false;
-                        tipo = nodoCampo.ChildNodes[0].ChildNodes[0].Token.Text.Replace("\"","");
-                        nombre = nodoCampo.ChildNodes[1].Token.Text.Replace("\"","");
+                        tipo = nodoCampo.ChildNodes[0].ChildNodes[0].Token.Text.Replace("\"", "");
+                        nombre = nodoCampo.ChildNodes[1].Token.Text.Replace("\"", "");
                         foreach (ParseTreeNode nodoParametro in nodoCampo.ChildNodes[2].ChildNodes)
                         {
                             if (nodoParametro.ChildNodes.Count == 0)
@@ -1064,16 +1064,16 @@ namespace ServidorDB.estructurasDB
                                     case "unico":
                                         unico = true;
                                         break;
-                                }                                
+                                }
                             }
                             else
-                            {                                                                      
-                                foranea = nodoParametro.ChildNodes[0].Token.Text.Replace("\"","");
-                                foranea = foranea + "." + nodoParametro.ChildNodes[1].Token.Text.Replace("\"","");
+                            {
+                                foranea = nodoParametro.ChildNodes[0].Token.Text.Replace("\"", "");
+                                foranea = foranea + "." + nodoParametro.ChildNodes[1].Token.Text.Replace("\"", "");
                                 break;
                             }
                         }
-                        defCampo nuevaDefinicion = new defCampo(nombre, tipo, auto, nulo, primaria, foranea,unico);
+                        defCampo nuevaDefinicion = new defCampo(nombre, tipo, auto, nulo, primaria, foranea, unico);
                         nuevaTabla.definiciones.Add(nuevaDefinicion);
                     }
                     // Agregamos la nueva tabla.
@@ -1081,16 +1081,16 @@ namespace ServidorDB.estructurasDB
                 }
                 else
                 {
-                    Error error = new Error("Semantico", "La tabla "+nombreTabla +" ya existe en el sistema", raiz.ChildNodes[0].Span.Location.Line, raiz.ChildNodes[0].Span.Location.Column);
+                    Error error = new Error("Semantico", "La tabla " + nombreTabla + " ya existe en el sistema", raiz.ChildNodes[0].Span.Location.Line, raiz.ChildNodes[0].Span.Location.Column);
                     Form1.errores.Add(error);
                     Form1.Mensajes.Add(error.getMensaje());
                 }
                 // Recorremos la lista de definicion
-    
+
             }
             else
             {
-                Error error = new Error("Semantico", "No se ha elegido una base de datos.",raiz.ChildNodes[0].Span.Location.Line, raiz.ChildNodes[0].Span.Location.Column);
+                Error error = new Error("Semantico", "No se ha elegido una base de datos.", raiz.ChildNodes[0].Span.Location.Line, raiz.ChildNodes[0].Span.Location.Column);
                 Form1.errores.Add(error);
                 Form1.Mensajes.Add(error.getMensaje());
             }
@@ -1098,12 +1098,12 @@ namespace ServidorDB.estructurasDB
 
         public void crearUsuario(ParseTreeNode raiz)
         {
-            if (raiz.ChildNodes.Count==4)
+            if (raiz.ChildNodes.Count == 4)
             {
                 if (usuarioActual.ToLower().Equals("admin"))
                 {
-                    String username = raiz.ChildNodes[0].Token.Text.Replace("\"","");
-                    String password = raiz.ChildNodes[3].Token.Text.Replace("\"","");
+                    String username = raiz.ChildNodes[0].Token.Text.Replace("\"", "");
+                    String password = raiz.ChildNodes[3].Token.Text.Replace("\"", "");
                     foreach (Usuario user in usuarios)
                     {
                         if (user.username.ToLower().Equals(username.ToLower()))
@@ -1114,9 +1114,9 @@ namespace ServidorDB.estructurasDB
                             return;
                         }
                     }
-                    Usuario newUser = new Usuario(username, password);                    
+                    Usuario newUser = new Usuario(username, password);
                     usuarios.Add(newUser);
-                    Form1.Mensajes.Add("Nuevo usuario "+username +" registrado con éxito.");
+                    Form1.Mensajes.Add("Nuevo usuario " + username + " registrado con éxito.");
                     commit();
 
                 }
@@ -1128,6 +1128,444 @@ namespace ServidorDB.estructurasDB
                 }
             }
         }
+
+        #region ALTERAR USUARIO
+        public void alterarUsuario(ParseTreeNode raiz)
+        {
+            if (!usuarioActual.Equals("admin"))// Si el usuario no es admin abortamos la operación
+            {
+                Error error = new Error("Semantico", "Sólo el usuario administrador puede realizar la operación de actualización de datos de usuarios.",
+                    raiz.ChildNodes[0].Token.Location.Line, raiz.ChildNodes[0].Token.Location.Column);
+                Form1.errores.Add(error);
+                Form1.Mensajes.Add(error.getMensaje());
+                return;
+            }
+            String nombreUsuario = raiz.ChildNodes[0].Token.Text.ToLower();
+            String nuevoPassword = raiz.ChildNodes[3].Token.Text.Replace("\"","");
+            // Primero buscamos si existe el usuario;
+            bool encontrado = false;
+            foreach (Usuario user in usuarios)
+            {
+                if (user.username.ToLower().Equals(nombreUsuario))
+                {
+                    encontrado = true;
+                    break;
+                }
+            }
+            if (!encontrado) // No se encontró usuario, reporte y aborto de operación
+            {
+                Error error = new Error("Semantico", "El usuario " + nombreUsuario + " no existe en el sistema.",
+                    raiz.ChildNodes[0].Token.Location.Line, raiz.ChildNodes[0].Token.Location.Column);
+                Form1.errores.Add(error);
+                Form1.Mensajes.Add(error.getMensaje());
+                return;
+            }
+            // Ahora sí hacemo el cambio
+            foreach (Usuario user in usuarios)
+            {
+                if (user.username.ToLower().Equals(nombreUsuario))
+                {
+                    // Verificamos si la contraseña es la misma
+                    if (user.password.Equals(nuevoPassword))
+                    {
+                        Error error = new Error("Semantico", "Debe ingresar una contraseña distinta a la actual.",
+                        raiz.ChildNodes[2].Token.Location.Line, raiz.ChildNodes[3].Token.Location.Column);
+                        Form1.errores.Add(error);
+                        Form1.Mensajes.Add(error.getMensaje());
+                        return;
+                    }
+                    else
+                    {
+                        user.password = nuevoPassword;
+                        Form1.Mensajes.Add("Se ha actualizado la contraseña del usuario " + usuarioActual + " exitosamente.");
+                    }
+                }
+            }
+
+
+        }
+        #endregion
+
+        #region ALTERAR OBJETO
+        public void alterarObjeto(ParseTreeNode raiz)
+        {
+            switch (raiz.ChildNodes[1].Token.Text.ToLower())
+            {
+                case "quitar":
+                    quitarEnObjeto(raiz);
+                    break;
+                case "agregar":
+                    agregarEnObjeto(raiz);
+                    break;
+            }
+        }
+
+        public void quitarEnObjeto(ParseTreeNode raiz)
+        {
+            if (getBase()!=null)
+            {
+                String nombreObjeto = raiz.ChildNodes[0].Token.Text.ToLower();
+                List<String> atributosAQuitar = new List<String>();
+                foreach (ParseTreeNode nodoAtributo in raiz.ChildNodes[2].ChildNodes)
+                {
+                    atributosAQuitar.Add(nodoAtributo.ChildNodes[0].Token.Text.ToLower());
+                }
+                // Ahora encontramos el objeto
+
+                List<Objeto> listaTemporal = getBase().objetos;
+                bool objetoEncontrado = false;
+                bool atributoEncontrado = false;
+                bool flagerror = false;
+                // Ahora verificamos que no exista el atributo
+                foreach (Objeto obj in listaTemporal)
+                {
+                    // Encontramos el objeto a modificar
+                    if (obj.nombre.ToLower().Equals(nombreObjeto))
+                    {
+                        // Recorremos sus atributos
+                        for(int x = 0; x<atributosAQuitar.Count;x++)
+                        {
+                            foreach (Atributo atrib in obj.atributos)
+                            {
+                                if (atrib.id.ToLower().Equals(atributosAQuitar[x]))
+                                {
+                                    atributoEncontrado = true;
+                                }
+                            }
+                            if (!atributoEncontrado)
+                            {
+                                Error error = new Error("Semantico", "No existe el atributo " + atributosAQuitar + " en el objeto " +obj.nombre
+                                     , raiz.ChildNodes[0].ChildNodes[x].ChildNodes[0].Token.Location.Line
+                                     , raiz.ChildNodes[0].ChildNodes[x].ChildNodes[0].Token.Location.Column);
+                                Form1.errores.Add(error);
+                                Form1.Mensajes.Add(error.getMensaje());
+                                flagerror = true;
+                            }
+                        }
+                        objetoEncontrado = true;
+                    }
+                }
+                if (!objetoEncontrado)
+                {
+                    Error error = new Error("Semantico", "El objeto " + nombreObjeto + " ya existe la base de datos " + getBase().nombre
+                        , raiz.ChildNodes[0].Token.Location.Line
+                        , raiz.ChildNodes[0].Token.Location.Column);
+                    Form1.errores.Add(error);
+                    Form1.Mensajes.Add(error.getMensaje());
+                    atributoEncontrado = true;
+                    return;
+                }
+                if (flagerror) // Si hay errores abortamos la ejecucion
+                {
+                    return;
+                }
+                foreach (Objeto obj in listaTemporal)
+                {
+                    // Encontramos el objeto a modificar
+                    if (obj.nombre.ToLower().Equals(nombreObjeto))
+                    {
+                        // Recorremos sus atributos
+                        for (int x = 0; x < atributosAQuitar.Count; x++)
+                        {
+                            for ( int y = 0; y<obj.atributos.Count; y++)
+                            {
+                                if (obj.atributos[y].id.ToLower().Equals(atributosAQuitar[x]))
+                                {
+                                    obj.atributos.RemoveAt(y);
+                                }
+                            }
+
+                        }
+                        objetoEncontrado = true;
+                    }
+                }
+            }
+        }
+        public void agregarEnObjeto(ParseTreeNode raiz)
+        {
+            if (getBase()!=null)
+            {
+                String nombreObjeto = raiz.ChildNodes[0].Token.Text.ToLower();
+                List<Atributo> listaNuevosAributos = new List<Atributo>();
+                // Obtenemos los atributos a agregar
+                foreach (ParseTreeNode nodoAtributo in raiz.ChildNodes[2].ChildNodes)
+                {                    
+                    String tipoAtributo = nodoAtributo.ChildNodes[0].ChildNodes[0].Token.Text.ToLower();
+                    String nombreAtributo = nodoAtributo.ChildNodes[1].Token.Text.ToLower();
+                    Atributo attr = new Atributo(tipoAtributo, nombreAtributo, null);
+                    switch (tipoAtributo)
+                    {
+                        case "text":
+                            attr.valor = "";
+                            break;
+                        case "integer":
+                            attr.valor = 0;
+                            break;
+                        case "double":
+                            attr.valor = 0.00;
+                            break;
+                        case "date":
+                        case "datetime":
+                            attr.valor = "null";
+                            break;
+                    }
+                    listaNuevosAributos.Add(attr);
+                }
+                List<Objeto> listaTemporal = new List<Objeto>();
+                listaTemporal = getBase().objetos;
+                bool objetoEncontrado = false;
+                bool atributoEncontrado = false;
+                // Ahora verificamos que no exista el atributo
+                foreach(Objeto obj in listaTemporal)
+                {
+                    // Encontramos el objeto a modificar
+                    if (obj.nombre.ToLower().Equals(nombreObjeto))
+                    {
+                        // Recorremos sus atributos
+                        foreach (Atributo attributo in obj.atributos)
+                        {
+                            for (int x = 0; x < listaNuevosAributos.Count; x++)
+                            {
+                                /// Veficiamos que no exista
+                                if (attributo.id.ToLower().Equals(listaNuevosAributos[x].id))
+                                {
+                                    Error error = new Error("Semantico", "El atributo " + attributo.id + " ya existe en el objeto " + nombreObjeto
+                                        , raiz.ChildNodes[2].ChildNodes[x].ChildNodes[0].ChildNodes[0].Token.Location.Line
+                                        , raiz.ChildNodes[2].ChildNodes[x].ChildNodes[0].ChildNodes[0].Token.Location.Column);
+                                    Form1.errores.Add(error);
+                                    Form1.Mensajes.Add(error.getMensaje());
+                                    atributoEncontrado = true;
+                                }
+                            }
+                        }
+                        objetoEncontrado = true;
+                    }
+                }
+                if (!objetoEncontrado)
+                {
+                    Error error = new Error("Semantico", "El objeto " + nombreObjeto + " ya existe la base de datos " + getBase().nombre
+                        , raiz.ChildNodes[0].Token.Location.Line
+                        , raiz.ChildNodes[0].Token.Location.Column);
+                    Form1.errores.Add(error);
+                    Form1.Mensajes.Add(error.getMensaje());
+                    atributoEncontrado = true;
+                    return;
+                }
+                if (atributoEncontrado)// Abortamos la insecion
+                {
+                    return;
+                }
+                foreach (Atributo attributo in listaNuevosAributos)
+                {
+                    foreach (Objeto obj in listaTemporal)
+                    {
+                        // Encontramos el objeto a modificar
+                        if (obj.nombre.ToLower().Equals(nombreObjeto))
+                        {
+                            obj.atributos.Add(attributo);
+                        }
+                    }
+                }
+            }
+        }
+        #endregion
+
+        #region ALTERAR TABLA
+        public void alterarTabla(ParseTreeNode raiz)
+        {
+            switch (raiz.ChildNodes[1].Token.Text.ToLower())
+            {
+                case "quitar":
+                    quitarEnTabla(raiz);
+                    break;
+                case "agregar":
+                    agregarEnTabla(raiz);
+                    break;
+            }
+        }
+
+        public void quitarEnTabla(ParseTreeNode raiz)
+        {
+            String nombreTabla = raiz.ChildNodes[0].Token.Text;
+            List<String> listaCampos = new List<String>();
+            foreach(ParseTreeNode nodo in raiz.ChildNodes[2].ChildNodes)
+            {
+                listaCampos.Add(nodo.ChildNodes[0].Token.Text);
+            }
+            int contador = 0;
+            // Ahora buscamos la tabla ;
+            if(getBase()!=null)
+            {
+                Tabla tablaActual = getTabla(nombreTabla, raiz.ChildNodes[0].Token.Location.Line, raiz.ChildNodes[0].Token.Location.Column);
+                if (tablaActual!=null)
+                {
+                    // Primero quitamos los campos de la definicion
+                    List<defCampo> definicionesTemporales = new List<defCampo>();
+                    foreach (String nombre in listaCampos)
+                    {                        
+                        foreach (defCampo definicion in tablaActual.definiciones)
+                        {
+                            if (!nombre.ToLower().Equals(definicion.nombre.ToLower()))
+                            {
+                                definicionesTemporales.Add(definicion);
+                            }
+                            else
+                            {
+                                contador++;
+                            }
+                        }
+                    }                    
+                    if (contador< listaCampos.Count)// Hay error en algún campo
+                    {
+                        Error error = new Error("Semantico", "Uno de los campos solicitado no existen en la tabla " + nombreTabla, raiz.ChildNodes[2].ChildNodes[0].Span.Location.Line, raiz.ChildNodes[2].ChildNodes[0].Span.Location.Column);
+                        Form1.errores.Add(error);
+                        Form1.Mensajes.Add(error.getMensaje());
+                        return;
+                    }
+                    tablaActual.definiciones = definicionesTemporales;
+                    // Segundo quitamos los campos de las tuplas                    
+                    for (int x= 0; x < tablaActual.tuplas.Count; x++)                        
+                    {
+                        tupla tup = tablaActual.tuplas[x];                                               
+                        for (int y = 0; y< tablaActual.tuplas[x].campos.Count; y++)
+                        {
+                            campo cmp = tablaActual.tuplas[x].campos[y];
+                            foreach (String nombre in listaCampos)
+                            {
+                                if (cmp.id.ToLower().Equals(nombreTabla +"."+ nombre.ToLower()))
+                                {
+                                    tablaActual.tuplas[x].campos.RemoveAt(y);
+                                }                                
+                            }
+                        }
+                    }
+                }
+            }
+
+        }
+
+        public void agregarEnTabla(ParseTreeNode raiz)
+        {
+            String nombreTabla = raiz.ChildNodes[0].Token.Text;
+            List<defCampo> definicionesTemporales = new List<defCampo>();
+            List<int> lineas = new List<int>();
+            List<int> columnas = new List<int>();
+            if (getBase()!=null)
+            {
+                Tabla tablaActual = getTabla(nombreTabla, raiz.ChildNodes[0].Token.Location.Line, raiz.ChildNodes[0].Token.Location.Column);
+                if (tablaActual !=null)
+                {
+                    foreach (ParseTreeNode nodo in raiz.ChildNodes[2].ChildNodes)
+                    {
+                        String tipo = nodo.ChildNodes[0].ChildNodes[0].Token.Text.ToLower();
+                        lineas.Add(nodo.ChildNodes[0].ChildNodes[0].Token.Location.Line);
+                        columnas.Add(nodo.ChildNodes[0].ChildNodes[0].Token.Location.Column);
+                        String nombre = nodo.ChildNodes[1].Token.Text.ToLower();
+                        bool auto = false;
+                        bool primaria = false;
+                        bool unico = false;
+                        bool nulo = false;
+                        String foranea = "";
+                        // Ahora obtenemos los complementos
+                        foreach (ParseTreeNode nodoCom in nodo.ChildNodes[2].ChildNodes)
+                        {
+                            if (nodoCom.Token != null)
+                            {
+                                switch (nodoCom.Token.Text.ToLower())
+                                {
+                                    case "llave_primaria":
+                                        primaria = true;
+                                        break;
+                                    case "autoincrementable":
+                                        auto = true;
+                                        break;
+                                    case "nulo":
+                                        nulo = true;
+                                        break;
+                                    case "no nulo":
+                                        nulo = false;
+                                        break;
+                                    case "unico":
+                                        unico = false;
+                                        break;
+                                }
+                            }
+                            else
+                            {
+                                foranea = nodoCom.ChildNodes[0].Token.Text.ToLower().Replace("\"", "") + "." + nodoCom.ChildNodes[1].Token.Text.ToLower().Replace("\"", "");
+                            }
+                        }
+                        // Agregamos la nueva definicion temporal
+                        definicionesTemporales.Add(new defCampo(nombre, tipo, auto, nulo, primaria, foranea, unico));
+                    }
+                    List<defCampo> listaNuevaDefiniciones = new List<defCampo>();
+                    int y = 0;
+                    bool flag = false;
+                    foreach (defCampo definicionActual in definicionesTemporales)
+                    {
+                        for (int x = 0; x < tablaActual.definiciones.Count; x++)
+                        {
+                            defCampo def = tablaActual.definiciones[x];
+                            if (def.nombre.ToLower().Equals(definicionActual.nombre.ToLower()))
+                            {
+                                Error error = new Error("Semantico", "El campo " + def.nombre.ToLower() + " ya existe en la tabla " + nombreTabla,
+                                    lineas[y], columnas[y]);
+                                Form1.errores.Add(error);
+                                Form1.Mensajes.Add(error.getMensaje());
+                                flag = true;
+                                y++;
+                            }                            
+                        }
+                        if (!flag)
+                        {
+                            // Agregamos la nueva definicion                            
+                            listaNuevaDefiniciones.Add(definicionActual);
+                            flag = true;
+                        }
+                    }
+                    if (y == 0)
+                    {
+                        // Agregamos las definiciniones
+                        foreach (defCampo definicion in listaNuevaDefiniciones)
+                        {
+                            tablaActual.definiciones.Add(definicion);
+                        }
+                    }
+                    else
+                    {
+                        return;
+                    }
+
+                    //Ahora agregamos los nuevos campos a las tuplas
+                    foreach (tupla tup in tablaActual.tuplas)
+                    {
+                        foreach (defCampo definicion in listaNuevaDefiniciones)
+                        {
+                            campo nuevoCampo = new campo(definicion.nombre, null, definicion.tipo);
+                            switch (nuevoCampo.tipo.ToLower())
+                            {
+                                case "text":
+                                    nuevoCampo.valor = "";
+                                    break;
+                                case "integer":
+                                    nuevoCampo.valor = 0;
+                                    break;
+                                case "double":
+                                    nuevoCampo.valor = 0.00;
+                                    break;
+                                case "date":
+                                case "datetime":
+                                    nuevoCampo.valor = "null";
+                                    break;
+                            }
+                            tup.campos.Add(nuevoCampo);
+                        }
+                    }
+                }//--Tabla no null
+            }
+        }
+        #endregion
+
 
 
         #region ACTUALIZAR
@@ -1161,14 +1599,14 @@ namespace ServidorDB.estructurasDB
                         {
                             Tabla tabActual = getTabla(nombreTabla, raiz.ChildNodes[1].Token.Location.Line, raiz.ChildNodes[1].Token.Location.Column);
                             bool flag = false;
-                            foreach(defCampo definicion in tabActual.definiciones)
+                            foreach (defCampo definicion in tabActual.definiciones)
                             {
-                                for( int x = 0; x < listaCampos.Count; x++)
+                                for (int x = 0; x < listaCampos.Count; x++)
                                 {
                                     campo cmp = listaCampos[x];
                                     if (definicion.nombre.ToLower().Equals(cmp.id.ToLower()))
                                     {
-                                        if(!definicion.tipo.ToLower().Equals(cmp.tipo.ToLower()))
+                                        if (!definicion.tipo.ToLower().Equals(cmp.tipo.ToLower()))
                                         {
                                             Error error = new Error("Semantico", "Se esperaba un valor de tipo " + definicion.tipo.ToLower() + " y se ha recibido uno de tipo " + cmp.tipo.ToLower(),
                                                raiz.ChildNodes[3].ChildNodes[x].Token.Location.Line, raiz.ChildNodes[3].ChildNodes[x].Token.Location.Column);
@@ -1222,6 +1660,84 @@ namespace ServidorDB.estructurasDB
                         Form1.Mensajes.Add(error.getMensaje());
                     }
                 }
+                else if (raiz.ChildNodes.Count ==4)
+                {
+                    // Primero verificamos que el número de campos coincida con el número de valores.
+                    if (raiz.ChildNodes[2].ChildNodes.Count == raiz.ChildNodes[3].ChildNodes.Count)
+                    {
+                        String nombreTabla = raiz.ChildNodes[1].Token.Text.ToLower();//Nombre de la tabla
+                        List<String> listaEtiquetas = new List<String>();
+                        //Obtenemos los parametros a modificar
+                        foreach (ParseTreeNode nodo in raiz.ChildNodes[2].ChildNodes)
+                        {
+                            listaEtiquetas.Add(nodo.ChildNodes[0].Token.Text.ToLower());
+                        }
+                        List<campo> listaCampos = new List<campo>();
+                        //Obtenemos la lista de valores.                    
+                        for (int cont = 0; cont < raiz.ChildNodes[3].ChildNodes.Count; cont++)
+                        {
+                            ParseTreeNode nodo = raiz.ChildNodes[3].ChildNodes[cont];
+                            Logica opL = new Logica();
+                            Resultado result = opL.operar(nodo);
+                            listaCampos.Add(new campo(listaEtiquetas[cont], result.valor, result.tipo));
+                        }
+                        // Ahora ya tenemos una lista de campos
+                        if (getTabla(nombreTabla, raiz.ChildNodes[1].Token.Location.Line, raiz.ChildNodes[1].Token.Location.Column) != null)
+                        {
+                            Tabla tabActual = getTabla(nombreTabla, raiz.ChildNodes[1].Token.Location.Line, raiz.ChildNodes[1].Token.Location.Column);
+                            bool flag = false;
+                            foreach (defCampo definicion in tabActual.definiciones)
+                            {
+                                for (int x = 0; x < listaCampos.Count; x++)
+                                {
+                                    campo cmp = listaCampos[x];
+                                    if (definicion.nombre.ToLower().Equals(cmp.id.ToLower()))
+                                    {
+                                        if (!definicion.tipo.ToLower().Equals(cmp.tipo.ToLower()))
+                                        {
+                                            Error error = new Error("Semantico", "Se esperaba un valor de tipo " + definicion.tipo.ToLower() + " y se ha recibido uno de tipo " + cmp.tipo.ToLower(),
+                                               raiz.ChildNodes[3].ChildNodes[x].Token.Location.Line, raiz.ChildNodes[3].ChildNodes[x].Token.Location.Column);
+                                            Form1.errores.Add(error);
+                                            Form1.Mensajes.Add(error.getMensaje());
+                                            flag = true;
+                                        }
+                                    }
+                                }
+                            }
+                            if (flag) { return; } // Si hay errores de tipos, salimos.
+                            foreach (tupla tup in getTabla(nombreTabla, raiz.ChildNodes[1].Token.Location.Line, raiz.ChildNodes[1].Token.Location.Column).tuplas)
+                            {
+                                foreach (campo campoTemp in tup.campos)
+                                {
+                                    foreach (campo nuevoCampo in listaCampos)
+                                    {
+                                        if (campoTemp.id.ToLower().Equals(nuevoCampo.id.ToLower()))
+                                        {
+                                            campoTemp.valor = nuevoCampo.valor;
+                                        }
+                                    }
+                                }
+                            }
+                            Form1.Mensajes.Add("Actualización realizada con éxito. :v");
+                        }
+                        else
+                        {
+                            Error error = new Error("Semantico", "La tabla " + nombreTabla + " no existe en la base " + getBase().nombre,
+                                raiz.ChildNodes[2].ChildNodes[0].Token.Location.Line, raiz.ChildNodes[2].ChildNodes[0].Token.Location.Column);
+                            Form1.errores.Add(error);
+                            Form1.Mensajes.Add(error.getMensaje());
+                        }
+
+                    }
+                    else
+                    {
+                        Error error = new Error("Semantico", "El número de parametros no coincide con el número de valores indicados.",
+                            raiz.ChildNodes[2].ChildNodes[0].Token.Location.Line, raiz.ChildNodes[2].ChildNodes[0].Token.Location.Column);
+                        Form1.errores.Add(error);
+                        Form1.Mensajes.Add(error.getMensaje());
+                    }
+                }
+            
             }
         }
         #endregion

@@ -347,7 +347,7 @@ namespace ServidorDB.estructurasDB
         {
             foreach (Tabla tab in tablas)
             {
-                if (tab.nombre.Equals(id))
+                if (tab.nombre.ToLower().Equals(id.ToLower()))
                 {
                     return tab.tuplas;
                 }
@@ -369,8 +369,8 @@ namespace ServidorDB.estructurasDB
             columnas = new List<int>();
             foreach (ParseTreeNode nodo in hijo.ChildNodes[1].ChildNodes)
             {
-                tablas.Add(nodo.ChildNodes[0].Token.Text);
-                nombres.Add(nodo.ChildNodes[0].Token.Text);
+                tablas.Add(nodo.ChildNodes[0].Token.Text.ToLower());
+                nombres.Add(nodo.ChildNodes[0].Token.Text.ToLower());
                 lineas.Add(nodo.ChildNodes[0].Token.Location.Line);
                 columnas.Add(nodo.ChildNodes[0].Token.Location.Column);
             }
