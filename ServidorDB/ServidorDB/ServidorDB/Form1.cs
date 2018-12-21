@@ -24,7 +24,7 @@ namespace ServidorDB
         public static SistemaArchivos sistemaArchivos;
         public static List<Error> errores;
         public static List<String> Mensajes;
-        
+        public static Interprete i;
 
         public Form1()
         {
@@ -229,10 +229,14 @@ namespace ServidorDB
             mostrarMensajes();
         }
 
+
+
+
         private void button1_Click(object sender, EventArgs e)
         {
             sistemaArchivos.commit();
             mostrarMensajes();
+
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -250,9 +254,9 @@ namespace ServidorDB
                 imprimirSalida("Salida...");
                 analizador.Genarbol(arbol.Root);
                 analizador.generateGraph2("Ejemplo.txt");
-                Interprete i = new Interprete();                             
+                i = new Interprete(arbol.Root.ChildNodes[0]);                             
                 Resultado result = i.ejecutar(arbol.Root.ChildNodes[0]);
-                imprimirSalida(result.valor+"");                
+                //imprimirSalida(result.valor+"");                
             }
             else
             {

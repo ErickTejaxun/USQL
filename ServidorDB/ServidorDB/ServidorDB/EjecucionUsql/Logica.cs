@@ -78,7 +78,7 @@ namespace ServidorDB.EjecucionUsql
                 return new Resultado("Error", null);
             }
 
-            if (!((Convert.ToInt64(r1.valor) == 1 || Convert.ToInt64(r1.valor) == 0) && (Convert.ToInt64(r2.valor) == 1 || Convert.ToInt64(r2.valor) == 0)))
+            if (!((Convert.ToInt32(r1.valor) == 1 || Convert.ToInt32(r1.valor) == 0) && (Convert.ToInt32(r2.valor) == 1 || Convert.ToInt32(r2.valor) == 0)))
             {
                 agregarError("Semantico", "Bool solo puede ser 1/0", raiz.Span.Location.Line, raiz.Span.Location.Column);
                 return new Resultado("Error", null);
@@ -88,7 +88,7 @@ namespace ServidorDB.EjecucionUsql
             switch (raiz.ChildNodes[1].Token.Text)
             {
                 case "&&":
-                    if (Convert.ToInt64(r1.valor) == 1 && Convert.ToInt64(r2.valor) == 1)
+                    if (Convert.ToInt32(r1.valor) == 1 && Convert.ToInt32(r2.valor) == 1)
                     {
                         return new Resultado("bool", 1);
                     }
@@ -98,7 +98,7 @@ namespace ServidorDB.EjecucionUsql
                         return new Resultado("bool", 0);
                     }
                 case "||":
-                    if (Convert.ToInt64(r1.valor) == 1 || Convert.ToInt64(r2.valor) == 1)
+                    if (Convert.ToInt32(r1.valor) == 1 || Convert.ToInt32(r2.valor) == 1)
                     {
                         return new Resultado("bool", 1);
                     }
@@ -115,6 +115,7 @@ namespace ServidorDB.EjecucionUsql
         private void agregarError(String tipo, String descripcion, int linea, int columna)
         {
             Error error = new Error(tipo, descripcion, linea, columna);
+            Form1.Mensajes.Add(error.getMensaje());
             Form1.errores.Add(error);
         }
     }

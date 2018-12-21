@@ -16,19 +16,55 @@ namespace ServidorBDD.EjecucionUsql
     {
 
         //nuevas
-        public static TablaSimbolo tablaGlobal;
         public static TablaSimbolo tabla;
+        public static TablaSimbolo metodos;
+        public static int nivel;
         public Logica opL;
-        public Interprete()
+        public Interprete(ParseTreeNode raiz)
         {
+            metodos = new TablaSimbolo();
+            guardarMetodos(raiz);
             tabla = new TablaSimbolo();
-            tablaGlobal = new TablaSimbolo();
+            nivel = 0;
         }
 
-        public Resultado ejecutar(ParseTreeNode raiz)
+        #region guardarMetodos
+        public void guardarMetodos(ParseTreeNode raiz)
         {
             foreach (ParseTreeNode hijo in raiz.ChildNodes)
             {
+                if (hijo.Term.Name.Equals("PROCEDIMIENTO"))
+                {
+                    Simbolo procedimiento = new Simbolo("", hijo);
+                    Boolean estado = metodos.setSimboloId(procedimiento);
+                    if (!estado)
+                    {
+                        agregarError("Semantico", "El procedimiento " + hijo.ChildNodes[0].Token.Text + " ya existe", hijo.Span.Location.Line, hijo.Span.Location.Column);
+                    }
+                }
+                else if (hijo.Term.Name.Equals("FUNCION"))
+                {
+                    Simbolo funcion = new Simbolo(hijo.ChildNodes[2].ChildNodes[0].Token.Text, hijo);
+                    Boolean estado = metodos.setSimboloId(funcion);
+                    if (!estado)
+                    {
+                        agregarError("Semantico", "La funcion " + hijo.ChildNodes[0].Token.Text + " ya existe", hijo.Span.Location.Line, hijo.Span.Location.Column);
+                    }
+                }
+            }
+
+        }
+        #endregion fin guardarMetodos
+
+        public Resultado ejecutar(ParseTreeNode raiz)
+        {
+            Resultado resultado = null;
+            foreach (ParseTreeNode hijo in raiz.ChildNodes)
+            {
+                if (resultado != null)
+                {
+                    return resultado;
+                }
                 String tipoAccion = hijo.Term.Name;
                 switch (tipoAccion)
                 {
@@ -75,7 +111,7 @@ namespace ServidorBDD.EjecucionUsql
                         break;
                     case "BORRAR": // Borrar registro en la tupla
                         Form1.sistemaArchivos.borrar(hijo);
-                        break;                    
+                        break;
                     case "INSERTAR":
                         Form1.sistemaArchivos.insertar(hijo);
                         break;
@@ -102,9 +138,39 @@ namespace ServidorBDD.EjecucionUsql
                         Asignacion asignacion = new Asignacion();
                         asignacion.asignar(hijo);
                         break;
+                    case "LLAMADA":
+                        nivel++;
+                        Llamada llamada = new Llamada(this);
+                        Resultado r = llamada.ejecutar(hijo);
+                        nivel--;
+                        break;
+                    case "RETORNO":
+                        opL = new Logica();
+                        resultado = opL.operar(hijo.ChildNodes[0]);
+                        return resultado;
+                    case "SENTSI":
+                        Si si = new Si(this);
+                        resultado = si.ejecutar(hijo);
+                        break;
+                    case "MIENTRAS":
+                        Mientras mientras = new Mientras(this);
+                        resultado = mientras.ejecutar(hijo);
+                        break;
+                    case "DETENER":
+                        resultado = new Resultado("Error", null);
+                        resultado.detener = true;
+                        return resultado;
+                    case "PARA":
+                        Para para = new Para(this);
+                        resultado = para.ejecutar(hijo);
+                        break;
+                    case "SENTSELECCIONA":
+                        Selecciona selecciona = new Selecciona(this);
+                        resultado = selecciona.ejecutar(hijo);
+                        break;
                 }
             }
-            return new Resultado("null", null);
+            return resultado;
         }
 
         #region Area ejecucion

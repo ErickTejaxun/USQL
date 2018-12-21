@@ -1,15 +1,15 @@
-﻿using System;
+﻿using Irony.Parsing;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
-using Irony.Parsing;
-using Irony.Ast;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace ServidorBDD.AnalisisUsql
+namespace ServidorDB.AnalisisUsql
 {
-    public class GramaticaSDB : Grammar
+    class GramaticaSDBCompleta : Grammar
     {
-        public GramaticaSDB() : base(false)
+        public GramaticaSDBCompleta() : base(false)
         {
 
             CommentTerminal comentario2 = new CommentTerminal("comentario2", "#*", "*#");//acepta comentarios de varias lineas
@@ -19,8 +19,7 @@ namespace ServidorBDD.AnalisisUsql
 
             //tipo de dato}
             StringLiteral tipoText = new StringLiteral("Text", "\"");
-            //NumberLiteral tipoInteger = new NumberLiteral("Integer");            
-            RegexBasedTerminal tipoInteger = new RegexBasedTerminal("Integer", "[0-9]+");
+            NumberLiteral tipoInteger = new NumberLiteral("Integer");
             RegexBasedTerminal tipoDouble = new RegexBasedTerminal("Double", "[0-9]+[.][0-9]+");
             RegexBasedTerminal tipoDate = new RegexBasedTerminal("Date", "([0-9]){2}-([0-9]){2}-([0-9]){4}");
             RegexBasedTerminal tipoDateTime = new RegexBasedTerminal("DateTime", "([0-9]){2}-([0-9]){2}-([0-9]){4} ([0-9]){2}:([0-9]){2}:([0-9]){2}");
@@ -30,7 +29,6 @@ namespace ServidorBDD.AnalisisUsql
 
             //otros
             RegexBasedTerminal PATH = new RegexBasedTerminal("PATH", @"[a-zA-Z]:([\\][a-zA-Z]([a-zA-Z]|[0-9]|\.|_|-))");
-
 
 
             NonTerminal INICIO = new NonTerminal("INICIO"),
@@ -49,6 +47,7 @@ namespace ServidorBDD.AnalisisUsql
                         LATRIBUTOS = new NonTerminal("LATRIBUTOS"),
                         PROCEDIMIENTO = new NonTerminal("PROCEDIMIENTO"),
                         LPARAMETROS = new NonTerminal("LPARAMETROS"),
+                        PARAMETRO = new NonTerminal("PARAMETRO"),
                         FUNCION = new NonTerminal("FUNCION"),
                         RETORNO = new NonTerminal("RETORNO"),
                         LLAMADA = new NonTerminal("LLAMADA"),
@@ -92,13 +91,7 @@ namespace ServidorBDD.AnalisisUsql
                         LISTA_DDL = new NonTerminal("LISTADDL"),
                         LISTA_PRC = new NonTerminal("LISTAPROC"),
                         RESTAURARBD = new NonTerminal("RESTAURARBD"),
-                        ATRIBUTO = new NonTerminal("ATRIBUTO"),
-                        FORANEA = new NonTerminal("FORANEA"),
-                        ETABLA = new NonTerminal("ETABLA"),
-                        EBASE = new NonTerminal("EBASE"),
-                        EOBJETO = new NonTerminal("EOBJETO"),
-                        EUSER = new NonTerminal("EUSER"),
-                        PARAMETRO = new NonTerminal("PARAMETRO");
+                        ATRIBUTO = new NonTerminal("ATRIBUTO");
 
 
 
@@ -179,10 +172,10 @@ namespace ServidorBDD.AnalisisUsql
                            | PARA
                            | IMPRIMIR + ToTerm(";")
                            | CREARDB + ToTerm(";")
-                           | CREAROBJETO + ToTerm(";")
                            | CREARTABLA + ToTerm(";")
                            | LLAMADA + ToTerm(";")
                            | DECLARAR
+                           | CREAROBJETO + ToTerm(";")
                            | ASIGNAROBJ
                            | IMPRIMIR
                            | BACKUP + ToTerm(";")
@@ -210,15 +203,11 @@ namespace ServidorBDD.AnalisisUsql
 
             COMPLEMENTOS.Rule = MakeStarRule(COMPLEMENTOS, COMPLEMENTO);
 
-            COMPLEMENTO.Rule = 
-                  ToTerm("Nulo") 
-                | ToTerm("No Nulo")
+            COMPLEMENTO.Rule = ToTerm("Nulo") | ToTerm("No Nulo")
                 | ToTerm("Autoincrementable")
                 | ToTerm("Llave_Primaria")
-                | FORANEA
+                | ToTerm("Llave_Foranea") + id + id
                 | ToTerm("Unico");
-
-            FORANEA.Rule = ToTerm("Llave_Foranea") + id + id;
 
             CREAROBJETO.Rule = ToTerm("Crear") + ToTerm("Objeto") + id + ToTerm("(") + LATRIBUTOS + ToTerm(")");
 
@@ -228,8 +217,8 @@ namespace ServidorBDD.AnalisisUsql
 
 
             PROCEDIMIENTO.Rule = ToTerm("Crear") + ToTerm("Procedimiento") + id + ToTerm("(") + LPARAMETROS + ToTerm(")") + ToTerm("{") + SENTSPROC + ToTerm("}");
-
             LPARAMETROS.Rule = MakeStarRule(LPARAMETROS, ToTerm(","), PARAMETRO);
+
             PARAMETRO.Rule = TIPODATO + idProc;
 
             FUNCION.Rule = ToTerm("Crear") + ToTerm("Funcion") + id + ToTerm("(") + LPARAMETROS + ToTerm(")") + TIPODATO + ToTerm("{") + SENTSPROC + ToTerm("}");
@@ -238,7 +227,6 @@ namespace ServidorBDD.AnalisisUsql
                         | ToTerm("Retorno") + SENTSPROC;
 
             LLAMADA.Rule = id + ToTerm("(") + LVALORES + ToTerm(")");
-
             LVALORES.Rule = MakeStarRule(LVALORES, ToTerm(","), EXPL);
 
             USUARIO.Rule = ToTerm("Crear") + ToTerm("Usuario") + id + ToTerm("Colocar") + ToTerm("Password") + ToTerm("=") + tipoText;
@@ -254,12 +242,10 @@ namespace ServidorBDD.AnalisisUsql
 
             ALTERARUSUARIO.Rule = ToTerm("Alterar") + ToTerm("Usuario") + id + ToTerm("Cambiar") + ToTerm("Password") + ToTerm("=") + tipoText;
 
-            ELIMINAR.Rule =
-                        ETABLA | EBASE | EOBJETO | EUSER;
-            ETABLA.Rule = ToTerm("Eliminar") + ToTerm("Tabla") + id;
-            EBASE.Rule = ToTerm("Eliminar") + ToTerm("Base_Datos") + id;
-            EOBJETO.Rule = ToTerm("Eliminar") + ToTerm("Objeto") + id;
-            EUSER.Rule = ToTerm("Eliminar") + ToTerm("User") + id; ;
+            ELIMINAR.Rule = ToTerm("Eliminar") + ToTerm("Tabla") + id
+                           | ToTerm("Eliminar") + ToTerm("Base_Datos") + id
+                           | ToTerm("Eliminar") + ToTerm("Objeto") + id
+                           | ToTerm("Eliminar") + ToTerm("User") + id;
 
             //sentencias DML
             INSERTAR.Rule = ToTerm("Insertar") + ToTerm("En") + ToTerm("Tabla") + id + ToTerm("(") + LID + ToTerm(")") + ToTerm("Valores") + ToTerm("(") + LVALORES + ToTerm(")")
@@ -268,9 +254,7 @@ namespace ServidorBDD.AnalisisUsql
             ACTUALIZAR.Rule = ToTerm("Actualizar") + ToTerm("Tabla") + id + ToTerm("(") + LID + ToTerm(")") + ToTerm("Valores") + ToTerm("(") + LVALORES + ToTerm(")") + ToTerm("Donde") + EXPL
                             | ToTerm("Actualizar") + ToTerm("Tabla") + id + ToTerm("(") + LID + ToTerm(")") + ToTerm("Valores") + ToTerm("(") + LVALORES + ToTerm(")");
 
-            BORRAR.Rule = ToTerm("Borrar") + ToTerm("En") + ToTerm("Tabla") + id + ToTerm("Donde") + EXPL
-                           | ToTerm("Borrar") + ToTerm("En") + ToTerm("Tabla") + id
-                            ;
+            BORRAR.Rule = ToTerm("Borrar") + ToTerm("En") + ToTerm("Tabla") + id + ToTerm("Donde") + EXPL;
 
             SELECCIONAR.Rule = ToTerm("Seleccionar") + LID + ToTerm("De") + LID + COMPSELECCIONAR
                               | ToTerm("Seleccionar") + ToTerm("*") + ToTerm("De") + LID + COMPSELECCIONAR;
@@ -320,11 +304,11 @@ namespace ServidorBDD.AnalisisUsql
 
             IMPRIMIR.Rule = ToTerm("Imprimir") + ToTerm("(") + EXPL + ToTerm(")") + ToTerm(";");
 
-            BACKUP.Rule = ToTerm("Backup") + ToTerm("usqldump") + id + id //+
-                        | ToTerm("Backup") + ToTerm("Completo") + id + id;// + ToTerm(";");
+            BACKUP.Rule = ToTerm("Backup") + ToTerm("usqldump") + EXPA + EXPA + ToTerm(";")
+                        | ToTerm("Backup") + ToTerm("Completo") + EXPA + EXPA + ToTerm(";");
 
-            RESTAURARBD.Rule = ToTerm("Restaurar") + ToTerm("usqldump") + tipoText
-                        | ToTerm("Restaurar") + ToTerm("Completo") + tipoText;
+            RESTAURARBD.Rule = ToTerm("Restaurar") + ToTerm("usqldump") + PATH
+                        | ToTerm("Restaurar") + ToTerm("Completo") + PATH;
 
 
 
@@ -344,25 +328,6 @@ namespace ServidorBDD.AnalisisUsql
             #endregion
 
 
-            #region "Eliminacion de Nodos"
-            //---------------------> Eliminacion de caracters, no terminales
-            this.MarkPunctuation("(", ")", ";", ":", "{", "}");
-            this.MarkPunctuation("imprimir", "si","sino", "mientras", "caso", "defecto");
-            this.MarkPunctuation("crear", "objeto", "procedimiento", "funcion", "retorno", "usuario", "usar");
-            this.MarkPunctuation("alterar", "tabla", "objeto", "usuario", "eliminar", "insertar", "en", "tabla");
-            this.MarkPunctuation("insertar", "valores", "borrar", "seleccionar", "permisos", "declarar");
-            this.MarkPunctuation("selecciona", "caso", "defecto", "para", "detener", "mientras", "backup", "restaurar", "contar", "<<", ">>", "De", "@", "=",",");
-            this.MarkPunctuation("selecciona", "caso", "defecto", "para", "detener", "mientras", "backup", "restaurar", "contar", "<<", ">>", "De", "@", "=",",");
-            this.MarkPunctuation("donde", "ordenar_por","Llave_Foranea");
-            this.MarkTransient(SENTDDL, SENTPROC, SENTSPROC, COMPLEMENTO, SENTDDL/*, LPARAMETROS*/);
-            //this.MarkTransient(CASO);
-
-            #endregion
-
-
         }
-
-
-
     }
 }

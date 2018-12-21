@@ -29,7 +29,7 @@ namespace ServidorDB.EjecucionUsql
                     if (!resultado.tipo.Equals("Error"))
                     {
                         Simbolo variable = new Simbolo(tipoDato, id.Token.Text, resultado.valor);
-                        Boolean estado = Interprete.tabla.setSimbolo(variable);
+                        Boolean estado = Interprete.tabla.setSimbolo3(variable);
                         if (!estado)
                         {
                             agregarError("Semantico", "La variable " + id.Token.Text + " ya existe", id.Span.Location.Line, id.Span.Location.Column);
@@ -83,13 +83,30 @@ namespace ServidorDB.EjecucionUsql
                             }
                             break;
                     }
-                    Boolean estado = Interprete.tabla.setSimbolo(variable);
+                    Boolean estado = Interprete.tabla.setSimbolo3(variable);
                     if (!estado)
                     {
                         agregarError("Semantico", "La variable " + id.Token.Text + " ya existe", id.Span.Location.Line, id.Span.Location.Column);
                     }
                 }
 
+            }
+            return false;
+        }
+
+        public Boolean declaracionParametros(ParseTreeNode raiz, Resultado resultado)
+        {
+            String tipoDato = raiz.ChildNodes[0].ChildNodes[0].Token.Text.ToLower();
+            String nombre = raiz.ChildNodes[1].Token.Text.ToLower().Replace("@", "");
+            resultado = comprobarTipos(tipoDato, resultado.tipo, resultado, raiz.Span.Location.Line, raiz.Span.Location.Column);
+            if (!resultado.tipo.Equals("Error"))
+            {
+                Simbolo variable = new Simbolo(tipoDato, nombre, resultado.valor);
+                Boolean estado = Interprete.tabla.setSimbolo3(variable);
+                if (!estado)
+                {
+                    agregarError("Semantico", "La variable " + nombre + " ya existe", raiz.Span.Location.Line, raiz.Span.Location.Column);
+                }
             }
             return false;
         }
@@ -118,7 +135,7 @@ namespace ServidorDB.EjecucionUsql
                         case "integer":
                             return resultado;
                         case "double":
-                            return new Resultado("integer", Convert.ToInt64(Convert.ToDouble(resultado.valor))); ;
+                            return new Resultado("integer", Convert.ToInt32(Convert.ToDouble(resultado.valor))); ;
                         case "bool":
                             return new Resultado("integer", resultado.valor);
                         case "text":
@@ -132,11 +149,11 @@ namespace ServidorDB.EjecucionUsql
                     switch (tipo2)
                     {
                         case "integer":
-                            return new Resultado("double", Convert.ToDouble(Convert.ToInt64(resultado.valor)));
+                            return new Resultado("double", Convert.ToDouble(Convert.ToInt32(resultado.valor)));
                         case "double":
                             return resultado;
                         case "bool":
-                            return new Resultado("double", Convert.ToDouble(Convert.ToInt64(resultado.valor)));
+                            return new Resultado("double", Convert.ToDouble(Convert.ToInt32(resultado.valor)));
                         case "text":
                         case "date":
                         case "datetime":
@@ -165,7 +182,7 @@ namespace ServidorDB.EjecucionUsql
                         case "date":
                             return resultado;
                         case "datetime":
-                            return new Resultado("date", Convert.ToDateTime(resultado.valor).ToString("dd-mm-yyyy"));
+                            return new Resultado("date", Convert.ToDateTime(resultado.valor).ToString("dd-MM-yyyy"));
                         case "text":
                         case "integer":
                         case "double":
@@ -207,11 +224,17 @@ namespace ServidorDB.EjecucionUsql
         private void agregarError(String tipo, String descripcion, int linea, int columna)
         {
             Error error = new Error(tipo, descripcion, linea, columna);
+            Form1.Mensajes.Add(error.getMensaje());
             Form1.errores.Add(error);
         }
 
         private Objeto instanciarObjeto(string nombre, int linea, int columna)
         {
+            if (Form1.sistemaArchivos.getBase() == null)
+            {
+                agregarError("Semantico", "No se ha seleccionado ninguna base de datos", linea, columna);
+                return null;
+            }
             Objeto aux = Form1.sistemaArchivos.getBase().getObjeto(nombre, linea, columna);
             if (aux == null)
             {

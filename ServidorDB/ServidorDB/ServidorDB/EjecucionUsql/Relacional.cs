@@ -86,7 +86,7 @@ namespace ServidorBDD.EjecucionUsql
                             {
                                 case "integer":
                                 case "bool":
-                                    if (Convert.ToInt64(r1.valor) == Convert.ToInt64(r2.valor))
+                                    if (Convert.ToInt32(r1.valor) == Convert.ToInt32(r2.valor))
                                     {
                                         return new Resultado("bool", 1);
                                     }
@@ -95,7 +95,7 @@ namespace ServidorBDD.EjecucionUsql
                                         return new Resultado("bool", 0);
                                     }
                                 case "double":
-                                    if (Convert.ToInt64(r1.valor) == Convert.ToDouble(r2.valor))
+                                    if (Convert.ToInt32(r1.valor) == Convert.ToDouble(r2.valor))
                                     {
                                         return new Resultado("bool", 1);
                                     }
@@ -125,7 +125,7 @@ namespace ServidorBDD.EjecucionUsql
                                     }
                                 case "integer":
                                 case "bool":
-                                    if (Convert.ToDouble(r1.valor) == Convert.ToInt64(r2.valor))
+                                    if (Convert.ToDouble(r1.valor) == Convert.ToInt32(r2.valor))
                                     {
                                         return new Resultado("bool", 1);
                                     }
@@ -146,7 +146,7 @@ namespace ServidorBDD.EjecucionUsql
                             {
                                 case "bool":
                                 case "integer":
-                                    if (Convert.ToInt64(r1.valor) == Convert.ToInt64(r2.valor))
+                                    if (Convert.ToInt32(r1.valor) == Convert.ToInt32(r2.valor))
                                     {
                                         return new Resultado("bool", 1);
                                     }
@@ -155,7 +155,7 @@ namespace ServidorBDD.EjecucionUsql
                                         return new Resultado("bool", 0);
                                     }
                                 case "double":
-                                    if (Convert.ToInt64(r1.valor) == Convert.ToDouble(r2.valor))
+                                    if (Convert.ToInt32(r1.valor) == Convert.ToDouble(r2.valor))
                                     {
                                         return new Resultado("bool", 1);
                                     }
@@ -288,7 +288,7 @@ namespace ServidorBDD.EjecucionUsql
                             {
                                 case "integer":
                                 case "bool":
-                                    if (Convert.ToInt64(r1.valor) != Convert.ToInt64(r2.valor))
+                                    if (Convert.ToInt32(r1.valor) != Convert.ToInt32(r2.valor))
                                     {
                                         return new Resultado("bool", 1);
                                     }
@@ -297,7 +297,7 @@ namespace ServidorBDD.EjecucionUsql
                                         return new Resultado("bool", 0);
                                     }
                                 case "double":
-                                    if (Convert.ToInt64(r1.valor) != Convert.ToDouble(r2.valor))
+                                    if (Convert.ToInt32(r1.valor) != Convert.ToDouble(r2.valor))
                                     {
                                         return new Resultado("bool", 1);
                                     }
@@ -327,7 +327,7 @@ namespace ServidorBDD.EjecucionUsql
                                     }
                                 case "integer":
                                 case "bool":
-                                    if (Convert.ToDouble(r1.valor) != Convert.ToInt64(r2.valor))
+                                    if (Convert.ToDouble(r1.valor) != Convert.ToInt32(r2.valor))
                                     {
                                         return new Resultado("bool", 1);
                                     }
@@ -348,7 +348,7 @@ namespace ServidorBDD.EjecucionUsql
                             {
                                 case "bool":
                                 case "integer":
-                                    if (Convert.ToInt64(r1.valor) != Convert.ToInt64(r2.valor))
+                                    if (Convert.ToInt32(r1.valor) != Convert.ToInt32(r2.valor))
                                     {
                                         return new Resultado("bool", 1);
                                     }
@@ -357,7 +357,7 @@ namespace ServidorBDD.EjecucionUsql
                                         return new Resultado("bool", 0);
                                     }
                                 case "double":
-                                    if (Convert.ToInt64(r1.valor) != Convert.ToDouble(r2.valor))
+                                    if (Convert.ToInt32(r1.valor) != Convert.ToDouble(r2.valor))
                                     {
                                         return new Resultado("bool", 1);
                                     }
@@ -490,7 +490,7 @@ namespace ServidorBDD.EjecucionUsql
                             {
                                 case "integer":
                                 case "bool":
-                                    if (Convert.ToInt64(r1.valor) < Convert.ToInt64(r2.valor))
+                                    if (Convert.ToInt32(r1.valor) < Convert.ToInt32(r2.valor))
                                     {
                                         return new Resultado("bool", 1);
                                     }
@@ -499,7 +499,7 @@ namespace ServidorBDD.EjecucionUsql
                                         return new Resultado("bool", 0);
                                     }
                                 case "double":
-                                    if (Convert.ToInt64(r1.valor) < Convert.ToDouble(r2.valor))
+                                    if (Convert.ToInt32(r1.valor) < Convert.ToDouble(r2.valor))
                                     {
                                         return new Resultado("bool", 1);
                                     }
@@ -529,7 +529,7 @@ namespace ServidorBDD.EjecucionUsql
                                     }
                                 case "integer":
                                 case "bool":
-                                    if (Convert.ToDouble(r1.valor) < Convert.ToInt64(r2.valor))
+                                    if (Convert.ToDouble(r1.valor) < Convert.ToInt32(r2.valor))
                                     {
                                         return new Resultado("bool", 1);
                                     }
@@ -550,7 +550,7 @@ namespace ServidorBDD.EjecucionUsql
                             {
                                 case "bool":
                                 case "integer":
-                                    if (Convert.ToInt64(r1.valor) < Convert.ToInt64(r2.valor))
+                                    if (Convert.ToInt32(r1.valor) < Convert.ToInt32(r2.valor))
                                     {
                                         return new Resultado("bool", 1);
                                     }
@@ -559,7 +559,7 @@ namespace ServidorBDD.EjecucionUsql
                                         return new Resultado("bool", 0);
                                     }
                                 case "double":
-                                    if (Convert.ToInt64(r1.valor) < Convert.ToDouble(r2.valor))
+                                    if (Convert.ToInt32(r1.valor) < Convert.ToDouble(r2.valor))
                                     {
                                         return new Resultado("bool", 1);
                                     }
@@ -696,7 +696,7 @@ namespace ServidorBDD.EjecucionUsql
                             {
                                 case "integer":
                                 case "bool":
-                                    if (Convert.ToInt64(r1.valor) < Convert.ToInt64(r2.valor))
+                                    if (Convert.ToInt32(r1.valor) < Convert.ToInt32(r2.valor))
                                     {
                                         return new Resultado("bool", 1);
                                     }
@@ -705,7 +705,7 @@ namespace ServidorBDD.EjecucionUsql
                                         return new Resultado("bool", 0);
                                     }
                                 case "double":
-                                    if (Convert.ToInt64(r1.valor) < Convert.ToDouble(r2.valor))
+                                    if (Convert.ToInt32(r1.valor) < Convert.ToDouble(r2.valor))
                                     {
                                         return new Resultado("bool", 1);
                                     }
@@ -735,7 +735,7 @@ namespace ServidorBDD.EjecucionUsql
                                     }
                                 case "integer":
                                 case "bool":
-                                    if (Convert.ToDouble(r1.valor) < Convert.ToInt64(r2.valor))
+                                    if (Convert.ToDouble(r1.valor) < Convert.ToInt32(r2.valor))
                                     {
                                         return new Resultado("bool", 1);
                                     }
@@ -756,7 +756,7 @@ namespace ServidorBDD.EjecucionUsql
                             {
                                 case "bool":
                                 case "integer":
-                                    if (Convert.ToInt64(r1.valor) < Convert.ToInt64(r2.valor))
+                                    if (Convert.ToInt32(r1.valor) < Convert.ToInt32(r2.valor))
                                     {
                                         return new Resultado("bool", 1);
                                     }
@@ -765,7 +765,7 @@ namespace ServidorBDD.EjecucionUsql
                                         return new Resultado("bool", 0);
                                     }
                                 case "double":
-                                    if (Convert.ToInt64(r1.valor) < Convert.ToDouble(r2.valor))
+                                    if (Convert.ToInt32(r1.valor) < Convert.ToDouble(r2.valor))
                                     {
                                         return new Resultado("bool", 1);
                                     }
@@ -899,7 +899,7 @@ namespace ServidorBDD.EjecucionUsql
                             {
                                 case "integer":
                                 case "bool":
-                                    if (Convert.ToInt64(r1.valor) <= Convert.ToInt64(r2.valor))
+                                    if (Convert.ToInt32(r1.valor) <= Convert.ToInt32(r2.valor))
                                     {
                                         return new Resultado("bool", 1);
                                     }
@@ -908,7 +908,7 @@ namespace ServidorBDD.EjecucionUsql
                                         return new Resultado("bool", 0);
                                     }
                                 case "double":
-                                    if (Convert.ToInt64(r1.valor) <= Convert.ToDouble(r2.valor))
+                                    if (Convert.ToInt32(r1.valor) <= Convert.ToDouble(r2.valor))
                                     {
                                         return new Resultado("bool", 1);
                                     }
@@ -938,7 +938,7 @@ namespace ServidorBDD.EjecucionUsql
                                     }
                                 case "integer":
                                 case "bool":
-                                    if (Convert.ToDouble(r1.valor) <= Convert.ToInt64(r2.valor))
+                                    if (Convert.ToDouble(r1.valor) <= Convert.ToInt32(r2.valor))
                                     {
                                         return new Resultado("bool", 1);
                                     }
@@ -959,7 +959,7 @@ namespace ServidorBDD.EjecucionUsql
                             {
                                 case "bool":
                                 case "integer":
-                                    if (Convert.ToInt64(r1.valor) <= Convert.ToInt64(r2.valor))
+                                    if (Convert.ToInt32(r1.valor) <= Convert.ToInt32(r2.valor))
                                     {
                                         return new Resultado("bool", 1);
                                     }
@@ -968,7 +968,7 @@ namespace ServidorBDD.EjecucionUsql
                                         return new Resultado("bool", 0);
                                     }
                                 case "double":
-                                    if (Convert.ToInt64(r1.valor) <= Convert.ToDouble(r2.valor))
+                                    if (Convert.ToInt32(r1.valor) <= Convert.ToDouble(r2.valor))
                                     {
                                         return new Resultado("bool", 1);
                                     }
@@ -1105,7 +1105,7 @@ namespace ServidorBDD.EjecucionUsql
                             {
                                 case "integer":
                                 case "bool":
-                                    if (Convert.ToInt64(r1.valor) <= Convert.ToInt64(r2.valor))
+                                    if (Convert.ToInt32(r1.valor) <= Convert.ToInt32(r2.valor))
                                     {
                                         return new Resultado("bool", 1);
                                     }
@@ -1114,7 +1114,7 @@ namespace ServidorBDD.EjecucionUsql
                                         return new Resultado("bool", 0);
                                     }
                                 case "double":
-                                    if (Convert.ToInt64(r1.valor) <= Convert.ToDouble(r2.valor))
+                                    if (Convert.ToInt32(r1.valor) <= Convert.ToDouble(r2.valor))
                                     {
                                         return new Resultado("bool", 1);
                                     }
@@ -1144,7 +1144,7 @@ namespace ServidorBDD.EjecucionUsql
                                     }
                                 case "integer":
                                 case "bool":
-                                    if (Convert.ToDouble(r1.valor) <= Convert.ToInt64(r2.valor))
+                                    if (Convert.ToDouble(r1.valor) <= Convert.ToInt32(r2.valor))
                                     {
                                         return new Resultado("bool", 1);
                                     }
@@ -1165,7 +1165,7 @@ namespace ServidorBDD.EjecucionUsql
                             {
                                 case "bool":
                                 case "integer":
-                                    if (Convert.ToInt64(r1.valor) <= Convert.ToInt64(r2.valor))
+                                    if (Convert.ToInt32(r1.valor) <= Convert.ToInt32(r2.valor))
                                     {
                                         return new Resultado("bool", 1);
                                     }
@@ -1174,7 +1174,7 @@ namespace ServidorBDD.EjecucionUsql
                                         return new Resultado("bool", 0);
                                     }
                                 case "double":
-                                    if (Convert.ToInt64(r1.valor) <= Convert.ToDouble(r2.valor))
+                                    if (Convert.ToInt32(r1.valor) <= Convert.ToDouble(r2.valor))
                                     {
                                         return new Resultado("bool", 1);
                                     }
@@ -1284,20 +1284,8 @@ namespace ServidorBDD.EjecucionUsql
         private void agregarError(String tipo, String descripcion, int linea, int columna)
         {
             Error error = new Error(tipo, descripcion, linea, columna);
-            bool existe = false;
-            foreach(Error err in Form1.errores)
-            {
-                if (err.getMensaje().Equals(error.getMensaje()))
-                {
-                    existe = true;
-                }
-            }
-            if (!existe)
-            {
-                Form1.errores.Add(error);
-                Form1.Mensajes.Add(error.getMensaje());
-            }
-            
+            Form1.Mensajes.Add(error.getMensaje());
+            Form1.errores.Add(error);
         }
     }
 }

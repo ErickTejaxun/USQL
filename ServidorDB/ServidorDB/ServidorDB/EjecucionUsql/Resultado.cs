@@ -11,11 +11,12 @@ namespace ServidorBDD.EjecucionUsql
 
         public String tipo;
         public Object valor;
-
-        public Resultado(String tipo,Object valor)
+        public Boolean detener;
+        public Resultado(String tipo, Object valor)
         {
             this.tipo = tipo;
             this.valor = valor;
+            this.detener = false;
 
         }
 

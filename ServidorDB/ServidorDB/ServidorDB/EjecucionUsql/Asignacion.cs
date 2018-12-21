@@ -32,7 +32,6 @@ namespace ServidorDB.EjecucionUsql
                 Atributo a = (Atributo)variable;
                 a.valor = resultado.valor;
             }
-            int ab = 10;
             return false;
 
         }
@@ -48,7 +47,7 @@ namespace ServidorDB.EjecucionUsql
                 String nombre = var.Token.Text.ToLower();
                 if (contador == 0)
                 {
-                    s = Interprete.tabla.getSimbolo(nombre);
+                    s = Interprete.tabla.getSimbolo2(nombre);
                     if (s != null)
                     {
                         actual = s.valor;
