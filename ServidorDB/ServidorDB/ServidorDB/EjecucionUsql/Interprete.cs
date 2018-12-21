@@ -44,7 +44,13 @@ namespace ServidorBDD.EjecucionUsql
                         break;
                     case "SELECCIONAR":
                         Form1.sistemaArchivos.realizarConsulta(hijo);
-                        break;                    
+                        break;
+                    case "RESTAURARBD":
+                        Form1.sistemaArchivos.restaurar(hijo);
+                        break;
+                    case "BACKUP":
+                        Form1.sistemaArchivos.backup(hijo);
+                        break;
                     case "USAR":
                         Form1.sistemaArchivos.setBaseActual(hijo.ChildNodes[0]);
                         break;
@@ -69,9 +75,12 @@ namespace ServidorBDD.EjecucionUsql
                         break;
                     case "BORRAR": // Borrar registro en la tupla
                         Form1.sistemaArchivos.borrar(hijo);
-                        break;
+                        break;                    
                     case "INSERTAR":
                         Form1.sistemaArchivos.insertar(hijo);
+                        break;
+                    case "PERMISOS":
+                        Form1.sistemaArchivos.permisos(hijo);
                         break;
                     case "ELIMINAR":
                         Form1.sistemaArchivos.eliminar(hijo);

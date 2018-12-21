@@ -20,7 +20,7 @@ namespace ServidorDB
     public partial class Form1 : Form
     {        
 
-        private String pathRaiz = "C:\\DB\\";
+        public static String pathRaiz = "C:\\DB\\";
         public static SistemaArchivos sistemaArchivos;
         public static List<Error> errores;
         public static List<String> Mensajes;

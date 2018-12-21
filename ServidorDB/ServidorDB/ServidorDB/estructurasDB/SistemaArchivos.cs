@@ -7,6 +7,7 @@ using ServidorDB.EjecucionUsql;
 using Irony.Parsing;
 using ServidorBDD.EjecucionUsql;
 using System.IO;
+using System.IO.Compression;
 
 namespace ServidorDB.estructurasDB
 {
@@ -39,6 +40,15 @@ namespace ServidorDB.estructurasDB
             {
                 getBase().seleccionar(raiz);
             }
+        }
+
+        public int contar(ParseTreeNode raiz)
+        {
+            if (getBase() != null)
+            {
+                return getBase().Contar(raiz);
+            }
+            return 0;
         }
 
         public void setBaseActual(ParseTreeNode nodo)
@@ -96,7 +106,150 @@ namespace ServidorDB.estructurasDB
             }
             return false;
         }
+        #region PERMISOS
+        public void permisos(ParseTreeNode raiz)
+        {
+            if (!usuarioActual.Equals("admin"))
+            {
+                Error error = new Error("Semantico", "Sólo el usuario admin puede realizar esta operacion."
+                    , raiz.ChildNodes[0].Span.Location.Line, raiz.ChildNodes[0].Span.Location.Column);
+                Form1.errores.Add(error);
+                Form1.Mensajes.Add(error.getMensaje());
+                return;
+            }
+            // Verificamos que exista el usuario
+            String nombreUsuario = raiz.ChildNodes[1].Token.Text.ToLower();
+            bool encontrado = false;
+            Usuario usuarioAUtilizar = null;
+            foreach (Usuario user in usuarios)
+            {
+                if (nombreUsuario.Equals(user.username.ToLower()))
+                {
+                    encontrado = true;
+                    usuarioAUtilizar = user;
+                }
+            }
+            if (!encontrado)
+            {
+                Error error = new Error("Semantico", "No existe el usuario " + nombreUsuario + " en el sistema."
+                    , raiz.ChildNodes[1].Span.Location.Line, raiz.ChildNodes[1].Span.Location.Column);
+                Form1.errores.Add(error);
+                Form1.Mensajes.Add(error.getMensaje());
+                return;
+            }
+            // Ahora obtenemos el nombre del objeto.
+            String nombreBase = raiz.ChildNodes[2].Token.Text.ToLower();
+            String nombreObjeto = raiz.ChildNodes[4].Token.Text.ToLower();
+            switch (raiz.ChildNodes[0].Token.Text.ToLower())
+            {
+                case "otorgar":
+                    otorgarPermisos(usuarioAUtilizar, nombreBase, nombreObjeto, raiz.ChildNodes[4].Span.Location.Line, raiz.ChildNodes[4].Span.Location.Column);
+                    break;
+                case "denegar":
 
+                    denegarPermisos(usuarioAUtilizar, nombreBase, nombreObjeto, raiz.ChildNodes[4].Span.Location.Line, raiz.ChildNodes[4].Span.Location.Column);
+                    break;
+            }
+        }
+        public void otorgarPermisos(Usuario user, String basedatos, String objeto, int linea, int columna)
+        {
+            if (objeto.Equals("*")) { objeto = "all"; }
+            if (user.permisos.Count == 0)
+            {
+                Permiso permiso = new Permiso(basedatos);
+                permiso.nombreDB = basedatos;
+                permiso.listaObjetos.Add(objeto);
+                user.permisos.Add(permiso);
+                Form1.Mensajes.Add("Se le han otorgado los permisos al usuario " + user.username + " sobre el objeto " + objeto + " de la base de datos " + basedatos);
+            }
+            else
+            {
+                foreach (Permiso permiso in user.permisos)
+                {
+                    if (permiso.nombreDB.ToLower().Equals(basedatos))
+                    {
+                        bool encontrado = false;
+                        foreach (String etiqueta in permiso.listaObjetos)
+                        {
+                            if (etiqueta.ToLower().Equals(objeto))
+                            {
+                                encontrado = true;
+                            }
+                        }
+                        if (encontrado) // Si ya existe el permiso se 
+                        {
+                            Error error = new Error("Semantico", "El usuario " + user.username + " ya tiene permisos sobre el objeto " + objeto + " de la base de datos " + basedatos,
+                                linea, columna);
+                            Form1.errores.Add(error);
+                            Form1.Mensajes.Add(error.getMensaje());
+                            return;
+                        }
+                        permiso.listaObjetos.Add(objeto);
+                        Form1.Mensajes.Add("Se le han otorgado los permisos al usuario " + user.username + " sobre el objeto " + objeto + " de la base de datos " + basedatos);
+
+                        return;
+                    }
+                }
+            }
+
+        }
+
+        public void denegarPermisos(Usuario user, String basedatos, String objeto, int linea, int columna)
+        {
+            if (user.permisos.Count == 0)
+            {
+                Error error = new Error("Semantico", "El usuario " + user.username + " no posee permisos sobre el objeto " + objeto + " de la base de datos " + basedatos,
+                    linea, columna);
+                Form1.errores.Add(error);
+                Form1.Mensajes.Add(error.getMensaje());
+            }
+            else
+            {
+
+                for (int cont = 0; cont < user.permisos.Count; cont++)
+                {
+                    Permiso permiso = user.permisos[cont];
+                    if (permiso.nombreDB.ToLower().Equals(basedatos))
+                    {
+                        if (objeto.Equals("*"))
+                        {
+                            user.permisos.RemoveAt(cont);
+                            cont--;
+                        }
+                        else
+                        {
+                            bool encontrado = false;
+                            foreach (String etiqueta in permiso.listaObjetos)
+                            {
+                                if (etiqueta.ToLower().Equals(objeto))
+                                {
+                                    encontrado = true;
+                                }
+                            }
+                            if (!encontrado) // Si ya existe el permiso se 
+                            {
+                                Error error = new Error("Semantico", "El usuario " + user.username + " no posee permisos sobre el objeto " + objeto + " de la base de datos " + basedatos,
+                                    linea, columna);
+                                Form1.errores.Add(error);
+                                Form1.Mensajes.Add(error.getMensaje());
+                                return;
+                            }
+                            for (int x = 0; x < permiso.listaObjetos.Count; x++)
+                            {
+                                if (permiso.listaObjetos[x].ToLower().Equals(objeto.ToLower()))
+                                {
+                                    permiso.listaObjetos.RemoveAt(x);
+                                    x--;
+                                }
+                            }
+                            Form1.Mensajes.Add("Se le han denegado los permisos al usuario " + user.username + " sobre el objeto " + objeto + " de la base de datos " + basedatos);
+                            return;
+                        }
+                    }
+                }
+            }
+        }
+        #endregion
 
         #region INSERT
         public void insertar(ParseTreeNode raiz)
@@ -678,6 +831,26 @@ namespace ServidorDB.estructurasDB
             }
             finally { }
         }
+        public void eliminarArchivo(String path)
+        {
+            String directorio = path;
+            try
+            {
+                // Si existe el directorio.
+                if (File.Exists(directorio))
+                {
+                    //System.IO.File.Delete(directorio,true);
+                    File.Delete(directorio);
+                    Form1.Mensajes.Add("El archivo fue eliminado con exito. " + Directory.GetCreationTime(path));
+                    return;
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+            finally { }
+        }
         #endregion
         #region Codigo para guardar en disco todas las chivas.
         public void commit()
@@ -1131,11 +1304,11 @@ namespace ServidorDB.estructurasDB
         #region BORRAR TUPLA
         public void borrar(ParseTreeNode raiz)
         {
-            if (getBase()!=null)
+            if (getBase() != null)
             {
                 String nombreTabla = raiz.ChildNodes[0].Token.Text.ToLower();
                 Tabla tabActual = getTabla(nombreTabla, raiz.ChildNodes[0].Token.Location.Line, raiz.ChildNodes[0].Token.Location.Column);
-                if (tabActual!=null)
+                if (tabActual != null)
                 {
                     // Tenemos dos casos, con un sólo hijo : Borrar todo, con dos hijos borrar si se cumple la condicion
                     if (raiz.ChildNodes.Count == 1)
@@ -1145,7 +1318,7 @@ namespace ServidorDB.estructurasDB
                     else
                     {
                         ParseTreeNode condicion = raiz.ChildNodes[1];
-                        for(int x =0; x<tabActual.tuplas.Count; x++)
+                        for (int x = 0; x < tabActual.tuplas.Count; x++)
                         {
                             Logica opL = new Logica(tabActual.tuplas[x]);
                             Resultado result = opL.operar(condicion);
@@ -1177,7 +1350,7 @@ namespace ServidorDB.estructurasDB
                 return;
             }
             String nombreUsuario = raiz.ChildNodes[0].Token.Text.ToLower();
-            String nuevoPassword = raiz.ChildNodes[3].Token.Text.Replace("\"","");
+            String nuevoPassword = raiz.ChildNodes[3].Token.Text.Replace("\"", "");
             // Primero buscamos si existe el usuario;
             bool encontrado = false;
             foreach (Usuario user in usuarios)
@@ -1238,7 +1411,7 @@ namespace ServidorDB.estructurasDB
 
         public void quitarEnObjeto(ParseTreeNode raiz)
         {
-            if (getBase()!=null)
+            if (getBase() != null)
             {
                 String nombreObjeto = raiz.ChildNodes[0].Token.Text.ToLower();
                 List<String> atributosAQuitar = new List<String>();
@@ -1259,7 +1432,7 @@ namespace ServidorDB.estructurasDB
                     if (obj.nombre.ToLower().Equals(nombreObjeto))
                     {
                         // Recorremos sus atributos
-                        for(int x = 0; x<atributosAQuitar.Count;x++)
+                        for (int x = 0; x < atributosAQuitar.Count; x++)
                         {
                             foreach (Atributo atrib in obj.atributos)
                             {
@@ -1270,7 +1443,7 @@ namespace ServidorDB.estructurasDB
                             }
                             if (!atributoEncontrado)
                             {
-                                Error error = new Error("Semantico", "No existe el atributo " + atributosAQuitar + " en el objeto " +obj.nombre
+                                Error error = new Error("Semantico", "No existe el atributo " + atributosAQuitar + " en el objeto " + obj.nombre
                                      , raiz.ChildNodes[0].ChildNodes[x].ChildNodes[0].Token.Location.Line
                                      , raiz.ChildNodes[0].ChildNodes[x].ChildNodes[0].Token.Location.Column);
                                 Form1.errores.Add(error);
@@ -1303,7 +1476,7 @@ namespace ServidorDB.estructurasDB
                         // Recorremos sus atributos
                         for (int x = 0; x < atributosAQuitar.Count; x++)
                         {
-                            for ( int y = 0; y<obj.atributos.Count; y++)
+                            for (int y = 0; y < obj.atributos.Count; y++)
                             {
                                 if (obj.atributos[y].id.ToLower().Equals(atributosAQuitar[x]))
                                 {
@@ -1320,13 +1493,13 @@ namespace ServidorDB.estructurasDB
         }
         public void agregarEnObjeto(ParseTreeNode raiz)
         {
-            if (getBase()!=null)
+            if (getBase() != null)
             {
                 String nombreObjeto = raiz.ChildNodes[0].Token.Text.ToLower();
                 List<Atributo> listaNuevosAributos = new List<Atributo>();
                 // Obtenemos los atributos a agregar
                 foreach (ParseTreeNode nodoAtributo in raiz.ChildNodes[2].ChildNodes)
-                {                    
+                {
                     String tipoAtributo = nodoAtributo.ChildNodes[0].ChildNodes[0].Token.Text.ToLower();
                     String nombreAtributo = nodoAtributo.ChildNodes[1].Token.Text.ToLower();
                     Atributo attr = new Atributo(tipoAtributo, nombreAtributo, null);
@@ -1353,7 +1526,7 @@ namespace ServidorDB.estructurasDB
                 bool objetoEncontrado = false;
                 bool atributoEncontrado = false;
                 // Ahora verificamos que no exista el atributo
-                foreach(Objeto obj in listaTemporal)
+                foreach (Objeto obj in listaTemporal)
                 {
                     // Encontramos el objeto a modificar
                     if (obj.nombre.ToLower().Equals(nombreObjeto))
@@ -1425,21 +1598,21 @@ namespace ServidorDB.estructurasDB
         {
             String nombreTabla = raiz.ChildNodes[0].Token.Text;
             List<String> listaCampos = new List<String>();
-            foreach(ParseTreeNode nodo in raiz.ChildNodes[2].ChildNodes)
+            foreach (ParseTreeNode nodo in raiz.ChildNodes[2].ChildNodes)
             {
                 listaCampos.Add(nodo.ChildNodes[0].Token.Text);
             }
             int contador = 0;
             // Ahora buscamos la tabla ;
-            if(getBase()!=null)
+            if (getBase() != null)
             {
                 Tabla tablaActual = getTabla(nombreTabla, raiz.ChildNodes[0].Token.Location.Line, raiz.ChildNodes[0].Token.Location.Column);
-                if (tablaActual!=null)
+                if (tablaActual != null)
                 {
                     // Primero quitamos los campos de la definicion
                     List<defCampo> definicionesTemporales = new List<defCampo>();
                     foreach (String nombre in listaCampos)
-                    {                        
+                    {
                         foreach (defCampo definicion in tablaActual.definiciones)
                         {
                             if (!nombre.ToLower().Equals(definicion.nombre.ToLower()))
@@ -1451,8 +1624,8 @@ namespace ServidorDB.estructurasDB
                                 contador++;
                             }
                         }
-                    }                    
-                    if (contador< listaCampos.Count)// Hay error en algún campo
+                    }
+                    if (contador < listaCampos.Count)// Hay error en algún campo
                     {
                         Error error = new Error("Semantico", "Uno de los campos solicitado no existen en la tabla " + nombreTabla, raiz.ChildNodes[2].ChildNodes[0].Span.Location.Line, raiz.ChildNodes[2].ChildNodes[0].Span.Location.Column);
                         Form1.errores.Add(error);
@@ -1461,19 +1634,19 @@ namespace ServidorDB.estructurasDB
                     }
                     tablaActual.definiciones = definicionesTemporales;
                     // Segundo quitamos los campos de las tuplas                    
-                    for (int x= 0; x < tablaActual.tuplas.Count; x++)                        
+                    for (int x = 0; x < tablaActual.tuplas.Count; x++)
                     {
-                        tupla tup = tablaActual.tuplas[x];                                               
-                        for (int y = 0; y< tablaActual.tuplas[x].campos.Count; y++)
+                        tupla tup = tablaActual.tuplas[x];
+                        for (int y = 0; y < tablaActual.tuplas[x].campos.Count; y++)
                         {
                             campo cmp = tablaActual.tuplas[x].campos[y];
                             foreach (String nombre in listaCampos)
                             {
-                                if (cmp.id.ToLower().Equals(nombreTabla +"."+ nombre.ToLower()))
+                                if (cmp.id.ToLower().Equals(nombreTabla + "." + nombre.ToLower()))
                                 {
                                     tablaActual.tuplas[x].campos.RemoveAt(y);
                                     y--;
-                                }                                
+                                }
                             }
                         }
                     }
@@ -1488,10 +1661,10 @@ namespace ServidorDB.estructurasDB
             List<defCampo> definicionesTemporales = new List<defCampo>();
             List<int> lineas = new List<int>();
             List<int> columnas = new List<int>();
-            if (getBase()!=null)
+            if (getBase() != null)
             {
                 Tabla tablaActual = getTabla(nombreTabla, raiz.ChildNodes[0].Token.Location.Line, raiz.ChildNodes[0].Token.Location.Column);
-                if (tablaActual !=null)
+                if (tablaActual != null)
                 {
                     foreach (ParseTreeNode nodo in raiz.ChildNodes[2].ChildNodes)
                     {
@@ -1552,7 +1725,7 @@ namespace ServidorDB.estructurasDB
                                 Form1.Mensajes.Add(error.getMensaje());
                                 flag = true;
                                 y++;
-                            }                            
+                            }
                         }
                         if (!flag)
                         {
@@ -1609,7 +1782,7 @@ namespace ServidorDB.estructurasDB
         #region ACTUALIZAR
         public void actualizar(ParseTreeNode raiz)
         {
-            if (getBase()!=null)
+            if (getBase() != null)
             {
                 if (raiz.ChildNodes.Count == 5)
                 {
@@ -1698,7 +1871,7 @@ namespace ServidorDB.estructurasDB
                         Form1.Mensajes.Add(error.getMensaje());
                     }
                 }
-                else if (raiz.ChildNodes.Count ==4)
+                else if (raiz.ChildNodes.Count == 4)
                 {
                     // Primero verificamos que el número de campos coincida con el número de valores.
                     if (raiz.ChildNodes[2].ChildNodes.Count == raiz.ChildNodes[3].ChildNodes.Count)
@@ -1775,10 +1948,95 @@ namespace ServidorDB.estructurasDB
                         Form1.Mensajes.Add(error.getMensaje());
                     }
                 }
-            
             }
         }
         #endregion
+        #region BACKUP
+        public void backup(ParseTreeNode raiz)
+        {
+            String tipo = raiz.ChildNodes[0].Token.Text.ToLower();
+            String nombreBase = raiz.ChildNodes[1].Token.Text.ToLower();
+            String nombreArchivo = raiz.ChildNodes[2].Token.Text.ToLower();
+            String pathBase = "";
+            bool flag = false;
+            foreach (BD boss in basesdedatos)
+            {
+                if (boss.nombre.ToLower().Equals(nombreBase))
+                {
+                    pathBase = boss.path;
+                    flag = true;
+                }
+            }
+            if (!flag)//  No se encontró la base
+            {
+                Error error = new Error("Semantico", "La base de datos " + nombreBase + " no existe en el sistema",
+                    raiz.ChildNodes[1].Token.Location.Line, raiz.ChildNodes[1].Token.Location.Column);
+                Form1.errores.Add(error);
+                Form1.Mensajes.Add(error.getMensaje());
+            }
+            switch (tipo)
+            {
+                case "completo":
+                    backupCompleto(nombreBase, nombreArchivo);
+                    break;
+                case "usqldump":
+                    backupdump();
+                    break;
+            }
+        }
+        public void backupCompleto(String nombreBase, String nombreArchivo)
+        {
+            String pathBase = Form1.pathRaiz + "BD" + "\\"+nombreBase;
+            guardarArchivo(pathBase + "nombre.txt", nombreBase);
+            String zipPath = Form1.pathRaiz + "\\backup\\" + nombreBase + ".zip";
+            System.IO.File.Delete(zipPath);
+            ZipFile.CreateFromDirectory(pathBase, zipPath);
+            System.IO.File.Delete(pathBase + "\\nombre.txt");
+        }
+        public void backupdump()
+        {
+        }
 
+        public void restaurar(ParseTreeNode raiz)
+        {
+            String path = raiz.ChildNodes[1].Token.Text.Replace("\"","");
+            switch (raiz.ChildNodes[0].Token.Text.ToLower())
+            {
+                case "completo":
+                    string pathDestino = Form1.pathRaiz + "BD" ;
+                    string zipPath = path;
+                    guardarArchivo(pathDestino,"");
+                    eliminarArchivo(pathDestino + "\\nombre.txt");
+                    ZipFile.ExtractToDirectory(zipPath, pathDestino);                    
+                    String nombre = getArchivo(pathDestino + "\\nombre.txt");
+                    BD nuevaBAse = new BD(nombre, pathDestino + "\\"+ nombre + "\\DB.xml");
+                    nuevaBAse.pathObjetos = pathDestino + "\\" + nombre + "\\objetos.xml";
+                    nuevaBAse.pathProcedimientos = pathDestino + "\\" + nombre + "\\procedimientos.xml";
+                    basesdedatos.Add(nuevaBAse);
+                    System.IO.File.Delete(pathDestino + "\\nombre.txt");
+                    break;
+                    //C:\DB\BD
+            }
+        }
+        #endregion
+        public String getArchivo(String path)
+        {
+            try
+            {
+                String textoArchivo = System.IO.File.ReadAllText(path);
+                return textoArchivo;
+                throw new FileNotFoundException();                
+            }
+            catch (FileNotFoundException)
+            {
+                return "0";
+            }
+            catch (Exception ex)
+            {
+                
+                return "0";
+            }
+
+        }
     }
 }

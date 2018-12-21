@@ -32,6 +32,7 @@ namespace ServidorBDD.AnalisisUsql
             RegexBasedTerminal PATH = new RegexBasedTerminal("PATH", @"[a-zA-Z]:([\\][a-zA-Z]([a-zA-Z]|[0-9]|\.|_|-))");
 
 
+
             NonTerminal INICIO = new NonTerminal("INICIO"),
                         TIPODATO = new NonTerminal("TIPODATO"),
                         EXPA = new NonTerminal("EXPA"),
@@ -296,11 +297,11 @@ namespace ServidorBDD.AnalisisUsql
 
             IMPRIMIR.Rule = ToTerm("Imprimir") + ToTerm("(") + EXPL + ToTerm(")") + ToTerm(";");
 
-            BACKUP.Rule = ToTerm("Backup") + ToTerm("usqldump") + EXPA + EXPA + ToTerm(";")
-                        | ToTerm("Backup") + ToTerm("Completo") + EXPA + EXPA + ToTerm(";");
+            BACKUP.Rule = ToTerm("Backup") + ToTerm("usqldump") + id + id //+
+                        | ToTerm("Backup") + ToTerm("Completo") + id + id;// + ToTerm(";");
 
-            RESTAURARBD.Rule = ToTerm("Restaurar") + ToTerm("usqldump") + PATH
-                        | ToTerm("Restaurar") + ToTerm("Completo") + PATH;
+            RESTAURARBD.Rule = ToTerm("Restaurar") + ToTerm("usqldump") + tipoText
+                        | ToTerm("Restaurar") + ToTerm("Completo") + tipoText;
 
 
 
@@ -327,7 +328,7 @@ namespace ServidorBDD.AnalisisUsql
             this.MarkPunctuation("crear", "objeto", "procedimiento", "funcion", "retorno", "usuario", "usar");
             this.MarkPunctuation("alterar", "tabla", "objeto", "usuario", "eliminar", "insertar", "en", "tabla");
             this.MarkPunctuation("insertar", "valores", "borrar", "seleccionar", "permisos", "declarar");
-            this.MarkPunctuation("selecciona", "caso", "defecto", "para", "detener", "mientras", "backup", "restaurar", "contar", "<<", ">>", "De", "@", "=");
+            this.MarkPunctuation("selecciona", "caso", "defecto", "para", "detener", "mientras", "backup", "restaurar", "contar", "<<", ">>", "De", "@", "=",",");
             this.MarkPunctuation("donde", "ordenar_por","Llave_Foranea");
             this.MarkTransient(SENTDDL, SENTPROC, SENTSPROC, COMPLEMENTO, SENTDDL, LPARAMETROS);
             //this.MarkTransient(CASO);

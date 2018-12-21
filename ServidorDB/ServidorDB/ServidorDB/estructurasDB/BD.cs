@@ -180,6 +180,68 @@ namespace ServidorDB.estructurasDB
             return listaOrdenada;
         }
 
+        public int seleccionarContado(List<String> listaCampos,
+            List<String> listaTablas, ParseTreeNode raiz, String campoOrdenacion, int orden)
+        {
+            String data = "\n";
+            List<tupla> cartesianoTemporal = new List<tupla>();
+            List<tupla> cartesiano = new List<tupla>();
+            /*Primero realizamos el producto cartesiano de las tablas involucradas*/
+            foreach (String ntab in listaTablas)
+            {
+
+                if (buscarTabla(ntab) == null)
+                {
+                    data = data + this.generarError("Error en ejecución", "Tabla " + ntab + " no existe en la base de datos. \n", ntab).getMensaje();
+                    cartesianoTemporal = productoCartesiano(cartesianoTemporal, new List<tupla>(), ntab);
+                }
+                else
+                {
+                    cartesianoTemporal = productoCartesiano(cartesianoTemporal, buscarTabla(ntab), ntab);
+                }
+
+            }
+            /*Verificamos las condiciones para filtrar resultados*/
+            foreach (tupla tp in cartesianoTemporal)
+            {
+                if (comprobarCondicion(tp, raiz))
+                {
+                    cartesiano.Add(tp);
+                }
+            }
+
+            /*Elegimos las celdas que se solicitan. Las demás se descartan*/
+            /*Tambien se ordena los resultados según el usuario haya indicado*/
+            cartesiano = filtrarResultados(listaCampos, cartesiano);
+
+            /**/
+            cartesiano = ordenarResultados(cartesiano, campoOrdenacion, orden);
+
+            #region imprimir resultado
+            if (cartesiano.Count > 0)
+            {
+                foreach (campo cp in cartesiano[0].campos)
+                {
+                    if (data.Equals("\n"))
+                    {
+                        data = cp.id;
+                    }
+                    else
+                    {
+                        data = data + "," + cp.id;
+                    }
+                }
+            }
+            else
+            {
+                return 0;
+            }
+
+            #endregion
+
+            return cartesiano.Count;
+        }
+
         public Boolean comprobarCondicion(tupla tup, ParseTreeNode raiz)
         {
             if (raiz == null)
@@ -355,6 +417,142 @@ namespace ServidorDB.estructurasDB
             return null;
         }
 
+        public int Contar(ParseTreeNode hijo)
+        {
+            List<String> campos = new List<String>();
+            List<String> tablas = new List<String>();
+            String campoOrdenamiento = "";
+            int orden = 2;
+            ParseTreeNode condicion = null;
+            nombres = new List<String>();
+            lineas = new List<int>();
+            columnas = new List<int>();
+            foreach (ParseTreeNode nodo in hijo.ChildNodes[1].ChildNodes)
+            {
+                tablas.Add(nodo.ChildNodes[0].Token.Text.ToLower());
+                nombres.Add(nodo.ChildNodes[0].Token.Text.ToLower());
+                lineas.Add(nodo.ChildNodes[0].Token.Location.Line);
+                columnas.Add(nodo.ChildNodes[0].Token.Location.Column);
+            }
+            foreach (ParseTreeNode nodoN in hijo.ChildNodes[0].ChildNodes)
+            {
+                if (nodoN.ChildNodes.Count == 1)
+                {
+                    if (tablas.Count == 1)
+                    {
+                        campos.Add(tablas[0] + "." + nodoN.ChildNodes[0].Token.Text);
+                        nombres.Add(tablas[0] + "." + nodoN.ChildNodes[0].Token.Text);
+                        lineas.Add(nodoN.ChildNodes[0].Token.Location.Line);
+                        columnas.Add(nodoN.ChildNodes[0].Token.Location.Column);
+                    }
+                    else
+                    {
+                        campos.Add(nodoN.ChildNodes[0].Token.Text);
+                        nombres.Add(nodoN.ChildNodes[0].Token.Text);
+                        lineas.Add(nodoN.ChildNodes[0].Token.Location.Line);
+                        columnas.Add(nodoN.ChildNodes[0].Token.Location.Column);
+                    }
+                }
+                else
+                {
+                    campos.Add(nodoN.ChildNodes[0].Token.Text + "." + nodoN.ChildNodes[1].Token.Text);
+                    nombres.Add(nodoN.ChildNodes[0].Token.Text + "." + nodoN.ChildNodes[1].Token.Text);
+                    lineas.Add(nodoN.ChildNodes[1].Token.Location.Line);
+                    columnas.Add(nodoN.ChildNodes[1].Token.Location.Column);
+                }
+            }
+            /*Si hay tres nodos existe where y ordenamiento*/
+            if (hijo.ChildNodes[2].ChildNodes.Count == 3)
+            {
+                if (tablas.Count == 1)
+                {
+
+                    campoOrdenamiento = tablas[0] + "." + hijo.ChildNodes[2].ChildNodes[1].ChildNodes[0].Token.Text;
+                    nombres.Add(campoOrdenamiento);
+                    lineas.Add(hijo.ChildNodes[2].ChildNodes[1].ChildNodes[0].Token.Location.Line);
+                    columnas.Add(hijo.ChildNodes[2].ChildNodes[1].ChildNodes[0].Token.Location.Column);
+
+                }
+                else
+                {
+
+                    campoOrdenamiento = hijo.ChildNodes[2].ChildNodes[1].ChildNodes[0].Token.Text
+                        + "." + hijo.ChildNodes[2].ChildNodes[1].ChildNodes[1].Token.Text;
+                    nombres.Add(campoOrdenamiento);
+                    lineas.Add(hijo.ChildNodes[2].ChildNodes[1].ChildNodes[0].Token.Location.Line);
+                    columnas.Add(hijo.ChildNodes[2].ChildNodes[1].ChildNodes[0].Token.Location.Column);
+                }
+                condicion = hijo.ChildNodes[2].ChildNodes[0];
+
+                if (hijo.ChildNodes[2].ChildNodes[2].Token.Text.ToLower().Equals("asc"))
+                {
+                    orden = 0; // Cero es ascendente.
+                }
+                if (hijo.ChildNodes[2].ChildNodes[2].Token.Text.ToLower().Equals("desc"))
+                {
+                    orden = 1; // Cero es ascendente.
+                }
+            }
+            if (hijo.ChildNodes[2].ChildNodes.Count == 2)// Ordenamiento
+            {
+                if (hijo.ChildNodes[2].ChildNodes[0].ChildNodes.Count == 2)
+                {
+                    campoOrdenamiento = hijo.ChildNodes[2].ChildNodes[0].ChildNodes[0].Token.Text
+                        + "." + hijo.ChildNodes[2].ChildNodes[0].ChildNodes[1].Token.Text;
+                    nombres.Add(campoOrdenamiento);
+                    lineas.Add(hijo.ChildNodes[2].ChildNodes[0].ChildNodes[0].Token.Location.Line);
+                    columnas.Add(hijo.ChildNodes[2].ChildNodes[0].ChildNodes[0].Token.Location.Column);
+                }
+                else
+                {
+                    // Verificamos si hay más de una tabla.
+                    // Formato esperado : NombreTabla.NombreCampo
+                    if (tablas.Count == 1)
+                    {
+                        campoOrdenamiento = tablas[0] + "." + hijo.ChildNodes[2].ChildNodes[0].ChildNodes[0].Token.Text;
+                        nombres.Add(campoOrdenamiento);
+                        lineas.Add(hijo.ChildNodes[2].ChildNodes[0].ChildNodes[0].Token.Location.Line);
+                        columnas.Add(hijo.ChildNodes[2].ChildNodes[0].ChildNodes[0].Token.Location.Column);
+                    }
+                    else
+                    {
+                        if (hijo.ChildNodes[2].ChildNodes[1].ChildNodes.Count == 2)
+                        {
+                            campoOrdenamiento = hijo.ChildNodes[2].ChildNodes[1].ChildNodes[0].Token.Text
+                                + "." + hijo.ChildNodes[2].ChildNodes[1].ChildNodes[1].Token.Text;
+                            nombres.Add(campoOrdenamiento);
+                            lineas.Add(hijo.ChildNodes[2].ChildNodes[1].ChildNodes[0].Token.Location.Line);
+                            columnas.Add(hijo.ChildNodes[2].ChildNodes[1].ChildNodes[0].Token.Location.Column);
+
+                        }
+                        else
+                        {
+                            Form1.Mensajes.Add(new Error("Semantico",
+                                "El campo para ordenar debe estar en formato NombreTabla.NombreCampo para poder encontrarse",
+                                  hijo.ChildNodes[2].ChildNodes[0].Token.Location.Line
+                                , hijo.ChildNodes[2].ChildNodes[0].Token.Location.Column
+                                ).getMensaje());
+                        }
+
+                    }
+                }
+                if (hijo.ChildNodes[2].ChildNodes[1].Token.Text.ToLower().Equals("asc"))
+                {
+                    orden = 0; // Cero es ascendente.
+                }
+                if (hijo.ChildNodes[2].ChildNodes[1].Token.Text.ToLower().Equals("desc"))
+                {
+                    orden = 1; // Cero es ascendente.
+                }
+            }
+            if (hijo.ChildNodes[2].ChildNodes.Count == 1)
+            {
+                condicion = hijo.ChildNodes[2].ChildNodes[0];
+            }
+
+            //Form1.Mensajes.Add(seleccionar(campos, tablas, condicion, campoOrdenamiento, orden));
+            return seleccionarContado(campos, tablas, condicion, campoOrdenamiento, orden);
+        }
 
 
         public void seleccionar(ParseTreeNode hijo)
