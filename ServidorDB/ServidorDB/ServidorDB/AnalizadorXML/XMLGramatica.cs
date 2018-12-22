@@ -227,8 +227,9 @@ namespace ServidorDB.AnalizadorXML
                         | FUNCIONES // Archivo de funciones
                         | PERMISOS // Archivo de usuario 
                         | PROCEDURE
-                        | Empty
-                        ;
+                        | Empty             
+                        | SyntaxError + ARCHIVO;
+            ;
 
             #region Archivo de usuarios y permisos
             PERMISOS.Rule = MakePlusRule(PERMISOS, PERMISO);
@@ -289,7 +290,9 @@ namespace ServidorDB.AnalizadorXML
                 abrir + ToTerm("tipo") + cerrar +
                     S_IDENTIFICADOR +
                 abrir + diagonal + ToTerm("tipo") + cerrar +
-            abrir + diagonal + ToTerm("func") + cerrar;
+            abrir + diagonal + ToTerm("func") + cerrar
+             | SyntaxError + FUNCIONES
+             | SyntaxError + ARCHIVO;
 
             #endregion
 
@@ -304,12 +307,16 @@ namespace ServidorDB.AnalizadorXML
                         VALOR +
                     abrir + diagonal + ToTerm("nombre") + cerrar +
                     ATRIBUTOS+
-                abrir + diagonal + ToTerm("obj") + cerrar;
+                abrir + diagonal + ToTerm("obj") + cerrar
+             | SyntaxError + OBJ
+             | SyntaxError + ARCHIVO;
 
             ATRIBUTOS.Rule =
                     abrir + ToTerm("attr") + cerrar +
                         LCAMPO+
-                    abrir + diagonal + ToTerm("attr") + cerrar;
+                    abrir + diagonal + ToTerm("attr") + cerrar
+             | SyntaxError + ATRIBUTOS
+             | SyntaxError + ARCHIVO;
             #endregion
 
             #region Archivo de procedimientos
@@ -370,7 +377,8 @@ namespace ServidorDB.AnalizadorXML
                             CODIGO +
                         abrir + diagonal + ToTerm("src") + cerrar +
                     abrir + diagonal + ToTerm("proc") + cerrar
-                    ;
+             | SyntaxError + PROC
+             | SyntaxError + ARCHIVO;
 
             #endregion
 
@@ -386,7 +394,9 @@ namespace ServidorDB.AnalizadorXML
                         abrir + S_IDENTIFICADOR + cerrar +
                         VALOR+
                         abrir + diagonal + S_IDENTIFICADOR + cerrar;
-            VALOR.Rule = S_IDENTIFICADOR | INTEGER | CADENA_LITERAL|DATE | DATE+ HORA| DOUBLE;
+            VALOR.Rule = S_IDENTIFICADOR | INTEGER | CADENA_LITERAL|DATE | DATE+ HORA| DOUBLE
+                         | SyntaxError + VALOR
+             | SyntaxError + ARCHIVO;
 
             #endregion
 
@@ -403,14 +413,18 @@ namespace ServidorDB.AnalizadorXML
                             abrir + ToTerm("PATH") + cerrar +
                             PATH +
                             abrir + diagonal + ToTerm("PATH") + cerrar +
-                        abrir + diagonal + ToTerm("FUNCTION") + cerrar;
+                        abrir + diagonal + ToTerm("FUNCTION") + cerrar
+             | SyntaxError + PFUNCTION
+             | SyntaxError + ARCHIVO;
 
             PPROCEDURE.Rule =
                         abrir + ToTerm("procedure") + cerrar +
                             abrir + ToTerm("PATH") + cerrar +
                             PATH +
                             abrir + diagonal + ToTerm("PATH") + cerrar +
-                        abrir + diagonal + ToTerm("procedure") + cerrar;
+                        abrir + diagonal + ToTerm("procedure") + cerrar
+             | SyntaxError + ATRIBUTOS
+             | SyntaxError + ARCHIVO;
 
             POBJECT.Rule = 
                         abrir + ToTerm("object") + cerrar +
@@ -430,7 +444,8 @@ namespace ServidorDB.AnalizadorXML
                             PATH +
                             abrir + diagonal + ToTerm("PATH") + cerrar +
                             LROWS+
-                        abrir + diagonal + ToTerm("tabla") + cerrar;            
+                        abrir + diagonal + ToTerm("tabla") + cerrar;     
+            
             
             LROWS.Rule = abrir + ToTerm("ROWS") + cerrar +
                         LCAMPOS+

@@ -1238,6 +1238,8 @@ namespace ServidorBDD.EjecucionUsql
                             {
                                 case "datetime":
                                     formato = "dd-MM-yyyy hh:mm:ss";
+                                    r1.valor = r1.valor.ToString().Replace("/","-");
+                                    r2.valor = r2.valor.ToString().Replace("/", "-");
                                     date1 = DateTime.ParseExact(r1.valor.ToString(),
                                     formato, CultureInfo.InvariantCulture);
                                     date2 = DateTime.ParseExact(r2.valor.ToString(),
@@ -1252,6 +1254,8 @@ namespace ServidorBDD.EjecucionUsql
                                     }
                                 case "date":
                                     formato = "dd-MM-yyyy";
+                                    r1.valor = r1.valor.ToString().Replace("/", "-");
+                                    r2.valor = r2.valor.ToString().Replace("/", "-");
                                     date1 = DateTime.ParseExact(r1.valor.ToString(),
                                     formato + " hh:mm:ss", CultureInfo.InvariantCulture);
                                     date2 = DateTime.ParseExact(r2.valor.ToString(),

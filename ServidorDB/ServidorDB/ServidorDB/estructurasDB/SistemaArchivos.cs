@@ -61,12 +61,33 @@ namespace ServidorDB.estructurasDB
                 {
                     Form1.Mensajes.Add("Base de datos --" + nombreDB + "-- seleccionada.");
                     this.baseActual = nombreDB;
+                    guardarDump(Form1.pathRaiz + "dump\\" + nombreDB + ".dump", Form1.comandos);
                     return;
                 }
             }
             //Form1.errores.Add(new Error("Semantico", "La base de datos " + nombreDB + " no existe en el sistema." , nodo.Token.Location.Line, nodo.Token.Location.Column));
             Form1.Mensajes.Add(new Error("Semantico", "La base de datos " + nombreDB + " no existe en el sistema.", nodo.Token.Location.Line, nodo.Token.Location.Column).getMensaje());
-            guardarArchivo(Form1.pathRaiz + "dump\\" + nombreDB + ".dump", Form1.comandos);
+            
+        }
+        public void guardarDump(String path, String contenido)
+        {
+            if (!File.Exists(path))
+            {
+                File.Create(path).Dispose();
+
+                using (TextWriter tw = new StreamWriter(path))
+                {
+                    tw.WriteLine(contenido);
+                }
+
+            }
+            else if (File.Exists(path))
+            {
+                using (TextWriter tw = new StreamWriter(path))
+                {
+                    tw.WriteLine(contenido);
+                }
+            }
         }
         public BD getBase()
         {
@@ -496,19 +517,88 @@ namespace ServidorDB.estructurasDB
             bool flag = true;  // Si es true se guarda, si es false no se guarda.
             for (contador = 0; contador < definiciones.Count; contador++)
             {
-                if (nuevaTupla.campos[contador].tipo.ToLower().Equals(definiciones[contador].tipo.ToLower())
-                   || (nuevaTupla.campos[contador].tipo.ToLower().Equals("integer") && definiciones[contador].tipo.ToLower().Equals("bool")))
+                if (nuevaTupla.campos[contador]!=null)
                 {
-                    /*Codigo para ver si los datos cumplen con la definicion*/
-                    nuevaTupla.campos[contador].id = definiciones[contador].nombre; // Nombre del campo
-                    #region Verificamos si es llave primaria
-                    if (definiciones[contador].primaria)
+                    if (nuevaTupla.campos[contador].tipo.ToLower().Equals(definiciones[contador].tipo.ToLower())
+                       || (nuevaTupla.campos[contador].tipo.ToLower().Equals("integer") && definiciones[contador].tipo.ToLower().Equals("bool")))
                     {
-                        // Verificamos que no exista una igual.
-                        foreach (tupla tup in tabActual.tuplas)
+                        /*Codigo para ver si los datos cumplen con la definicion*/
+                        nuevaTupla.campos[contador].id = definiciones[contador].nombre; // Nombre del campo
+                        #region Verificamos si es llave primaria
+                        if (definiciones[contador].primaria)
                         {
-                            campo tmpcampo = tup.getCampo(definiciones[contador].nombre);
-                            if (tmpcampo.valor.ToString().Equals(nuevaTupla.campos[contador].valor.ToString()))
+                            // Verificamos que no exista una igual.
+                            foreach (tupla tup in tabActual.tuplas)
+                            {
+                                campo tmpcampo = tup.getCampo(definiciones[contador].nombre);
+                                if (tmpcampo.valor.ToString().Equals(nuevaTupla.campos[contador].valor.ToString()))
+                                {
+                                    flag = false;
+                                    int contador2 = 0;
+                                    foreach (String etiqueta in listaEtiquetas)
+                                    {
+                                        if (!etiqueta.Equals(definiciones[contador].nombre))
+                                        {
+                                            contador2++;
+                                        }
+                                        else
+                                        {
+                                            break;
+                                        }
+                                    }
+                                    Error error = new Error("Ejecución", "Condicion de unico (Llave primaria) fallada " + nombreTabla + "." + nuevaTupla.campos[contador].id,
+                                        raizValores.ChildNodes[contador2].Span.Location.Line, raizValores.ChildNodes[contador2].Span.Location.Column);
+                                    Form1.errores.Add(error);
+                                    Form1.Mensajes.Add(error.getMensaje());
+                                }
+                            }
+                        }
+                        #endregion
+                        #region Autoincremental
+                        if (definiciones[contador].auto)
+                        {
+                            // Si es entero y no tiene valor en el campo, se busca el mayor
+                            if (nuevaTupla.campos[contador].tipo.Equals("integer") && nuevaTupla.campos[contador].tablaId.Equals("nulo"))
+                            {
+                                long maximo = 0;
+                                if (getTabla(nombreTabla, linea, columna) != null)
+                                {
+                                    foreach (tupla tup in getTabla(nombreTabla, linea, columna).tuplas)
+                                    {
+                                        long valor = Convert.ToInt64(tup.campos[contador].valor);
+                                        if (valor > maximo)
+                                        {
+                                            maximo = valor;
+                                        }
+                                    }
+                                }
+                                nuevaTupla.campos[contador].valor = maximo + 1;
+                                nuevaTupla.campos[contador].tablaId = "";
+                            }
+                        }
+                        #endregion
+
+                        #region Verificamos si es Unico
+                        if (definiciones[contador].unico)
+                        {
+                            // Verificamos que no exista una igual.
+                            foreach (tupla tup in tabActual.tuplas)
+                            {
+                                if (tup.getCampo(definiciones[contador].nombre).valor == nuevaTupla.campos[contador].valor)
+                                {
+                                    flag = false;
+                                    Error error = new Error("Ejecución", "Condicion de unico (Unico) fallada " + nombreTabla + "." + nuevaTupla.campos[contador].id,
+                                        raizValores.ChildNodes[contador].Span.Location.Line, raizValores.ChildNodes[contador].Span.Location.Column);
+                                    Form1.errores.Add(error);
+                                    Form1.Mensajes.Add(error.getMensaje());
+                                }
+                            }
+                        }
+                        #endregion
+                        #region Verificamos que exista la llave Foranea
+                        if (!definiciones[contador].foranea.Equals(""))
+                        {
+                            if (!existeTupla(definiciones[contador].foranea, nuevaTupla.campos[contador].id, nuevaTupla.campos[contador].valor, linea, columna))
                             {
                                 flag = false;
                                 int contador2 = 0;
@@ -523,118 +613,52 @@ namespace ServidorDB.estructurasDB
                                         break;
                                     }
                                 }
-                                Error error = new Error("Ejecución", "Condicion de unico (Llave primaria) fallada " + nombreTabla + "." + nuevaTupla.campos[contador].id,
-                                    raizValores.ChildNodes[contador2].Span.Location.Line, raizValores.ChildNodes[contador2].Span.Location.Column);
+                                Error error = new Error("Semantico", "Error, no se encuentra la llave foranea " + definiciones[contador].foranea,
+                                    raizValores.ChildNodes[contador2].Span.Location.Line,
+                                    raizValores.ChildNodes[contador2].Span.Location.Column);
                                 Form1.errores.Add(error);
                                 Form1.Mensajes.Add(error.getMensaje());
                             }
                         }
-                    }
-                    #endregion
-                    #region Autoincremental
-                    if (definiciones[contador].auto)
-                    {
-                        // Si es entero y no tiene valor en el campo, se busca el mayor
-                        if (nuevaTupla.campos[contador].tipo.Equals("integer") && nuevaTupla.campos[contador].tablaId.Equals("nulo"))
+                        #region Verificación de nulo
+                        if (definiciones[contador].nulo)
                         {
-                            long maximo = 0;
-                            if (getTabla(nombreTabla, linea, columna) != null)
-                            {
-                                foreach (tupla tup in getTabla(nombreTabla, linea, columna).tuplas)
-                                {
-                                    long valor = Convert.ToInt64(tup.campos[contador].valor);
-                                    if (valor > maximo)
-                                    {
-                                        maximo = valor;
-                                    }
-                                }
-                            }
-                            nuevaTupla.campos[contador].valor = maximo + 1;
-                            nuevaTupla.campos[contador].tablaId = "";
-                        }
-                    }
-                    #endregion
-
-                    #region Verificamos si es Unico
-                    if (definiciones[contador].unico)
-                    {
-                        // Verificamos que no exista una igual.
-                        foreach (tupla tup in tabActual.tuplas)
-                        {
-                            if (tup.getCampo(definiciones[contador].nombre).valor == nuevaTupla.campos[contador].valor)
+                            if (nuevaTupla.campos[contador].tablaId.ToLower().Equals("nulo"))
                             {
                                 flag = false;
-                                Error error = new Error("Ejecución", "Condicion de unico (Unico) fallada " + nombreTabla + "." + nuevaTupla.campos[contador].id,
-                                    raizValores.ChildNodes[contador].Span.Location.Line, raizValores.ChildNodes[contador].Span.Location.Column);
+                                foreach (String etiqueta in listaEtiquetas)
+                                {
+                                    if (!etiqueta.ToLower().Equals(definiciones[contador].nombre.ToLower()))
+                                    {
+
+                                    }
+                                    else
+                                    {
+                                        break;
+                                    }
+                                }
+
+                                Error error = new Error("Semantico", "El campo " + definiciones[contador].nombre + " de la tabla " + nombreTabla + " es no nulo.",
+                                    raizValores.ChildNodes[0].Span.Location.Line,
+                                    raizValores.ChildNodes[0].Span.Location.Column);
                                 Form1.errores.Add(error);
                                 Form1.Mensajes.Add(error.getMensaje());
                             }
                         }
+
+                        #endregion
+
+                        #endregion
                     }
-                    #endregion
-                    #region Verificamos que exista la llave Foranea
-                    if (!definiciones[contador].foranea.Equals(""))
+                    else
                     {
-                        if (!existeTupla(definiciones[contador].foranea, nuevaTupla.campos[contador].id, nuevaTupla.campos[contador].valor, linea, columna))
-                        {
-                            flag = false;
-                            int contador2 = 0;
-                            foreach (String etiqueta in listaEtiquetas)
-                            {
-                                if (!etiqueta.Equals(definiciones[contador].nombre))
-                                {
-                                    contador2++;
-                                }
-                                else
-                                {
-                                    break;
-                                }
-                            }
-                            Error error = new Error("Semantico", "Error, no se encuentra la llave foranea " + definiciones[contador].foranea,
-                                raizValores.ChildNodes[contador2].Span.Location.Line,
-                                raizValores.ChildNodes[contador2].Span.Location.Column);
-                            Form1.errores.Add(error);
-                            Form1.Mensajes.Add(error.getMensaje());
-                        }
+                        flag = false;
+                        Error error = new Error("Semantico",
+                            "Se esperaba un dato de tipo " + definiciones[contador].tipo + ", valor " + nuevaTupla.campos[contador].valor + " inválido",
+                            raizValores.ChildNodes[contador].Span.Location.Line, raizValores.ChildNodes[contador].Span.Location.Column);
+                        Form1.errores.Add(error);
+                        Form1.Mensajes.Add(error.getMensaje());
                     }
-                    #region Verificación de nulo
-                    if (definiciones[contador].nulo)
-                    {
-                        if (nuevaTupla.campos[contador].tablaId.ToLower().Equals("nulo"))
-                        {
-                            flag = false;                            
-                            foreach (String etiqueta in listaEtiquetas)
-                            {
-                                if (!etiqueta.ToLower().Equals(definiciones[contador].nombre.ToLower()))
-                                {
-
-                                }
-                                else
-                                {
-                                    break;
-                                }
-                            }
-
-                            Error error = new Error("Semantico", "El campo " + definiciones[contador].nombre + " de la tabla " + nombreTabla+ " es no nulo.",
-                                raizValores.ChildNodes[0].Span.Location.Line,
-                                raizValores.ChildNodes[0].Span.Location.Column);
-                            Form1.errores.Add(error);
-                            Form1.Mensajes.Add(error.getMensaje());
-                        }
-                    }
-
-                    #endregion
-
-                    #endregion
-                }
-                else
-                {
-                    flag = false;
-                    Error error = new Error("Semantico",
-                        "Se esperaba un dato de tipo " + definiciones[contador].tipo + ", valor " + nuevaTupla.campos[contador].valor + " inválido",
-                        raizValores.ChildNodes[contador].Span.Location.Line, raizValores.ChildNodes[contador].Span.Location.Column);
-                    Form1.errores.Add(error);
-                    Form1.Mensajes.Add(error.getMensaje());
                 }
             }
             if (flag)

@@ -244,14 +244,17 @@ namespace ServidorDB
         private void button2_Click(object sender, EventArgs e)
         {
             ejecutar(inputConsole.Text);
-            comandos = inputConsole.Text;
+            
         }
+
+        
 
         public void ejecutar(String comandos)
         {
             outputConsola.Text = "";
             Form1.Mensajes = new List<string>(); ;
             Form1.errores = new List<Error>();
+            Form1.comandos = comandos;
             GramaticaSDBCompleta gramatica = new GramaticaSDBCompleta();
             LanguageData lenguaje1 = new LanguageData(gramatica);
             Parser par = new Parser(lenguaje1);
@@ -281,11 +284,7 @@ namespace ServidorDB
                 imprimirSalida(getErrores(arbol));
             }
             mostrarMensajes();
-            //mostrarErrores();
-
-            
-
-
+            //mostrarErrores();            
         }
 
 

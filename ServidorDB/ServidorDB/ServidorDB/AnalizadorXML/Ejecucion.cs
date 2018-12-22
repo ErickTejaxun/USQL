@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -96,9 +97,12 @@ namespace ServidorDB.AnalizadorXML
                         {
                             if (nodoCampo.ChildNodes[1].ChildNodes.Count == 2) // Si tiene dos nodos el nodo uno es la fecha y el segundo es la hora. Concatenar
                             {
-                                cmp.valor = DateTime.Parse(nodoCampo.ChildNodes[1].ChildNodes[0].Token.Text.Replace("\"","")
-                                    + " " + nodoCampo.ChildNodes[1].ChildNodes[1].Token.Text.Replace("\"","")
-                                    );
+                                cmp.valor = nodoCampo.ChildNodes[1].ChildNodes[0].Token.Text.Replace("\"", "")
+                                    + " " + nodoCampo.ChildNodes[1].ChildNodes[1].Token.Text.Replace("\"", "");                                    
+                                String formato = "dd-MM-yyyy hh:mm:ss";
+                                DateTime date1 = DateTime.ParseExact(cmp.valor.ToString(),
+                                formato, CultureInfo.InvariantCulture);
+                                cmp.valor = date1.ToString(formato);
                                 cmp.tipo = "datetime";
                             }
                             else
@@ -114,7 +118,11 @@ namespace ServidorDB.AnalizadorXML
                                         cmp.tipo = "text";
                                         break;
                                     case "date":
-                                        cmp.valor = DateTime.Parse(nodoCampo.ChildNodes[1].ChildNodes[0].Token.Text.Replace("\"",""));
+                                        cmp.valor = nodoCampo.ChildNodes[1].ChildNodes[0].Token.Text.Replace("\"","");
+                                        String formato = "dd-MM-yyyy";
+                                        DateTime date1 = DateTime.ParseExact(cmp.valor.ToString(),
+                                        formato, CultureInfo.InvariantCulture);
+                                        cmp.valor = date1.ToString(formato);
                                         cmp.tipo = "date";
                                         break;
                                     case "double":
@@ -136,8 +144,10 @@ namespace ServidorDB.AnalizadorXML
                         }
                         else
                         {
-                            Form1.Mensajes.Add("Error en etiquetas del archivo " + tabla.path + " En linea:" + (nodoCampo.ChildNodes[0].Token.Location.Line + 1)
-                                + " En columna:" + nodoCampo.ChildNodes[0].Token.Location.Column + " Registro no cargado.");
+                            Error error = new Error("Semantico", "Error en etiquetas del archivo " + tabla.path  , nodoCampo.ChildNodes[0].Token.Location.Line + 1
+                                , nodoCampo.ChildNodes[0].Token.Location.Column);
+                            Form1.errores.Add(error);
+                            Form1.Mensajes.Add(error.getMensaje());
                             continue;
                         }
                     }
@@ -228,8 +238,10 @@ namespace ServidorDB.AnalizadorXML
                     }
                     else
                     {
-                        Form1.Mensajes.Add("Tabla " + nuevaTabla.nombre+ "Path:" + nuevaTabla.path+" Error de etiquetas que no coinciden. Linea:" + nodoDef.ChildNodes[0].Token.Location.Line
-                            +" Columna:" + nodoDef.ChildNodes[0].Token.Location.Column);
+                        Error error = new Error("Semantico","Tabla " + nuevaTabla.nombre + "Path:" + nuevaTabla.path + " Error de etiquetas que no coinciden. ", nodoDef.ChildNodes[0].Token.Location.Line
+                            ,nodoDef.ChildNodes[0].Token.Location.Column);
+                        Form1.errores.Add(error);
+                        Form1.Mensajes.Add(error.getMensaje());
                     }
                 }
                 listaTablas.Add(nuevaTabla);
@@ -357,17 +369,23 @@ namespace ServidorDB.AnalizadorXML
             // Primero verificamos de que existan procedimientos
             if (raiz.ChildNodes.Count > 0)
             {
+                
                 foreach (ParseTreeNode nodo in raiz.ChildNodes[0].ChildNodes)
                 {
+                    String tipo = "";
                     Procedimiento nuevoProc = new Procedimiento("", "");
                     //= new Procedimiento()
+                    if (nodo.ChildNodes.Count==9)
+                    {
+                        tipo = nodo.ChildNodes[6].Token.Text;
+                    }
                     if (nodo.ChildNodes.Count == 6) // No tiene retorno
                     {
                         nuevoProc = new Procedimiento(nodo.ChildNodes[2].ChildNodes[0].Token.Text.Replace("\"",""), "");
                     }
                     else if (nodo.ChildNodes.Count == 9) // tiene retorno
                     {
-                        nuevoProc = new Procedimiento(nodo.ChildNodes[2].ChildNodes[0].Token.Text.Replace("\"",""), nodo.ChildNodes[7].Token.Text.Replace("\"",""));
+                        nuevoProc = new Procedimiento(nodo.ChildNodes[2].ChildNodes[0].Token.Text.Replace("\"",""), nodo.ChildNodes[6].Token.Text.Replace("\"",""));
                     }
                     nuevoProc.codigoFuente = nodo.ChildNodes[4].Token.Text;
                     /*Generamos el arbol de la funcion*/
@@ -386,13 +404,16 @@ namespace ServidorDB.AnalizadorXML
                         }
                         else
                         {
-                            Form1.Mensajes.Add("Procedimiento " + nuevoProc.nombre + " Error en esta etiqueta. Linea:" + nodoParametro.ChildNodes[0].Token.Location.Line
-                                + " Columna:" + +nodoParametro.ChildNodes[0].Token.Location.Column);
+                            Error error = new Error("Semantico" ,"Procedimiento " + nuevoProc.nombre + " Error en esta etiqueta" , nodoParametro.ChildNodes[0].Token.Location.Line
+                                , +nodoParametro.ChildNodes[0].Token.Location.Column);
+                            Form1.errores.Add(error);
+                            Form1.Mensajes.Add(error.getMensaje());
                         }
                     }
                     nuevoProc.nombre=nuevoProc.nombre.Replace(".","$");
                     nuevoProc.id = nuevoProc.nombre;
                     nuevoProc.codigoFuente = nuevoProc.codigoFuente.Replace("~","");
+                    nuevoProc.tipoRetorno = tipo;
                     listaProcedimientos.Add(nuevoProc);
                 }
             }
@@ -420,8 +441,10 @@ namespace ServidorDB.AnalizadorXML
                         }
                         else
                         {
-                            Form1.Mensajes.Add("Error en la etiquetas de declaracion de objeto en: linea " + nodoCampo.ChildNodes[0].Token.Location.Line
-                                + " Columna " + nodoCampo.ChildNodes[0].Token.Location.Column);
+                            Error error = new Error("Semantico" ,"Error en la etiquetas de declaracion de objeto ", nodoCampo.ChildNodes[0].Token.Location.Line
+                                , nodoCampo.ChildNodes[0].Token.Location.Column);
+                            Form1.errores.Add(error);
+                            Form1.Mensajes.Add(error.getMensaje());
                         }
                     }
                     listaObjetos.Add(nuevoObjeto);
