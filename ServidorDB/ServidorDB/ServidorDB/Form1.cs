@@ -26,6 +26,7 @@ namespace ServidorDB
         public static List<Error> errores;
         public static List<String> Mensajes;
         public static Interprete i;
+        public static String comandos = "";
 
         public Form1()
         {
@@ -242,14 +243,20 @@ namespace ServidorDB
 
         private void button2_Click(object sender, EventArgs e)
         {
+            ejecutar(inputConsole.Text);
+            comandos = inputConsole.Text;
+        }
+
+        public void ejecutar(String comandos)
+        {
             outputConsola.Text = "";
             Form1.Mensajes = new List<string>(); ;
             Form1.errores = new List<Error>();
             GramaticaSDBCompleta gramatica = new GramaticaSDBCompleta();
             LanguageData lenguaje1 = new LanguageData(gramatica);
             Parser par = new Parser(lenguaje1);
-            ParseTree arbol1 = par.Parse(inputConsole.Text);
-            if (arbol1.Root!=null)
+            ParseTree arbol1 = par.Parse(comandos);
+            if (arbol1.Root != null)
             {
                 //Interprete interprete = new Interprete(arbol1.Root.ChildNodes[0]);
                 //interprete.guardarMetodos(arbol1.Root.ChildNodes[0]);
@@ -265,9 +272,9 @@ namespace ServidorDB
                 imprimirSalida("Salida...");
                 //analizador.Genarbol(arbol.Root);
                 //analizador.generateGraph2("Ejemplo.txt");
-                i = new Interprete(arbol.Root.ChildNodes[0], arbol1.Root.ChildNodes[0]);                             
+                i = new Interprete(arbol.Root.ChildNodes[0], arbol1.Root.ChildNodes[0]);
                 Resultado result = i.ejecutar(arbol.Root.ChildNodes[0]);
-                //imprimirSalida(result.valor+"");                
+                //imprimirSalida(result.valor+"");                                
             }
             else
             {
@@ -275,8 +282,13 @@ namespace ServidorDB
             }
             mostrarMensajes();
             //mostrarErrores();
+
             
+
+
         }
+
+
         public void mostrarMensajes()
         {
             imprimirSalida("--------------------------------------");

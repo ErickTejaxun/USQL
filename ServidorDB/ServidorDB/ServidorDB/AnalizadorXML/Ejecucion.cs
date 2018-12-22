@@ -369,7 +369,7 @@ namespace ServidorDB.AnalizadorXML
                     {
                         nuevoProc = new Procedimiento(nodo.ChildNodes[2].ChildNodes[0].Token.Text.Replace("\"",""), nodo.ChildNodes[7].Token.Text.Replace("\"",""));
                     }
-                    nuevoProc.codigoFuente = nodo.ChildNodes[4].Token.Text.Replace("\"","");
+                    nuevoProc.codigoFuente = nodo.ChildNodes[4].Token.Text;
                     /*Generamos el arbol de la funcion*/
                     
 

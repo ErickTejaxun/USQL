@@ -38,7 +38,7 @@ namespace ServidorDB.estructurasDB
                         return camp;
                     }
                 }
-                return null;
+                //return null;
 
             }
             return null;

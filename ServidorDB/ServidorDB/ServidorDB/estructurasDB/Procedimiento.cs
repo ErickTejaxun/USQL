@@ -106,6 +106,10 @@ namespace ServidorDB.estructurasDB
                 getCodigo(nodo);
                 if (nodo.Token != null)
                 {
+                    if (nodo.Token.Text.Contains("JUAN RAYMUNDO GOMEZ RAMIREZ"))
+                    {
+                        int a = 2;
+                    }
                     this.codigoFuente = this.codigoFuente + nodo.Token.Text + " ";
                     this.codigoFuente = this.codigoFuente.Replace(", ,",",");
                     //if (nodo.Token.Text.Equals(";") || nodo.Token.Text.Equals("}") || nodo.Token.Text.Equals("{"))

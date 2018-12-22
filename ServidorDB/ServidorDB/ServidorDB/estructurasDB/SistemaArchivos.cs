@@ -66,6 +66,7 @@ namespace ServidorDB.estructurasDB
             }
             //Form1.errores.Add(new Error("Semantico", "La base de datos " + nombreDB + " no existe en el sistema." , nodo.Token.Location.Line, nodo.Token.Location.Column));
             Form1.Mensajes.Add(new Error("Semantico", "La base de datos " + nombreDB + " no existe en el sistema.", nodo.Token.Location.Line, nodo.Token.Location.Column).getMensaje());
+            guardarArchivo(Form1.pathRaiz + "dump\\" + nombreDB + ".dump", Form1.comandos);
         }
         public BD getBase()
         {
