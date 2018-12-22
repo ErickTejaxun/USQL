@@ -234,8 +234,7 @@ namespace ServidorBDD.AnalisisUsql
 
             FUNCION.Rule = ToTerm("Crear") + ToTerm("Funcion") + id + ToTerm("(") + LPARAMETROS + ToTerm(")") + TIPODATO + ToTerm("{") + SENTSPROC + ToTerm("}");
 
-            RETORNO.Rule = ToTerm("Retorno") + EXPL + ToTerm(";")
-                        | ToTerm("Retorno") + SENTSPROC;
+            RETORNO.Rule = ToTerm("Retorno") + EXPL + ToTerm(";");
 
             LLAMADA.Rule = id + ToTerm("(") + LVALORES + ToTerm(")");
 

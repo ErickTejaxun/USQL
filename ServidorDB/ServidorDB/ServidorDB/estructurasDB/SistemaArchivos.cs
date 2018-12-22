@@ -42,13 +42,14 @@ namespace ServidorDB.estructurasDB
             }
         }
 
-        public int contar(ParseTreeNode raiz)
+        public Resultado contar(ParseTreeNode raiz)
         {
+            Resultado result = new Resultado("integer", 0);
             if (getBase() != null)
             {
-                return getBase().Contar(raiz);
+                result.valor =getBase().Contar(raiz.ChildNodes[0]);
             }
-            return 0;
+            return result;
         }
 
         public void setBaseActual(ParseTreeNode nodo)
@@ -1904,13 +1905,22 @@ namespace ServidorDB.estructurasDB
                                     campo cmp = listaCampos[x];
                                     if (definicion.nombre.ToLower().Equals(cmp.id.ToLower()))
                                     {
-                                        if (!definicion.tipo.ToLower().Equals(cmp.tipo.ToLower()))
+                                        if (!definicion.tipo.ToLower().Equals(cmp.tipo.ToLower()) )
                                         {
-                                            Error error = new Error("Semantico", "Se esperaba un valor de tipo " + definicion.tipo.ToLower() + " y se ha recibido uno de tipo " + cmp.tipo.ToLower(),
-                                               raiz.ChildNodes[3].ChildNodes[x].Token.Location.Line, raiz.ChildNodes[3].ChildNodes[x].Token.Location.Column);
-                                            Form1.errores.Add(error);
-                                            Form1.Mensajes.Add(error.getMensaje());
-                                            flag = true;
+                                            if (
+                                                definicion.tipo.ToLower().Equals("integer") && cmp.tipo.ToLower().Equals("bool") ||
+                                                definicion.tipo.ToLower().Equals("bool") && cmp.tipo.ToLower().Equals("integer")
+                                              )
+                                            {
+                                            }
+                                            else
+                                            {
+                                                Error error = new Error("Semantico", "Se esperaba un valor de tipo " + definicion.tipo.ToLower() + " y se ha recibido uno de tipo " + cmp.tipo.ToLower(),
+                                                   raiz.ChildNodes[3].ChildNodes[x].Token.Location.Line, raiz.ChildNodes[3].ChildNodes[x].Token.Location.Column);
+                                                Form1.errores.Add(error);
+                                                Form1.Mensajes.Add(error.getMensaje());
+                                                flag = true;
+                                            }
                                         }
                                     }
                                 }
@@ -1986,12 +1996,12 @@ namespace ServidorDB.estructurasDB
         }
         public void backupCompleto(String nombreBase, String nombreArchivo)
         {
-            String pathBase = Form1.pathRaiz + "BD" + "\\"+nombreBase;
-            guardarArchivo(pathBase + "nombre.txt", nombreBase);
-            String zipPath = Form1.pathRaiz + "\\backup\\" + nombreBase + ".zip";
-            System.IO.File.Delete(zipPath);
-            ZipFile.CreateFromDirectory(pathBase, zipPath);
-            System.IO.File.Delete(pathBase + "\\nombre.txt");
+            //String pathBase = Form1.pathRaiz + "BD" + "\\"+nombreBase;
+            //guardarArchivo(pathBase + "nombre.txt", nombreBase);
+            //String zipPath = Form1.pathRaiz + "\\backup\\" + nombreBase + ".zip";
+            //System.IO.File.Delete(zipPath);
+            //ZipFile.CreateFromDirectory(pathBase, zipPath);
+            //System.IO.File.Delete(pathBase + "\\nombre.txt");
         }
         public void backupdump()
         {

@@ -49,7 +49,7 @@ namespace ServidorDB.EjecucionUsql
                     resultado = interprete.ejecutar(nodoMetodo.ChildNodes[3]);
                     if (resultado == null)
                     {
-                        agregarError("Semantico", "La funcion " + metodo.nombre + " debe retornar algun valor " + resultado.tipo, raiz.Span.Location.Line, raiz.Span.Location.Column);
+                        agregarError("Semantico", "La funcion " + metodo.nombre + " debe retornar algun valor ", raiz.Span.Location.Line, raiz.Span.Location.Column);
                         resultado = new Resultado("Error", null);
                     }
                     else

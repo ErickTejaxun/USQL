@@ -252,8 +252,8 @@ namespace ServidorDB
             if (arbol.Root != null)
             {
                 imprimirSalida("Salida...");
-                analizador.Genarbol(arbol.Root);
-                analizador.generateGraph2("Ejemplo.txt");
+                //analizador.Genarbol(arbol.Root);
+                //analizador.generateGraph2("Ejemplo.txt");
                 i = new Interprete(arbol.Root.ChildNodes[0]);                             
                 Resultado result = i.ejecutar(arbol.Root.ChildNodes[0]);
                 //imprimirSalida(result.valor+"");                

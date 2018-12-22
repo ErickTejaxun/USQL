@@ -74,6 +74,9 @@ namespace ServidorBDD.EjecucionUsql
                     case "CREARTABLA":
                         Form1.sistemaArchivos.crearTabla(hijo);
                         break;
+                    case "CONTAR":
+                        Form1.sistemaArchivos.contar(hijo);
+                        break;
                     case "DECLARACION"://jose
                         Declaracion declaracion = new Declaracion();
                         Boolean estado = declaracion.declaracion(hijo);

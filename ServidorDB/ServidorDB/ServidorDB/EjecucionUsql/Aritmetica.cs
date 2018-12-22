@@ -111,6 +111,9 @@ namespace ServidorBDD.EjecucionUsql
                     {
                         return r1;
                     }
+                case "contar":
+                    return Form1.sistemaArchivos.contar(raiz);
+                    
             }
 
             switch (raiz.ChildNodes[1].Token.Text)
@@ -717,7 +720,7 @@ namespace ServidorBDD.EjecucionUsql
             {
                 foreach (campo cmp in tuplaActual.campos)
                 {
-                    if (raiz.ChildNodes.Count < 2)
+                    if (raiz.ChildNodes.Count == 1)
                     {
                         if (cmp.id.ToLower().Contains(nombreCampo))
                         {
@@ -726,7 +729,7 @@ namespace ServidorBDD.EjecucionUsql
                     }
                     else
                     {
-                        if (cmp.id.ToLower().Contains("." + nombreCampo))
+                        if (cmp.id.ToLower().Contains(nombreCampo))
                         {
                             return new Resultado(cmp.tipo, cmp.valor);
                         }
