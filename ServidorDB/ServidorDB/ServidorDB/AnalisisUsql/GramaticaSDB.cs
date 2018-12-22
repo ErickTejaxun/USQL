@@ -353,7 +353,7 @@ namespace ServidorBDD.AnalisisUsql
             this.MarkPunctuation("selecciona", "caso", "defecto", "para", "detener", "mientras", "backup", "restaurar", "contar", "<<", ">>", "De", "@", "=",",");
             this.MarkPunctuation("selecciona", "caso", "defecto", "para", "detener", "mientras", "backup", "restaurar", "contar", "<<", ">>", "De", "@", "=",",");
             this.MarkPunctuation("donde", "ordenar_por","Llave_Foranea");
-            this.MarkTransient(SENTDDL, SENTPROC, SENTSPROC, COMPLEMENTO, SENTDDL/*, LPARAMETROS*/);
+            this.MarkTransient(SENTDDL, SENTPROC,COMPLEMENTO, SENTDDL/*, LPARAMETROS*/);
             //this.MarkTransient(CASO);
 
             #endregion

@@ -151,22 +151,22 @@ namespace ServidorDB.AnalizadorXML
 
             //}
         }
-        public void generateGraph2(string fileName)
-        {
-            try
-            {
-                var command = string.Format("dot -Tjpg {0} -o {1}", Path.Combine(ruta, fileName), Path.Combine(ruta, fileName.Replace(".txt", ".jpg")));
-                String commando = "dot -Tjpg " + fileName + " -o " + fileName.Replace(".txt", ".jpg");
-                var procStartInfo = new System.Diagnostics.ProcessStartInfo("cmd", "/C" + command);
-                var proc = new System.Diagnostics.Process();
-                proc.StartInfo = procStartInfo;
-                proc.Start();
-                proc.WaitForExit();
-            }
-            catch (Exception x)
-            {
+        public void generateGraph2(string fileName) { 
+        ////{
+        ////    try
+        ////    {
+        ////        var command = string.Format("dot -Tjpg {0} -o {1}", Path.Combine(ruta, fileName), Path.Combine(ruta, fileName.Replace(".txt", ".jpg")));
+        ////        String commando = "dot -Tjpg " + fileName + " -o " + fileName.Replace(".txt", ".jpg");
+        ////        var procStartInfo = new System.Diagnostics.ProcessStartInfo("cmd", "/C" + command);
+        ////        var proc = new System.Diagnostics.Process();
+        ////        proc.StartInfo = procStartInfo;
+        ////        proc.Start();
+        ////        proc.WaitForExit();
+        ////    }
+        ////    catch (Exception x)
+        ////    {
 
-            }
+        ////    }
         }
 
     }

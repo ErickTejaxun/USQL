@@ -80,6 +80,31 @@ namespace ServidorDB.estructurasDB
             return null;
         }
 
+        public Boolean setMetodo(Procedimiento nuevo)
+        {
+            foreach (Procedimiento p in getBase().procedimientos)
+            {
+                if (nuevo.id.Equals(p.id))
+                {
+                    return false;
+                }
+            }
+            getBase().procedimientos.Add(nuevo);
+            return true;
+        }
+
+        public Procedimiento getMetodo(String id)
+        {
+            foreach (Procedimiento p in getBase().procedimientos)
+            {
+                if (id.Equals(p.id))
+                {
+                    return p;
+                }
+            }
+            return null;
+        }
+
         public BD getBase(String nombre)
         {
             foreach (BD db in basesdedatos)
@@ -446,9 +471,12 @@ namespace ServidorDB.estructurasDB
             {
                 Logica opL = new Logica();
                 Resultado result = opL.operar(raizValores.ChildNodes[contador]);
-                nuevaTupla.getCampo(raizCampos.ChildNodes[contador].ChildNodes[0].Token.Text).valor = result.valor;
-                nuevaTupla.getCampo(raizCampos.ChildNodes[contador].ChildNodes[0].Token.Text).tablaId = ""; // Con esto sabremos que no es nulo.
-                listaEtiquetas.Add(raizCampos.ChildNodes[contador].ChildNodes[0].Token.Text);
+                if (nuevaTupla.getCampo(raizCampos.ChildNodes[contador].ChildNodes[0].Token.Text)!=null)
+                {
+                    nuevaTupla.getCampo(raizCampos.ChildNodes[contador].ChildNodes[0].Token.Text).valor = result.valor;
+                    nuevaTupla.getCampo(raizCampos.ChildNodes[contador].ChildNodes[0].Token.Text).tablaId = ""; // Con esto sabremos que no es nulo.
+                    listaEtiquetas.Add(raizCampos.ChildNodes[contador].ChildNodes[0].Token.Text);
+                }
             }
 
             #region Verificamos que el número de valores coinicida con 
@@ -569,26 +597,26 @@ namespace ServidorDB.estructurasDB
                         }
                     }
                     #region Verificación de nulo
-                    if (!definiciones[contador].nulo)
+                    if (definiciones[contador].nulo)
                     {
                         if (nuevaTupla.campos[contador].tablaId.ToLower().Equals("nulo"))
                         {
-                            flag = false;
-                            int contador2 = 0;
+                            flag = false;                            
                             foreach (String etiqueta in listaEtiquetas)
                             {
                                 if (!etiqueta.ToLower().Equals(definiciones[contador].nombre.ToLower()))
                                 {
-                                    contador2++;
+
                                 }
                                 else
                                 {
                                     break;
                                 }
                             }
-                            Error error = new Error("Semantico", "El campo " + definiciones[contador].nombre + " es no nulo.",
-                                raizValores.ChildNodes[contador2].Span.Location.Line,
-                                raizValores.ChildNodes[contador2].Span.Location.Column);
+
+                            Error error = new Error("Semantico", "El campo " + definiciones[contador].nombre + " de la tabla " + nombreTabla+ " es no nulo.",
+                                raizValores.ChildNodes[0].Span.Location.Line,
+                                raizValores.ChildNodes[0].Span.Location.Column);
                             Form1.errores.Add(error);
                             Form1.Mensajes.Add(error.getMensaje());
                         }
@@ -975,7 +1003,7 @@ namespace ServidorDB.estructurasDB
             foreach (Procedimiento proc in lista)
             {
                 cadena = cadena + "\n<proc>\n";
-                cadena = cadena + "<nombre>" + proc.nombre + "</nombre>\n";
+                cadena = cadena + "<nombre>" + proc.id.Replace("$",".") + "</nombre>\n";
                 cadena = cadena + "<params>\n";
                 foreach (Parametro par in proc.listaParametros)
                 {
@@ -983,7 +1011,7 @@ namespace ServidorDB.estructurasDB
                         + "</" + par.tipo + ">\n";
                 }
                 cadena = cadena + "</params>";
-                cadena = cadena + "<src>" + proc.codigoFuente + "</src>\n";
+                cadena = cadena + "<src>~" + proc.codigoFuente + "~</src>\n";
                 if (!proc.tipoRetorno.Equals(""))
                 {
                     cadena = cadena + "<tipo>" + proc.tipoRetorno + "</tipo>";
@@ -1034,6 +1062,10 @@ namespace ServidorDB.estructurasDB
                                 + "</" + quitarNombreTabla(cmp.id.ToLower()) + ">\n";
                             break;
                         case "text":
+                            if (cmp.valor.Equals(""))
+                            {
+                                cmp.valor.Equals("null");
+                            }
                             cadena = cadena + "<" + quitarNombreTabla(cmp.id.ToLower()) + ">\"" + cmp.valor
                                 + "\"</" + quitarNombreTabla(cmp.id.ToLower()) + ">\n";
                             break;
@@ -1046,7 +1078,7 @@ namespace ServidorDB.estructurasDB
                 cadena = cadena + "\n" + "</" + "row" + ">";
             }
             guardarArchivo(tab.path, cadena);
-            Form1.Mensajes.Add(cadena);
+            //Form1.Mensajes.Add(cadena);
         }
         public String quitarNombreTabla(String tipo)
         {
@@ -1662,6 +1694,7 @@ namespace ServidorDB.estructurasDB
             List<defCampo> definicionesTemporales = new List<defCampo>();
             List<int> lineas = new List<int>();
             List<int> columnas = new List<int>();
+            Object valor = null;
             if (getBase() != null)
             {
                 Tabla tablaActual = getTabla(nombreTabla, raiz.ChildNodes[0].Token.Location.Line, raiz.ChildNodes[0].Token.Location.Column);
@@ -1669,7 +1702,22 @@ namespace ServidorDB.estructurasDB
                 {
                     foreach (ParseTreeNode nodo in raiz.ChildNodes[2].ChildNodes)
                     {
-                        String tipo = nodo.ChildNodes[0].ChildNodes[0].Token.Text.ToLower();
+                        String tipo = nodo.ChildNodes[0].ChildNodes[0].Token.Text.ToLower();                        
+                        switch (tipo.ToLower())
+                        {
+                            case "text":
+                                valor = " ";
+                                break;
+                            case "double":
+                                valor = 0.00;
+                                break;
+                            case "integer":
+                                valor = 0;
+                                break;
+                            case "bool":
+                                valor = 0;
+                                break;
+                        }
                         lineas.Add(nodo.ChildNodes[0].ChildNodes[0].Token.Location.Line);
                         columnas.Add(nodo.ChildNodes[0].ChildNodes[0].Token.Location.Column);
                         String nombre = nodo.ChildNodes[1].Token.Text.ToLower();
@@ -1686,13 +1734,13 @@ namespace ServidorDB.estructurasDB
                                 switch (nodoCom.Token.Text.ToLower())
                                 {
                                     case "llave_primaria":
-                                        primaria = true;
+                                        primaria = false;
                                         break;
                                     case "autoincrementable":
-                                        auto = true;
+                                        auto = false;
                                         break;
                                     case "nulo":
-                                        nulo = true;
+                                        nulo = false;
                                         break;
                                     case "no nulo":
                                         nulo = false;
@@ -1768,6 +1816,9 @@ namespace ServidorDB.estructurasDB
                                 case "date":
                                 case "datetime":
                                     nuevoCampo.valor = "null";
+                                    break;
+                                case "bool":
+                                    nuevoCampo.valor = 0;
                                     break;
                             }
                             tup.campos.Add(nuevoCampo);
@@ -1964,6 +2015,7 @@ namespace ServidorDB.estructurasDB
         #region BACKUP
         public void backup(ParseTreeNode raiz)
         {
+            commit();
             String tipo = raiz.ChildNodes[0].Token.Text.ToLower();
             String nombreBase = raiz.ChildNodes[1].Token.Text.ToLower();
             String nombreArchivo = raiz.ChildNodes[2].Token.Text.ToLower();
@@ -1996,12 +2048,12 @@ namespace ServidorDB.estructurasDB
         }
         public void backupCompleto(String nombreBase, String nombreArchivo)
         {
-            //String pathBase = Form1.pathRaiz + "BD" + "\\"+nombreBase;
-            //guardarArchivo(pathBase + "nombre.txt", nombreBase);
-            //String zipPath = Form1.pathRaiz + "\\backup\\" + nombreBase + ".zip";
-            //System.IO.File.Delete(zipPath);
-            //ZipFile.CreateFromDirectory(pathBase, zipPath);
-            //System.IO.File.Delete(pathBase + "\\nombre.txt");
+            String pathBase = Form1.pathRaiz + "BD" + "\\"+nombreBase;
+            guardarArchivo(pathBase + "nombre.txt", nombreBase);
+            String zipPath = Form1.pathRaiz + "\\backup\\" + nombreBase + ".zip";
+            System.IO.File.Delete(zipPath);
+            ZipFile.CreateFromDirectory(pathBase, zipPath);
+            System.IO.File.Delete(pathBase + "\\nombre.txt");
         }
         public void backupdump()
         {

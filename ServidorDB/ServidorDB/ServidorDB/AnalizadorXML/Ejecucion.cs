@@ -72,8 +72,8 @@ namespace ServidorDB.AnalizadorXML
             }
             if (raiz != null)
             {
-                analizador.Genarbol(raiz);
-                analizador.generateGraph("ejemplo.txt");
+                //analizador.Genarbol(raiz);
+                //analizador.generateGraph("ejemplo.txt");
                 ServidorDB.AnalizadorXML.Ejecucion ejecutor = new ServidorDB.AnalizadorXML.Ejecucion(raiz, formularioACtual);
                 obtenerTuplas(raiz, tabla);
             }            
@@ -314,8 +314,8 @@ namespace ServidorDB.AnalizadorXML
             }
             if (raiz != null)
             {
-                analizador.Genarbol(raiz);
-                analizador.generateGraph("ejemplo.txt");
+                //analizador.Genarbol(raiz);
+                //analizador.generateGraph("ejemplo.txt");
                 ServidorDB.AnalizadorXML.Ejecucion ejecutor = new ServidorDB.AnalizadorXML.Ejecucion(raiz, formularioACtual);
                 listaProcedimientos = recorrerProcedimiento(raiz);
             }
@@ -343,8 +343,8 @@ namespace ServidorDB.AnalizadorXML
             }
             if (raiz != null)
             {
-                analizador.Genarbol(raiz);
-                analizador.generateGraph("ejemplo.txt");
+                //analizador.Genarbol(raiz);
+                //analizador.generateGraph("ejemplo.txt");
                 ServidorDB.AnalizadorXML.Ejecucion ejecutor = new ServidorDB.AnalizadorXML.Ejecucion(raiz, formularioACtual);
                 listaObjetos = recorrerObjetos(raiz);
             }
@@ -361,15 +361,15 @@ namespace ServidorDB.AnalizadorXML
                 {
                     Procedimiento nuevoProc = new Procedimiento("", "");
                     //= new Procedimiento()
-                    if (nodo.ChildNodes.Count == 7) // No tiene retorno
+                    if (nodo.ChildNodes.Count == 6) // No tiene retorno
                     {
                         nuevoProc = new Procedimiento(nodo.ChildNodes[2].ChildNodes[0].Token.Text.Replace("\"",""), "");
                     }
-                    else if (nodo.ChildNodes.Count == 10) // tiene retorno
+                    else if (nodo.ChildNodes.Count == 9) // tiene retorno
                     {
                         nuevoProc = new Procedimiento(nodo.ChildNodes[2].ChildNodes[0].Token.Text.Replace("\"",""), nodo.ChildNodes[7].Token.Text.Replace("\"",""));
                     }
-                    nuevoProc.codigoFuente = nodo.ChildNodes[5].Token.Text.Replace("\"","");
+                    nuevoProc.codigoFuente = nodo.ChildNodes[4].Token.Text.Replace("\"","");
                     /*Generamos el arbol de la funcion*/
                     
 
@@ -380,6 +380,8 @@ namespace ServidorDB.AnalizadorXML
                             (nodoParametro.ChildNodes[2].Token.Text.Replace("\"","").ToLower()))
                         {
                             Parametro parametro = new Parametro(nodoParametro.ChildNodes[0].Token.Text.Replace("\"",""), nodoParametro.ChildNodes[1].ChildNodes[0].Token.Text.Replace("\"",""));
+                            nuevoProc.nombre.Replace(".", "$");
+                            nuevoProc.id = nuevoProc.nombre;
                             nuevoProc.listaParametros.Add(parametro);
                         }
                         else
@@ -388,6 +390,9 @@ namespace ServidorDB.AnalizadorXML
                                 + " Columna:" + +nodoParametro.ChildNodes[0].Token.Location.Column);
                         }
                     }
+                    nuevoProc.nombre=nuevoProc.nombre.Replace(".","$");
+                    nuevoProc.id = nuevoProc.nombre;
+                    nuevoProc.codigoFuente = nuevoProc.codigoFuente.Replace("~","");
                     listaProcedimientos.Add(nuevoProc);
                 }
             }

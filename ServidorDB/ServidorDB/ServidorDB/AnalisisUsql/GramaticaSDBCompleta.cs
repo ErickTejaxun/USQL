@@ -197,7 +197,9 @@ namespace ServidorDB.AnalisisUsql
 
             CREARTABLA.Rule = ToTerm("CREAR") + ToTerm("TABLA") + id + ToTerm("(") + LCAMPOS + ToTerm(")");
 
-            LCAMPOS.Rule = MakePlusRule(LCAMPOS, ToTerm(","), CAMPO);
+            //LCAMPOS.Rule = MakePlusRule(LCAMPOS, ToTerm(","), CAMPO);
+            LCAMPOS.Rule = LCAMPOS + ToTerm(",") + CAMPO
+                        | CAMPO ;
 
             CAMPO.Rule = TIPODATO + id + COMPLEMENTOS;
 
@@ -211,7 +213,10 @@ namespace ServidorDB.AnalisisUsql
 
             CREAROBJETO.Rule = ToTerm("Crear") + ToTerm("Objeto") + id + ToTerm("(") + LATRIBUTOS + ToTerm(")");
 
-            LATRIBUTOS.Rule = MakeStarRule(LATRIBUTOS, ToTerm(","), ATRIBUTO);
+            LATRIBUTOS.Rule = LATRIBUTOS + ToTerm(",") + ATRIBUTO
+                            | ATRIBUTO
+                            | Empty;
+                //MakeStarRule(LATRIBUTOS, ToTerm(","), ATRIBUTO);
 
             ATRIBUTO.Rule = TIPODATO + id;
 
@@ -227,7 +232,9 @@ namespace ServidorDB.AnalisisUsql
                         | ToTerm("Retorno") + SENTSPROC;
 
             LLAMADA.Rule = id + ToTerm("(") + LVALORES + ToTerm(")");
-            LVALORES.Rule = MakeStarRule(LVALORES, ToTerm(","), EXPL);
+            LVALORES.Rule = LVALORES + ToTerm(",") + EXPL
+                        | EXPL | Empty;
+            //LVALORES.Rule = MakeStarRule(LVALORES, ToTerm(","), EXPL);
 
             USUARIO.Rule = ToTerm("Crear") + ToTerm("Usuario") + id + ToTerm("Colocar") + ToTerm("Password") + ToTerm("=") + tipoText;
 
@@ -235,7 +242,9 @@ namespace ServidorDB.AnalisisUsql
 
             ALTERARTABLA.Rule = ToTerm("Alterar") + ToTerm("Tabla") + id + ToTerm("Agregar") + ToTerm("(") + LCAMPOS + ToTerm(")")
                                | ToTerm("Alterar") + ToTerm("Tabla") + id + ToTerm("Quitar") + LID;
-            LID.Rule = MakePlusRule(LID, ToTerm(","), IDACCESO);
+            LID.Rule = LID + ToTerm(",") + IDACCESO
+                      | IDACCESO;
+            //LID.Rule = MakePlusRule(LID, ToTerm(","), IDACCESO);
 
             ALTERAROBJETO.Rule = ToTerm("Alterar") + ToTerm("Objeto") + id + ToTerm("Agregar") + ToTerm("(") + LATRIBUTOS + ToTerm(")")
                                 | ToTerm("Alterar") + ToTerm("Objeto") + id + ToTerm("Quitar") + LID;
@@ -254,7 +263,10 @@ namespace ServidorDB.AnalisisUsql
             ACTUALIZAR.Rule = ToTerm("Actualizar") + ToTerm("Tabla") + id + ToTerm("(") + LID + ToTerm(")") + ToTerm("Valores") + ToTerm("(") + LVALORES + ToTerm(")") + ToTerm("Donde") + EXPL
                             | ToTerm("Actualizar") + ToTerm("Tabla") + id + ToTerm("(") + LID + ToTerm(")") + ToTerm("Valores") + ToTerm("(") + LVALORES + ToTerm(")");
 
-            BORRAR.Rule = ToTerm("Borrar") + ToTerm("En") + ToTerm("Tabla") + id + ToTerm("Donde") + EXPL;
+            BORRAR.Rule = ToTerm("Borrar") + ToTerm("En") + ToTerm("Tabla") + id + ToTerm("Donde") + EXPL
+                | ToTerm("Borrar") + ToTerm("En") + ToTerm("Tabla") + id
+                            ;
+
 
             SELECCIONAR.Rule = ToTerm("Seleccionar") + LID + ToTerm("De") + LID + COMPSELECCIONAR
                               | ToTerm("Seleccionar") + ToTerm("*") + ToTerm("De") + LID + COMPSELECCIONAR;
@@ -276,13 +288,18 @@ namespace ServidorDB.AnalisisUsql
             //Sentencias SSL
             DECLARAR.Rule = ToTerm("Declarar") + LIDPROC + TIPODATO + ToTerm(";")
                            | ToTerm("Declarar") + LIDPROC + TIPODATO + ToTerm("=") + EXPL + ToTerm(";");
-            LIDPROC.Rule = MakePlusRule(LIDPROC, ToTerm(","), idProc);
+            //LIDPROC.Rule = MakePlusRule(LIDPROC, ToTerm(","), idProc);
+            LIDPROC.Rule = LIDPROC + ToTerm(",") + idProc
+                            | idProc;
+
+
 
             ASIGNAROBJ.Rule = ACCESOOBJ + ToTerm("=") + EXPL + ToTerm(";");
 
             ACCESOOBJ.Rule = ToTerm("@") + IDACCESO;
 
-            IDACCESO.Rule = MakePlusRule(IDACCESO, ToTerm("."), id);
+            IDACCESO.Rule = IDACCESO + ToTerm(".") + id | id;
+            //IDACCESO.Rule = MakePlusRule(IDACCESO, ToTerm("."), id);
 
             SENTSI.Rule = ToTerm("Si") + ToTerm("(") + EXPL + ToTerm(")") + ToTerm("{") + SENTSPROC + ToTerm("}")
                          | ToTerm("Si") + ToTerm("(") + EXPL + ToTerm(")") + ToTerm("{") + SENTSPROC + ToTerm("}") + ToTerm("Sino") + ToTerm("{") + SENTSPROC + ToTerm("}");
@@ -304,8 +321,8 @@ namespace ServidorDB.AnalisisUsql
 
             IMPRIMIR.Rule = ToTerm("Imprimir") + ToTerm("(") + EXPL + ToTerm(")") + ToTerm(";");
 
-            BACKUP.Rule = ToTerm("Backup") + ToTerm("usqldump") + EXPA + EXPA + ToTerm(";")
-                        | ToTerm("Backup") + ToTerm("Completo") + EXPA + EXPA + ToTerm(";");
+            BACKUP.Rule = ToTerm("Backup") + ToTerm("usqldump") + id + id //+
+                        | ToTerm("Backup") + ToTerm("Completo") + id + id;// + ToTerm(";");
 
             RESTAURARBD.Rule = ToTerm("Restaurar") + ToTerm("usqldump") + PATH
                         | ToTerm("Restaurar") + ToTerm("Completo") + PATH;

@@ -25,16 +25,21 @@ namespace ServidorDB.estructurasDB
 
             foreach (campo camp in campos)
             {
-                String nombre2 = camp.id;
-                if (nombre2.ToLower().Contains("."))
+                if (camp != null)
                 {
-                    String[] partes = nombre2.Split('.');
-                    nombre2 = partes[1].ToLower();
+                    String nombre2 = camp.id;
+                    if (nombre2.ToLower().Contains("."))
+                    {
+                        String[] partes = nombre2.Split('.');
+                        nombre2 = partes[1].ToLower();
+                    }
+                    if (nombre2.ToLower().Equals(id.ToLower()))
+                    {
+                        return camp;
+                    }
                 }
-                if (nombre2.ToLower().Equals(id.ToLower()))
-                {
-                    return camp;
-                }
+                return null;
+
             }
             return null;
         }

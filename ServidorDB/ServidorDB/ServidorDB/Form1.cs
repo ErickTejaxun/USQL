@@ -14,6 +14,7 @@ using ServidorDB.estructurasDB;
 using ServidorBDD.AnalisisUsql;
 using ServidorBDD.EjecucionUsql;
 using ServidorDB.EjecucionUsql;
+using ServidorDB.AnalisisUsql;
 
 namespace ServidorDB
 {    
@@ -244,6 +245,16 @@ namespace ServidorDB
             outputConsola.Text = "";
             Form1.Mensajes = new List<string>(); ;
             Form1.errores = new List<Error>();
+            GramaticaSDBCompleta gramatica = new GramaticaSDBCompleta();
+            LanguageData lenguaje1 = new LanguageData(gramatica);
+            Parser par = new Parser(lenguaje1);
+            ParseTree arbol1 = par.Parse(inputConsole.Text);
+            if (arbol1.Root!=null)
+            {
+                //Interprete interprete = new Interprete(arbol1.Root.ChildNodes[0]);
+                //interprete.guardarMetodos(arbol1.Root.ChildNodes[0]);
+            }
+
             GramaticaSDB grammar = new GramaticaSDB();
             LanguageData lenguaje = new LanguageData(grammar);
             Parser p = new Parser(lenguaje);
@@ -254,7 +265,7 @@ namespace ServidorDB
                 imprimirSalida("Salida...");
                 //analizador.Genarbol(arbol.Root);
                 //analizador.generateGraph2("Ejemplo.txt");
-                i = new Interprete(arbol.Root.ChildNodes[0]);                             
+                i = new Interprete(arbol.Root.ChildNodes[0], arbol1.Root.ChildNodes[0]);                             
                 Resultado result = i.ejecutar(arbol.Root.ChildNodes[0]);
                 //imprimirSalida(result.valor+"");                
             }

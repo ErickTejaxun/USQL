@@ -1,5 +1,6 @@
 ﻿using Irony.Parsing;
 using ServidorBDD.EjecucionUsql;
+using ServidorDB.estructurasDB;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,13 +22,14 @@ namespace ServidorDB.EjecucionUsql
             Resultado resultado = null;
             List<Resultado> valores = getvalParametros(raiz.ChildNodes[1]);
             String id = getId(raiz.ChildNodes[0].Token.Text, valores);
-            Simbolo metodo = Interprete.metodos.getSimboloId(id);
+            //Simbolo metodo = Interprete.metodos.getSimboloId(id);
+            Procedimiento metodo = Form1.sistemaArchivos.getMetodo(id);
             if (metodo != null)
             {
                 TablaSimbolo aux = Interprete.tabla;
                 Interprete.tabla = new TablaSimbolo();
                 Interprete.tabla.anterior = getGlobal(aux);
-                ParseTreeNode nodoMetodo = (ParseTreeNode)metodo.valor;
+                ParseTreeNode nodoMetodo = (ParseTreeNode)metodo.getRaiz();
 
                 for (int i = 0; i < nodoMetodo.ChildNodes[1].ChildNodes.Count; i++)
                 {
@@ -53,7 +55,7 @@ namespace ServidorDB.EjecucionUsql
                         resultado = new Resultado("Error", null);
                     }
                     else
-                    if (!resultado.tipo.Equals(metodo.tipo))
+                    if (!resultado.tipo.Equals(metodo.tipoRetorno))
                     {
                         agregarError("Semantico", "La funcion " + metodo.nombre + " no es de tipo " + resultado.tipo, raiz.Span.Location.Line, raiz.Span.Location.Column);
                         resultado = new Resultado("Error", null);

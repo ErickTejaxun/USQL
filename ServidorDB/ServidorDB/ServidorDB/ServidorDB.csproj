@@ -85,6 +85,7 @@
     <Compile Include="estructurasDB\defCampo.cs" />
     <Compile Include="estructurasDB\defTabla.cs" />
     <Compile Include="estructurasDB\Entorno.cs" />
+    <Compile Include="estructurasDB\GramticaSDB.cs" />
     <Compile Include="estructurasDB\Objeto.cs" />
     <Compile Include="estructurasDB\Permiso.cs" />
     <Compile Include="estructurasDB\Procedimiento.cs" />

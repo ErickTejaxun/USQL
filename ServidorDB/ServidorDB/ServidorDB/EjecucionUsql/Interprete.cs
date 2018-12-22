@@ -20,23 +20,56 @@ namespace ServidorBDD.EjecucionUsql
         public static TablaSimbolo metodos;
         public static int nivel;
         public Logica opL;
+        public ParseTreeNode raizCompleta;
+        public  ParseTreeNode raiz;
+
         public Interprete(ParseTreeNode raiz)
         {
             metodos = new TablaSimbolo();
-            guardarMetodos(raiz);
+            //guardarMetodos(raiz);
             tabla = new TablaSimbolo();
             nivel = 0;
         }
 
+        public Interprete(ParseTreeNode raiz, ParseTreeNode raizCompleta)
+        {
+            this.raizCompleta = raizCompleta;
+            this.raiz = raiz;
+            metodos = new TablaSimbolo();
+            //guardarMetodos(raiz);
+            tabla = new TablaSimbolo();
+            nivel = 0;
+        }
+
+
+
+        public Procedimiento getProcedimientoCompleto(String id, ParseTreeNode raizCompleta)
+        {
+            foreach (ParseTreeNode hijo in raizCompleta.ChildNodes)
+            {
+                if (hijo.ChildNodes[0].Term.Name.Equals("PROCEDIMIENTO") || hijo.ChildNodes[0].Term.Name.Equals("FUNCION"))
+                {
+                    Procedimiento nuevoProc = new Procedimiento(hijo);
+                    if (id.ToLower().Equals(nuevoProc.id.ToLower()))
+                    {
+                        return nuevoProc;
+                    }
+                }
+            }
+            return null;
+        }
+
+
         #region guardarMetodos
-        public void guardarMetodos(ParseTreeNode raiz)
+        public void guardarMetodos(ParseTreeNode raiz, ParseTreeNode raizCompleta)
         {
             foreach (ParseTreeNode hijo in raiz.ChildNodes)
             {
                 if (hijo.Term.Name.Equals("PROCEDIMIENTO"))
                 {
                     Simbolo procedimiento = new Simbolo("", hijo);
-                    Boolean estado = metodos.setSimboloId(procedimiento);
+                    Procedimiento nuevo = getProcedimientoCompleto(procedimiento.id, raizCompleta);
+                    Boolean estado = Form1.sistemaArchivos.setMetodo(nuevo);
                     if (!estado)
                     {
                         agregarError("Semantico", "El procedimiento " + hijo.ChildNodes[0].Token.Text + " ya existe", hijo.Span.Location.Line, hijo.Span.Location.Column);
@@ -44,8 +77,9 @@ namespace ServidorBDD.EjecucionUsql
                 }
                 else if (hijo.Term.Name.Equals("FUNCION"))
                 {
-                    Simbolo funcion = new Simbolo(hijo.ChildNodes[2].ChildNodes[0].Token.Text, hijo);
-                    Boolean estado = metodos.setSimboloId(funcion);
+                    Simbolo procedimiento = new Simbolo("", hijo);
+                    Procedimiento nuevo = getProcedimientoCompleto(procedimiento.id, raizCompleta);
+                    Boolean estado = Form1.sistemaArchivos.setMetodo(nuevo);
                     if (!estado)
                     {
                         agregarError("Semantico", "La funcion " + hijo.ChildNodes[0].Token.Text + " ya existe", hijo.Span.Location.Line, hijo.Span.Location.Column);
@@ -92,6 +126,7 @@ namespace ServidorBDD.EjecucionUsql
                         break;
                     case "USAR":
                         Form1.sistemaArchivos.setBaseActual(hijo.ChildNodes[0]);
+                        guardarMetodos(raiz,raizCompleta);
                         break;
                     case "IMPRIMIR":
                         opL = new Logica();
@@ -171,7 +206,7 @@ namespace ServidorBDD.EjecucionUsql
                         Selecciona selecciona = new Selecciona(this);
                         resultado = selecciona.ejecutar(hijo);
                         break;
-                }
+                }                
             }
             return resultado;
         }
