@@ -1,0 +1,206 @@
+<procedure>
+	<path>C:\DB\BD\bd_clases\procedimientos.xml</path>
+</procedure>
+<object>
+	<path>C:\DB\BD\bd_clases\objetos.xml</path>
+</object>
+<tabla>
+<nombre>BANCODEDATOSA</nombre>
+<path>C:\DB\BD\bd_clases\BANCODEDATOSA.xml</path>
+<rows>
+<campo>
+	<text>Valor</text>
+<propiedades>
+	<autoincrementable>0</autoincrementable>
+	<nulo>1</nulo>
+	<primaria>0</primaria>
+	<foranea>0</foranea>
+	<unico>0</unico>
+</propiedades>
+</campo>
+<campo>
+	<integer>TIPO</integer>
+<propiedades>
+	<autoincrementable>0</autoincrementable>
+	<nulo>1</nulo>
+	<primaria>0</primaria>
+	<foranea>0</foranea>
+	<unico>0</unico>
+</propiedades>
+</campo>
+<campo>
+	<integer>Orden</integer>
+<propiedades>
+	<autoincrementable>0</autoincrementable>
+	<nulo>1</nulo>
+	<primaria>0</primaria>
+	<foranea>0</foranea>
+	<unico>0</unico>
+</propiedades>
+</campo>
+</rows>
+</tabla>
+<tabla>
+<nombre>BANCODEDATOSB</nombre>
+<path>C:\DB\BD\bd_clases\BANCODEDATOSB.xml</path>
+<rows>
+<campo>
+	<text>Valor</text>
+<propiedades>
+	<autoincrementable>0</autoincrementable>
+	<nulo>1</nulo>
+	<primaria>0</primaria>
+	<foranea>0</foranea>
+	<unico>0</unico>
+</propiedades>
+</campo>
+<campo>
+	<integer>TIPO</integer>
+<propiedades>
+	<autoincrementable>0</autoincrementable>
+	<nulo>1</nulo>
+	<primaria>0</primaria>
+	<foranea>0</foranea>
+	<unico>0</unico>
+</propiedades>
+</campo>
+<campo>
+	<integer>Orden</integer>
+<propiedades>
+	<autoincrementable>0</autoincrementable>
+	<nulo>1</nulo>
+	<primaria>0</primaria>
+	<foranea>0</foranea>
+	<unico>0</unico>
+</propiedades>
+</campo>
+</rows>
+</tabla>
+<tabla>
+<nombre>BANCODEDATOSC</nombre>
+<path>C:\DB\BD\bd_clases\BANCODEDATOSC.xml</path>
+<rows>
+<campo>
+	<text>Valor</text>
+<propiedades>
+	<autoincrementable>0</autoincrementable>
+	<nulo>1</nulo>
+	<primaria>0</primaria>
+	<foranea>0</foranea>
+	<unico>0</unico>
+</propiedades>
+</campo>
+<campo>
+	<integer>TIPO</integer>
+<propiedades>
+	<autoincrementable>0</autoincrementable>
+	<nulo>1</nulo>
+	<primaria>0</primaria>
+	<foranea>0</foranea>
+	<unico>0</unico>
+</propiedades>
+</campo>
+<campo>
+	<integer>Orden</integer>
+<propiedades>
+	<autoincrementable>0</autoincrementable>
+	<nulo>1</nulo>
+	<primaria>0</primaria>
+	<foranea>0</foranea>
+	<unico>0</unico>
+</propiedades>
+</campo>
+</rows>
+</tabla>
+<tabla>
+<nombre>Profesor</nombre>
+<path>C:\DB\BD\bd_clases\Profesor.xml</path>
+<rows>
+<campo>
+	<integer>codigo</integer>
+<propiedades>
+	<autoincrementable>1</autoincrementable>
+	<nulo>0</nulo>
+	<primaria>1</primaria>
+	<foranea>0</foranea>
+	<unico>0</unico>
+</propiedades>
+</campo>
+<campo>
+	<text>nombre</text>
+<propiedades>
+	<autoincrementable>0</autoincrementable>
+	<nulo>0</nulo>
+	<primaria>0</primaria>
+	<foranea>0</foranea>
+	<unico>0</unico>
+</propiedades>
+</campo>
+<campo>
+	<bool>titular</bool>
+<propiedades>
+	<autoincrementable>0</autoincrementable>
+	<nulo>0</nulo>
+	<primaria>0</primaria>
+	<foranea>0</foranea>
+	<unico>0</unico>
+</propiedades>
+</campo>
+</rows>
+</tabla>
+<tabla>
+<nombre>Cursos</nombre>
+<path>C:\DB\BD\bd_clases\Cursos.xml</path>
+<rows>
+<campo>
+	<integer>cod</integer>
+<propiedades>
+	<autoincrementable>1</autoincrementable>
+	<nulo>0</nulo>
+	<primaria>1</primaria>
+	<foranea>0</foranea>
+	<unico>0</unico>
+</propiedades>
+</campo>
+<campo>
+	<text>curso</text>
+<propiedades>
+	<autoincrementable>0</autoincrementable>
+	<nulo>0</nulo>
+	<primaria>0</primaria>
+	<foranea>0</foranea>
+	<unico>0</unico>
+</propiedades>
+</campo>
+<campo>
+	<text>semestre</text>
+<propiedades>
+	<autoincrementable>0</autoincrementable>
+	<nulo>0</nulo>
+	<primaria>0</primaria>
+	<foranea>0</foranea>
+	<unico>0</unico>
+</propiedades>
+</campo>
+<campo>
+	<integer>salon</integer>
+<propiedades>
+	<autoincrementable>0</autoincrementable>
+	<nulo>0</nulo>
+	<primaria>0</primaria>
+	<foranea>0</foranea>
+	<unico>0</unico>
+</propiedades>
+</campo>
+<campo>
+	<text>carrera</text>
+<propiedades>
+	<autoincrementable>0</autoincrementable>
+	<nulo>0</nulo>
+	<primaria>0</primaria>
+	<foranea>0</foranea>
+	<unico>0</unico>
+</propiedades>
+</campo>
+</rows>
+</tabla>

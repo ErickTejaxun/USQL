@@ -1,0 +1,223 @@
+
+CREAR PROCEDIMIENTO iniciar_archivo3(){
+	crear objeto objeto_Estudiante (
+		integer carnet,
+		text dpi,
+		text nombre,
+		text direccion,
+	);
+
+	crear tabla BANCODEDATOS (
+		text Valor NUlo,
+		integer TIPO Nulo,
+		integer Orden nulo
+	);
+		
+	CREAR TABLA tmp_estudiante(
+		INTEGER carnet NULO ,
+		integer dpi nulo,
+		text nombre nulo ,
+		text direccion nulo ,
+		datetime fh_nac NULo ,
+		DATETIME fh_creacion NULo 
+	)	
+}
+
+#FUNCION QUE OBTIENE EL DPI DEL ESTUDIANTE
+CREAR FUNCION getDPIEstudiante (integer @ParCarnet) INTEGER {
+
+	declarar  @Estudiante1 estudiante;
+	declarar  @Estudiante2 estudiante;
+	declarar  @Estudiante3 estudiante;
+
+	@estudiante1.Carnet=201520854;
+	@estudiante2.Carnet=201520855;
+	@estudiante3.Carnet=201520856;
+
+	@estudiante1.dpi="1606607420101";
+	@estudiante2.dpi="1610412480501";
+	@estudiante3.dpi="1607206050101";
+	
+	Si(@estudiante1.carnet == @ParCarnet){
+		RETORNO @estudiante1.dpi;
+    }
+    Si(@estudiante2.carnet == @ParCarnet){
+		RETORNO @estudiante2.dpi;
+    }
+    Si(@estudiante3.carnet == @ParCarnet){
+		RETORNO @estudiante3.dpi;
+    }
+	RETORNO -1;	
+)
+
+#FUNCION QUE DEVUELVE LOS DATOS DE UN ESTUDIANTE
+CREAR FUNCION getDatosEstudiante (integer @ParCarnet) TEXT {
+
+	declarar  @Estudiante1 estudiante;
+	declarar  @Estudiante2 estudiante;
+	declarar  @Estudiante3 estudiante;
+
+	@estudiante1.Carnet=201520854;
+	@estudiante2.Carnet=201520855;
+	@estudiante3.Carnet=201520856;
+
+	@estudiante1.dpi="1606607420101";
+	@estudiante2.dpi="1610412480501";
+	@estudiante3.dpi="1607206050101";
+
+	@estudiante1.nombre="ROSA FABIOLA SOSA BANHOS";
+	@estudiante2.nombre="KARINA LISSETH ROQUE CRUZ";
+	@estudiante3.nombre="WUILIAN ADOLFO AZMITIA GOMEZ";
+
+	declarar @DATOS text;
+	Si(@estudiante1.carnet == @ParCarnet){
+		@DATOS = @estudiante1.dpi + " - " + @estudiante1.CARNET + " - " + @estudiante1.Nombre;
+    }
+    Si(@estudiante2.carnet == @ParCarnet){
+		@DATOS = @estudiante2.dpi + " - " + @estudiante2.CARNET + " - " + @estudiante2.Nombre;
+    }
+    Si(@estudiante3.carnet == @ParCarnet){
+		@DATOS = @estudiante3.dpi + " - " + @estudiante3.CARNET + " - " + @estudiante3.Nombre;
+    }
+	SINO{
+		@DATOS = 'No existe'
+	}
+	RETORNO @DATOS;
+)
+
+
+#procedimiento: Ingresar banco de nombres, apellidos y direcciones.
+CREAR PROCEDIMIENTO BancoDatos(@parametro_1  integer, @parametro_2  integer,	@parametro_3  integer) {	
+	DECLARAR @orden  integer;
+	
+	BORRAR EN TABLA BANCODEDATOS;
+	@orden = 0;
+	
+	SI( @parametro_1 == 1)	{
+		@orden = @orden + 1
+		INSERTAR EN TABLA  BANCODEDATOS ("RICARDO ARNULFO",1,@orden); @orden = @orden + 1;
+		INSERTAR EN TABLA  BANCODEDATOS ("ENCARNACION",1,@orden); @orden = @orden + 1;
+		INSERTAR EN TABLA  BANCODEDATOS ("MIGUEL  EDMUNDO",1,@orden); @orden = @orden + 1;
+		INSERTAR EN TABLA  BANCODEDATOS ("OTTO FRANCISCO",2,@orden); @orden = @orden + 1;
+		INSERTAR EN TABLA  BANCODEDATOS ("AUGUSTO ADOLFO",1,@orden); @orden = @orden + 1;
+		INSERTAR EN TABLA  BANCODEDATOS ("WELLINGTON JAVIER",1,@orden); @orden = @orden + 1;
+		INSERTAR EN TABLA  BANCODEDATOS ("KAREN IVONNE",2,@orden); @orden = @orden + 1;
+		INSERTAR EN TABLA  BANCODEDATOS ("SERGIO ESTUARDO",1,@orden); @orden = @orden + 1;
+		INSERTAR EN TABLA  BANCODEDATOS ("INGRID ESTELA",2,@orden); @orden = @orden + 1;
+		INSERTAR EN TABLA  BANCODEDATOS ("INGRID CAROLINA",1,@orden); @orden = @orden + 1;
+	}
+}
+
+#FUNCION PARA EL INGRESO DE PERSONAS DE NUEVO INGRESO
+CREAR PROCEDIMIENTO primerIngreso( integer @inicio, integer	@fin, integer @Anho, integer @Correlativo,integer @dpi_1, integer @dpi_correlativo , integer @dpi_ciudad ) {
+	
+	Declarar @x integer;
+	Declarar @CARNET INTEGER;
+	Declarar @Alumno text;
+	Declarar @direccion text;
+	Declarar @DPI INTEGER;
+	
+	@CARNET =  @Correlativo;
+
+	@X = @inicio;
+	@CARNET = (@Anho * 100000) + @Correlativo;
+	
+	MIENTRAS ( @X < @fin ){	
+		SI (@X = 1){@alumNo="LAZARO ACUNHA ORELLANA"; @Direccion = "7a. avenida 20-98, zona 13 Colonia Aurora 2, Apartamento C";}
+		SI (@X = 2){@alumNo="LUIS ROLANDO NAJERA RIOS"; @Direccion = "KM. 19.4 CARRETERA A EL SALVADOR CASA 84";}
+		SI (@X = 3){@alumNo="JUAN FERNANDO MEJIA ABREGO"; @Direccion = "17 CALLE 16-89 ZONA 10 JARDINES DE OAKLAND APARTAMENTO 14B";}
+		SI (@X = 4){@alumNo="JOSE MIGUEL GONZALEZ MARTINEZ"; @Direccion = "17 AV. 18-89 BOSQUES DE MIRALVALLE CASA";}
+		SI (@X = 5){@alumNo="CLAUDIA LISSETTE DUARTE GOMEZ"; @Direccion = "8 CALLE B 5-31 ZONA 8 VALLES DE SAN CRISTOBAL MIXCO";		}
+		
+		@DPI = @dpi_1 + ((@dpi_correlativo * 10 ^ 3)+ @x) + @dpi_ciudad;
+
+		INSERTAR EN TABLA estudiante(@CARNET,@DPI,@Alumno,@direccion, fecha(),fecha());
+		
+		@CARNET = @CARNET + 1;
+		@X = @X + 1;
+	}
+	
+	SELECCIONAR nombre, carnet , dpi DE estudiante donde fh_creacion == fecha();	
+}
+
+CREAR FUNCION  factorial (INTEGER @a) INTEGER{
+    si(@a==0||@a==1){
+        retorno 1;
+    }
+    retorno @a*factorial(@a-1);
+}
+
+CREAR PROCEDIMIENTO COPIAR_ESTUDIANTES(integer @noCopiar){	
+	declarar  @Estudiante1 objeto_Estudiante;
+	declarar  @Estudiante2 objeto_Estudiante;
+	declarar  @Estudiante3 objeto_Estudiante;
+	declarar  @Estudiante4 objeto_Estudiante;
+	declarar  @Estudiante5 objeto_Estudiante;
+
+	@estudiante1.Carnet=201520854;
+	@estudiante2.Carnet=201520855;
+	@estudiante3.Carnet=201520856;
+	@estudiante4.Carnet=201520857;
+	@estudiante5.Carnet=201520858;
+
+	@estudiante1.dpi="1606607420101";
+	@estudiante2.dpi="1610412480501";
+	@estudiante3.dpi="1607206050101";
+	@estudiante4.dpi="1607467601202";
+	@estudiante5.dpi="2712462430101";
+	
+	@estudiante1.nombre="ROSA FABIOLA SOSA BANHOS";
+	@estudiante2.nombre="KARINA LISSETH ROQUE CRUZ";
+	@estudiante3.nombre="WUILIAN ADOLFO AZMITIA GOMEZ";
+	@estudiante4.nombre="MARIANO JOSE LEMUS CABRERA";
+	@estudiante5.nombre="JOSE ROBERTO MORALES REYES";
+
+	@estudiante1.direccion = "17 AV. 7-19 ZONA 6 TERRANOVA VILLA NUEVA";
+	@estudiante2.direccion = "2 AVENIDA 4-14, ZONA 18 COLONIA SAN RAFAEL I";
+	@estudiante3.direccion = "KM 16.5 CTRA A ELSALVADOR CASA C-95 RES. LOS DIAMANTES STA CATAR PINULA";
+	@estudiante4.direccion = "9 AVENIDA 11-36, ZONA 12";
+	@estudiante5.direccion = "12 AVE 17-85 C.K-6 ZONA 4 CONDADO EL NARANJO COND. SAN AGUSTIN, MIXCO";
+
+	Borrar en tabla tmp_estudiante;
+	
+	SI(@noCopiar <=1){INSERTAR EN TABLA tmp_estudiante(@estudiante1.CARNET,@estudiante1.DPI,@estudiante1.nombre,@estudiante1.direccion, fecha(),fecha_hora());}
+	SI(@noCopiar <=2){INSERTAR EN TABLA tmp_estudiante(@estudiante2.CARNET,@estudiante2.DPI,@estudiante2.nombre,@estudiante2.direccion, fecha(),fecha_hora());}
+	SI(@noCopiar <=3){INSERTAR EN TABLA tmp_estudiante(@estudiante3.CARNET,@estudiante3.DPI,@estudiante3.nombre,@estudiante3.direccion, fecha(),fecha_hora());}
+	SI(@noCopiar <=4){INSERTAR EN TABLA tmp_estudiante(@estudiante4.CARNET,@estudiante4.DPI,@estudiante4.nombre,@estudiante4.direccion, fecha(),fecha_hora());}
+	SI(@noCopiar <=5){INSERTAR EN TABLA tmp_estudiante(@estudiante5.CARNET,@estudiante5.DPI,@estudiante5.nombre,@estudiante5.direccion, fecha(),fecha_hora());}
+	
+	SELECCIONAR * DE tmp_estudiante;	
+}
+
+## --------------------------------------------------------------
+# paso 1
+iniciar_archivo3();
+
+# paso 2
+#Salida 1
+imprimir("DPI : " + getDPIEstudiante(201520854));
+imprimir("DPI : " + getDPIEstudiante(201520855));
+IMprimir("DPI : " + getDPIEstudiante(201520863));
+
+#Salida 2
+imprimir("DATOS : " + getDatosEStudiante(201520854));
+imprimir("DATOS : " + getDatosEStudiante(201520868));
+imprimir("DATOS : " + getDatosEStudiante(201520855));
+
+#Salida 3
+BancoDatos(31,2,31);
+IMPRIMIR("TOTAL TIPO 3: " + CONTAR(<< SELECCIONAR * DE BANCODEDATOS DONDE TIPO == 3 >>);
+IMPRIMIR("TOTAL TIPO 2: " + CONTAR(<< SELECCIONAR * DE BANCODEDATOS DONDE TIPO == 2 >>);
+
+#Salida 4
+primerIngreso(1, 5, 2017, 25000, 21230000, 4562, 12);
+
+#Salida 5
+imprimir("Factorial de 6 : " + factorial(6));
+	
+#Salida 6
+COPIAR_ESTUDIANTES(5);
+	
+#Salida 7
+ALTERAR TABLA ASIGNACION AGREGAR(INTEGER NOTA NULO);
+ACTUALIZAR TABLA asignacion (NOTA) VALORES (100);

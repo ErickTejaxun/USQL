@@ -1,0 +1,20 @@
+
+<obj>
+	<nombre>t_direccion</nombre>
+	<attr>
+<integer>avenida</integer>
+<integer>calle</integer>
+<text>nombre</text>
+<text>descripcion</text>
+	</attr>
+	</obj>
+
+<obj>
+	<nombre>objeto_estudiante</nombre>
+	<attr>
+<integer>carnet</integer>
+<text>dpi</text>
+<text>nombres</text>
+<text>direccion1</text>
+	</attr>
+	</obj>

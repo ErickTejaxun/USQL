@@ -1,0 +1,25 @@
+
+<row><codigo_curso>772</codigo_curso>
+<nombre>"Estructuras de Datos"</nombre>
+<creditos>5</creditos>
+<creditos_prerrequisito>0</creditos_prerrequisito>
+
+</row>
+<row><codigo_curso>777</codigo_curso>
+<nombre>"Organizacion de lenguajes y compiladores 1"</nombre>
+<creditos>5</creditos>
+<creditos_prerrequisito>0</creditos_prerrequisito>
+
+</row>
+<row><codigo_curso>781</codigo_curso>
+<nombre>"Organizacion de lenguajes y compiladores 2"</nombre>
+<creditos>5</creditos>
+<creditos_prerrequisito>0</creditos_prerrequisito>
+
+</row>
+<row><codigo_curso>281</codigo_curso>
+<nombre>"Sistemas Operativos 1"</nombre>
+<creditos>5</creditos>
+<creditos_prerrequisito>0</creditos_prerrequisito>
+
+</row>

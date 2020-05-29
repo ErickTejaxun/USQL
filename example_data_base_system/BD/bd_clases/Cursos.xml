@@ -1,0 +1,211 @@
+
+<row><cod>1</cod>
+<curso>"ORIENTACION Y LIDERAZGO"</curso>
+<semestre>"1er semestre 2017"</semestre>
+<salon>101</salon>
+<carrera>""</carrera>
+
+</row>
+<row><cod>2</cod>
+<curso>"AREA SOCIAL HUMANISTICA 1"</curso>
+<semestre>"2do semestre 2017"</semestre>
+<salon>102</salon>
+<carrera>""</carrera>
+
+</row>
+<row><cod>3</cod>
+<curso>"DEPORTES 1"</curso>
+<semestre>"1er semestre 2018"</semestre>
+<salon>103</salon>
+<carrera>""</carrera>
+
+</row>
+<row><cod>4</cod>
+<curso>"AREA TECNICA COMPLEMENTARIA 1"</curso>
+<semestre>"2do semestre 2018"</semestre>
+<salon>104</salon>
+<carrera>""</carrera>
+
+</row>
+<row><cod>5</cod>
+<curso>"AREA MATEMATICA BASICA 1"</curso>
+<semestre>"1er semestre 2019"</semestre>
+<salon>105</salon>
+<carrera>""</carrera>
+
+</row>
+<row><cod>6</cod>
+<curso>"QUIMICA GENERAL 1"</curso>
+<semestre>"2do semestre 2019"</semestre>
+<salon>106</salon>
+<carrera>""</carrera>
+
+</row>
+<row><cod>7</cod>
+<curso>"AREA MATEMATICA BASICA 2"</curso>
+<semestre>"1er semestre 2020"</semestre>
+<salon>201</salon>
+<carrera>""</carrera>
+
+</row>
+<row><cod>8</cod>
+<curso>"AREA SOCIAL HUMANISTICA 2"</curso>
+<semestre>"2do semestre 2020"</semestre>
+<salon>202</salon>
+<carrera>""</carrera>
+
+</row>
+<row><cod>9</cod>
+<curso>"AREA MATEMATICA INTERMEDIA 1"</curso>
+<semestre>"1er semestre 2021"</semestre>
+<salon>203</salon>
+<carrera>""</carrera>
+
+</row>
+<row><cod>10</cod>
+<curso>"FISICA BASICA"</curso>
+<semestre>"2do semestre 2021"</semestre>
+<salon>204</salon>
+<carrera>""</carrera>
+
+</row>
+<row><cod>11</cod>
+<curso>"INTRODUCCION A LA PROGRAMACION Y COMPUTACION 1"</curso>
+<semestre>"1er semestre 2017"</semestre>
+<salon>205</salon>
+<carrera>""</carrera>
+
+</row>
+<row><cod>12</cod>
+<curso>"LOGICA DE SISTEMAS"</curso>
+<semestre>"2do semestre 2017"</semestre>
+<salon>206</salon>
+<carrera>""</carrera>
+
+</row>
+<row><cod>13</cod>
+<curso>"MATEMATICA PARA COMPUTACION 1"</curso>
+<semestre>"1er semestre 2018"</semestre>
+<salon>207</salon>
+<carrera>""</carrera>
+
+</row>
+<row><cod>14</cod>
+<curso>"PRACTICAS INICIALES"</curso>
+<semestre>"2do semestre 2018"</semestre>
+<salon>301</salon>
+<carrera>""</carrera>
+
+</row>
+<row><cod>15</cod>
+<curso>"AREA MATEMATICA INTERMEDIA 2"</curso>
+<semestre>"1er semestre 2019"</semestre>
+<salon>302</salon>
+<carrera>""</carrera>
+
+</row>
+<row><cod>16</cod>
+<curso>"FISICA 1"</curso>
+<semestre>"2do semestre 2019"</semestre>
+<salon>303</salon>
+<carrera>""</carrera>
+
+</row>
+<row><cod>17</cod>
+<curso>"MATEMATICA PARA COMPUTACION 2"</curso>
+<semestre>"1er semestre 2020"</semestre>
+<salon>304</salon>
+<carrera>""</carrera>
+
+</row>
+<row><cod>18</cod>
+<curso>"AREA MATEMATICA INTERMEDIA 3"</curso>
+<semestre>"2do semestre 2020"</semestre>
+<salon>305</salon>
+<carrera>""</carrera>
+
+</row>
+<row><cod>19</cod>
+<curso>"TECNICAS DE ESTUDIO E INVESTIGACION"</curso>
+<semestre>"1er semestre 2021"</semestre>
+<salon>306</salon>
+<carrera>""</carrera>
+
+</row>
+<row><cod>20</cod>
+<curso>"LOGICA"</curso>
+<semestre>"2do semestre 2021"</semestre>
+<salon>401</salon>
+<carrera>""</carrera>
+
+</row>
+<row><cod>21</cod>
+<curso>"MATEMATICA APLICADA 1"</curso>
+<semestre>"1er semestre 2017"</semestre>
+<salon>402</salon>
+<carrera>""</carrera>
+
+</row>
+<row><cod>22</cod>
+<curso>"MATEMATICA APLICADA 3"</curso>
+<semestre>"2do semestre 2017"</semestre>
+<salon>403</salon>
+<carrera>""</carrera>
+
+</row>
+<row><cod>23</cod>
+<curso>"FISICA 2"</curso>
+<semestre>"1er semestre 2018"</semestre>
+<salon>404</salon>
+<carrera>""</carrera>
+
+</row>
+<row><cod>24</cod>
+<curso>"ESTADISTICA 1"</curso>
+<semestre>"2do semestre 2018"</semestre>
+<salon>501</salon>
+<carrera>""</carrera>
+
+</row>
+<row><cod>25</cod>
+<curso>"INTRODUCCION A LA PROGRAMACION Y COMPUTACION 2"</curso>
+<semestre>"1er semestre 2019"</semestre>
+<salon>502</salon>
+<carrera>""</carrera>
+
+</row>
+<row><cod>26</cod>
+<curso>"LENGUAJES FORMALES Y DE PROGRAMACION"</curso>
+<semestre>"2do semestre 2019"</semestre>
+<salon>502</salon>
+<carrera>""</carrera>
+
+</row>
+<row><cod>27</cod>
+<curso>"ESTRUCTURAS DE DATOS"</curso>
+<semestre>"1er semestre 2020"</semestre>
+<salon>504</salon>
+<carrera>""</carrera>
+
+</row>
+<row><cod>28</cod>
+<curso>"ORGANIZACION COMPUTACIONAL"</curso>
+<semestre>"2do semestre 2020"</semestre>
+<salon>505</salon>
+<carrera>""</carrera>
+
+</row>
+<row><cod>29</cod>
+<curso>"INVESTIGACION DE OPERACIONES I"</curso>
+<semestre>"1er semestre 2021"</semestre>
+<salon>506</salon>
+<carrera>""</carrera>
+
+</row>
+<row><cod>30</cod>
+<curso>"ORGANIZACION DE LENGUAJES Y COMPILADORES 1"</curso>
+<semestre>"2do semestre 2021"</semestre>
+<salon>507</salon>
+<carrera>""</carrera>
+
+</row>

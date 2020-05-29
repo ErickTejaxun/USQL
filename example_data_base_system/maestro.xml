@@ -1,0 +1,12 @@
+<db>
+	<nombre>sistema</nombre>
+	<path>C:\DB\BD\sistema\DB.xml</path>
+</db>
+<db>
+	<nombre>calificacion</nombre>
+	<path>C:\DB\BD\calificacion\DB.xml</path>
+</db>
+<db>
+	<nombre>bd_clases</nombre>
+	<path>C:\DB\BD\bd_clases\DB.xml</path>
+</db>

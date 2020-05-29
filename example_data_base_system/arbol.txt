@@ -1,0 +1,31 @@
+digraph lista{ rankdir=TB;node [shape = box, style=rounded]; nodo11454272[label="PAQUETES ", fillcolor="yellow", style ="filled", shape="circle"]; 
+nodo60504909[label="LOGININ ", fillcolor="yellow", style ="filled", shape="circle"]; 
+nodo21950498[label="[ (Key symbol) ", fillcolor="yellow", style ="filled", shape="circle"]; 
+"nodo60504909"-> "nodo21950498" 
+nodo37614147[label="\"validar\" (Key symbol) ", fillcolor="yellow", style ="filled", shape="circle"]; 
+"nodo60504909"-> "nodo37614147" 
+nodo35460724[label=": (Key symbol) ", fillcolor="yellow", style ="filled", shape="circle"]; 
+"nodo60504909"-> "nodo35460724" 
+nodo65961401[label="3529 (INTEGER) ", fillcolor="yellow", style ="filled", shape="circle"]; 
+"nodo60504909"-> "nodo65961401" 
+nodo47602007[label=", (Key symbol) ", fillcolor="yellow", style ="filled", shape="circle"]; 
+"nodo60504909"-> "nodo47602007" 
+nodo3927761[label="\"login\" (Key symbol) ", fillcolor="yellow", style ="filled", shape="circle"]; 
+"nodo60504909"-> "nodo3927761" 
+nodo66771947[label=": (Key symbol) ", fillcolor="yellow", style ="filled", shape="circle"]; 
+"nodo60504909"-> "nodo66771947" 
+nodo61381290[label="[ (Key symbol) ", fillcolor="yellow", style ="filled", shape="circle"]; 
+"nodo60504909"-> "nodo61381290" 
+nodo36848977[label="\"comando\" (Key symbol) ", fillcolor="yellow", style ="filled", shape="circle"]; 
+"nodo60504909"-> "nodo36848977" 
+nodo22452836[label=": (Key symbol) ", fillcolor="yellow", style ="filled", shape="circle"]; 
+"nodo60504909"-> "nodo22452836" 
+nodo46153895[label="\"Seleccionar * de usuarios donde usuario=='admin
+ '&& password=='admin'\" (codigo) ", fillcolor="yellow", style ="filled", shape="circle"]; 
+"nodo60504909"-> "nodo46153895" 
+nodo46418718[label="] (Key symbol) ", fillcolor="yellow", style ="filled", shape="circle"]; 
+"nodo60504909"-> "nodo46418718" 
+nodo50920718[label="] (Key symbol) ", fillcolor="yellow", style ="filled", shape="circle"]; 
+"nodo60504909"-> "nodo50920718" 
+"nodo11454272"-> "nodo60504909" 
+}

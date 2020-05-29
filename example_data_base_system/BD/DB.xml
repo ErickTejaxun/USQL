@@ -1,0 +1,302 @@
+<procedure>
+	<path>C:\DB\BD\calificacion\procedimientos.xml</path>
+</procedure>
+<object>
+	<path>C:\DB\BD\calificacion\objetos.xml</path>
+</object>
+<tabla>
+<nombre>estudiante</nombre>
+<path>C:\DB\BD\calificacion\estudiante.xml</path>
+<rows>
+<campo>
+	<INTEGER>carnet</INTEGER>
+<propiedades>
+	<autoincrementable>0</autoincrementable>
+	<nulo>0</nulo>
+	<primaria>1</primaria>
+	<foranea>0</foranea>
+	<unico>0</unico>
+</propiedades>
+</campo>
+<campo>
+	<TEXT>dpi</TEXT>
+<propiedades>
+	<autoincrementable>0</autoincrementable>
+	<nulo>0</nulo>
+	<primaria>0</primaria>
+	<foranea>0</foranea>
+	<unico>1</unico>
+</propiedades>
+</campo>
+<campo>
+	<TEXT>nombre</TEXT>
+<propiedades>
+	<autoincrementable>0</autoincrementable>
+	<nulo>0</nulo>
+	<primaria>0</primaria>
+	<foranea>0</foranea>
+	<unico>0</unico>
+</propiedades>
+</campo>
+<campo>
+	<TEXT>direccion</TEXT>
+<propiedades>
+	<autoincrementable>0</autoincrementable>
+	<nulo>0</nulo>
+	<primaria>0</primaria>
+	<foranea>0</foranea>
+	<unico>0</unico>
+</propiedades>
+</campo>
+<campo>
+	<DATE>fh_nac</DATE>
+<propiedades>
+	<autoincrementable>0</autoincrementable>
+	<nulo>0</nulo>
+	<primaria>0</primaria>
+	<foranea>0</foranea>
+	<unico>0</unico>
+</propiedades>
+</campo>
+<campo>
+	<DATETIME>fh_creacion</DATETIME>
+<propiedades>
+	<autoincrementable>0</autoincrementable>
+	<nulo>0</nulo>
+	<primaria>0</primaria>
+	<foranea>0</foranea>
+	<unico>0</unico>
+</propiedades>
+</campo>
+</rows>
+</tabla>
+<tabla>
+<nombre>curso</nombre>
+<path>C:\DB\BD\calificacion\curso.xml</path>
+<rows>
+<campo>
+	<INTEGER>codigo_curso</INTEGER>
+<propiedades>
+	<autoincrementable>0</autoincrementable>
+	<nulo>0</nulo>
+	<primaria>1</primaria>
+	<foranea>0</foranea>
+	<unico>0</unico>
+</propiedades>
+</campo>
+<campo>
+	<TEXT>nombre</TEXT>
+<propiedades>
+	<autoincrementable>0</autoincrementable>
+	<nulo>0</nulo>
+	<primaria>0</primaria>
+	<foranea>0</foranea>
+	<unico>0</unico>
+</propiedades>
+</campo>
+<campo>
+	<INTEGER>creditos</INTEGER>
+<propiedades>
+	<autoincrementable>0</autoincrementable>
+	<nulo>0</nulo>
+	<primaria>0</primaria>
+	<foranea>0</foranea>
+	<unico>0</unico>
+</propiedades>
+</campo>
+<campo>
+	<INTEGER>creditos_prerrequisito</INTEGER>
+<propiedades>
+	<autoincrementable>0</autoincrementable>
+	<nulo>0</nulo>
+	<primaria>0</primaria>
+	<foranea>0</foranea>
+	<unico>0</unico>
+</propiedades>
+</campo>
+</rows>
+</tabla>
+<tabla>
+<nombre>prerrequisito</nombre>
+<path>C:\DB\BD\calificacion\prerrequisito.xml</path>
+<rows>
+<campo>
+	<INTEGER>codigo_curso</INTEGER>
+<propiedades>
+	<autoincrementable>0</autoincrementable>
+	<nulo>0</nulo>
+	<primaria>0</primaria>
+	<foranea>curso.codigo_curso</foranea>
+	<unico>0</unico>
+</propiedades>
+</campo>
+<campo>
+	<INTEGER>prerrequisito</INTEGER>
+<propiedades>
+	<autoincrementable>0</autoincrementable>
+	<nulo>0</nulo>
+	<primaria>0</primaria>
+	<foranea>curso.codigo_curso</foranea>
+	<unico>0</unico>
+</propiedades>
+</campo>
+</rows>
+</tabla>
+<tabla>
+<nombre>asignacion</nombre>
+<path>C:\DB\BD\calificacion\asignacion.xml</path>
+<rows>
+<campo>
+	<INTEGER>codigo_curso</INTEGER>
+<propiedades>
+	<autoincrementable>0</autoincrementable>
+	<nulo>0</nulo>
+	<primaria>0</primaria>
+	<foranea>curso.codigo_curso</foranea>
+	<unico>0</unico>
+</propiedades>
+</campo>
+<campo>
+	<INTEGER>carnet</INTEGER>
+<propiedades>
+	<autoincrementable>0</autoincrementable>
+	<nulo>0</nulo>
+	<primaria>0</primaria>
+	<foranea>estudiante.carnet</foranea>
+	<unico>0</unico>
+</propiedades>
+</campo>
+<campo>
+	<DATETIME>fh_asignacion</DATETIME>
+<propiedades>
+	<autoincrementable>0</autoincrementable>
+	<nulo>0</nulo>
+	<primaria>0</primaria>
+	<foranea>0</foranea>
+	<unico>0</unico>
+</propiedades>
+</campo>
+<campo>
+	<TEXT>estado</TEXT>
+<propiedades>
+	<autoincrementable>0</autoincrementable>
+	<nulo>0</nulo>
+	<primaria>0</primaria>
+	<foranea>0</foranea>
+	<unico>0</unico>
+</propiedades>
+</campo>
+<campo>
+	<integer>nota</integer>
+<propiedades>
+	<autoincrementable>0</autoincrementable>
+	<nulo>0</nulo>
+	<primaria>0</primaria>
+	<foranea>0</foranea>
+	<unico>0</unico>
+</propiedades>
+</campo>
+</rows>
+</tabla>
+<tabla>
+<nombre>BANCODEDATOS</nombre>
+<path>C:\DB\BD\calificacion\BANCODEDATOS.xml</path>
+<rows>
+<campo>
+	<text>Valor</text>
+<propiedades>
+	<autoincrementable>0</autoincrementable>
+	<nulo>1</nulo>
+	<primaria>0</primaria>
+	<foranea>0</foranea>
+	<unico>0</unico>
+</propiedades>
+</campo>
+<campo>
+	<integer>TIPO</integer>
+<propiedades>
+	<autoincrementable>0</autoincrementable>
+	<nulo>1</nulo>
+	<primaria>0</primaria>
+	<foranea>0</foranea>
+	<unico>0</unico>
+</propiedades>
+</campo>
+<campo>
+	<integer>Orden</integer>
+<propiedades>
+	<autoincrementable>0</autoincrementable>
+	<nulo>1</nulo>
+	<primaria>0</primaria>
+	<foranea>0</foranea>
+	<unico>0</unico>
+</propiedades>
+</campo>
+</rows>
+</tabla>
+<tabla>
+<nombre>tmp_estudiante</nombre>
+<path>C:\DB\BD\calificacion\tmp_estudiante.xml</path>
+<rows>
+<campo>
+	<INTEGER>carnet</INTEGER>
+<propiedades>
+	<autoincrementable>0</autoincrementable>
+	<nulo>1</nulo>
+	<primaria>0</primaria>
+	<foranea>0</foranea>
+	<unico>0</unico>
+</propiedades>
+</campo>
+<campo>
+	<integer>dpi</integer>
+<propiedades>
+	<autoincrementable>0</autoincrementable>
+	<nulo>1</nulo>
+	<primaria>0</primaria>
+	<foranea>0</foranea>
+	<unico>0</unico>
+</propiedades>
+</campo>
+<campo>
+	<text>nombres</text>
+<propiedades>
+	<autoincrementable>0</autoincrementable>
+	<nulo>1</nulo>
+	<primaria>0</primaria>
+	<foranea>0</foranea>
+	<unico>0</unico>
+</propiedades>
+</campo>
+<campo>
+	<text>direccion1</text>
+<propiedades>
+	<autoincrementable>0</autoincrementable>
+	<nulo>1</nulo>
+	<primaria>0</primaria>
+	<foranea>0</foranea>
+	<unico>0</unico>
+</propiedades>
+</campo>
+<campo>
+	<datetime>fh_nac</datetime>
+<propiedades>
+	<autoincrementable>0</autoincrementable>
+	<nulo>1</nulo>
+	<primaria>0</primaria>
+	<foranea>0</foranea>
+	<unico>0</unico>
+</propiedades>
+</campo>
+<campo>
+	<DATETIME>fh_creacion</DATETIME>
+<propiedades>
+	<autoincrementable>0</autoincrementable>
+	<nulo>1</nulo>
+	<primaria>0</primaria>
+	<foranea>0</foranea>
+	<unico>0</unico>
+</propiedades>
+</campo>
+</rows>
+</tabla>

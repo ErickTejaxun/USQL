@@ -1,0 +1,32 @@
+<procedure>
+	<path>C:\DB\BD\sistema\procedimientos.xml</path>
+</procedure>
+<object>
+	<path>C:\DB\BD\sistema\objetos.xml</path>
+</object>
+<tabla>
+<nombre>usuario</nombre>
+<path>C:\DB\BD\sistema\usuario.xml</path>
+<rows>
+<campo>
+	<text>nombre</text>
+<propiedades>
+	<autoincrementable>0</autoincrementable>
+	<nulo>0</nulo>
+	<primaria>0</primaria>
+	<foranea>0</foranea>
+	<unico>0</unico>
+</propiedades>
+</campo>
+<campo>
+	<text>password</text>
+<propiedades>
+	<autoincrementable>0</autoincrementable>
+	<nulo>0</nulo>
+	<primaria>0</primaria>
+	<foranea>0</foranea>
+	<unico>0</unico>
+</propiedades>
+</campo>
+</rows>
+</tabla>

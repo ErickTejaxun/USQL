@@ -1,0 +1,8 @@
+
+<obj>
+	<nombre>obj_carrera</nombre>
+	<attr>
+<integer>id</integer>
+<text>name</text>
+	</attr>
+	</obj>

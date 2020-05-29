@@ -1,0 +1,118 @@
+USAR calificacion;
+
+CREAR PROCEDIMIENTO insertar_primer_semestre (){
+
+	INSERTAR EN TABLA asignacion (772, 201403002, 17-01-2017 00:00:00, "C");
+	INSERTAR EN TABLA asignacion (772, 201403003, 17-01-2017 00:00:00, "C");
+	INSERTAR EN TABLA asignacion (772, 201403004, 17-01-2017 00:00:00, "C");
+	INSERTAR EN TABLA asignacion (772, 201403006, 17-01-2017 00:00:00, "C");
+	INSERTAR EN TABLA asignacion (772, 201403008, 17-01-2017 00:00:00, "C");
+	INSERTAR EN TABLA asignacion (772, 201403009, 17-01-2017 00:00:00, "C");
+	INSERTAR EN TABLA asignacion (772, 201403010, 17-01-2017 00:00:00, "C");
+	INSERTAR EN TABLA asignacion (772, 201403011, 17-01-2017 00:00:00, "C");
+	INSERTAR EN TABLA asignacion (772, 201403012, 17-01-2017 00:00:00, "C");
+	INSERTAR EN TABLA asignacion (772, 201403013, 17-01-2017 00:00:00, "C");
+	INSERTAR EN TABLA asignacion (772, 201403015, 17-01-2017 00:00:00, "C");
+
+
+	INSERTAR EN TABLA asignacion (777, 201403002, 17-01-2017 00:00:00, "C");
+	INSERTAR EN TABLA asignacion (777, 201403004, 17-01-2017 00:00:00, "C");
+	INSERTAR EN TABLA asignacion (777, 201403006, 17-01-2017 00:00:00, "C");
+	INSERTAR EN TABLA asignacion (777, 201403008, 17-01-2017 00:00:00, "C");
+	INSERTAR EN TABLA asignacion (777, 201403007, 17-01-2017 00:00:00, "C");
+	INSERTAR EN TABLA asignacion (777, 201403010, 17-01-2017 00:00:00, "C");
+	INSERTAR EN TABLA asignacion (777, 201403014, 17-01-2017 00:00:00, "C");
+	INSERTAR EN TABLA asignacion (777, 201403012, 17-01-2017 00:00:00, "C");
+	INSERTAR EN TABLA asignacion (777, 201403013, 17-01-2017 00:00:00, "C");
+	INSERTAR EN TABLA asignacion (777, 201403015, 17-01-2017 00:00:00, "C");
+
+}
+
+
+CREAR PROCEDIMIENTO finalizar_primer_semestre (){
+
+	ACTUALIZAR TABLA asignacion (estado) VALORES ("A") DONDE carnet == 201403002 && (codigo_curso == 772 || codigo_curso == 777);
+	ACTUALIZAR TABLA asignacion (estado) VALORES ("A") DONDE carnet == 201403004 && (codigo_curso == 772 || codigo_curso == 777);
+	ACTUALIZAR TABLA asignacion (estado) VALORES ("A") DONDE carnet == 201403006 && (codigo_curso == 772 || codigo_curso == 777);
+	ACTUALIZAR TABLA asignacion (estado) VALORES ("A") DONDE carnet == 201403013 && (codigo_curso == 772 || codigo_curso == 777);
+	ACTUALIZAR TABLA asignacion (estado) VALORES ("A") DONDE carnet == 201403015 && (codigo_curso == 772 || codigo_curso == 777);
+	ACTUALIZAR TABLA asignacion (estado) VALORES ("A") DONDE carnet == 201403003 && (codigo_curso == 777);
+	ACTUALIZAR TABLA asignacion (estado) VALORES ("A") DONDE carnet == 201403010 && (codigo_curso == 772);
+
+	ACTUALIZAR TABLA asignacion (estado) VALORES ("R") DONDE estado == "C" && (codigo_curso == 772 || codigo_curso == 777);
+}
+
+CREAR PROCEDIMIENTO insertar_segundo_semestre (){
+	INSERTAR EN TABLA asignacion (781, 201403002, 12-07-2017 00:00:00, "C");
+	INSERTAR EN TABLA asignacion (781, 201403004, 12-07-2017 00:00:00, "C");
+	INSERTAR EN TABLA asignacion (781, 201403006, 12-07-2017 00:00:00, "C");
+	INSERTAR EN TABLA asignacion (781, 201403013, 12-07-2017 00:00:00, "C");
+	INSERTAR EN TABLA asignacion (781, 201403015, 12-07-2017 00:00:00, "C");
+}
+
+
+CREAR PROCEDIMIENTO finalizar_segundo_semestre (){
+
+	ACTUALIZAR TABLA asignacion (estado) VALORES ("A") DONDE carnet == 201403002 && codigo_curso == 781;
+	ACTUALIZAR TABLA asignacion (estado) VALORES ("A") DONDE carnet == 201403004 && codigo_curso == 781;
+	ACTUALIZAR TABLA asignacion (estado) VALORES ("R") DONDE carnet != 201403002 && carnet != 201403004 && codigo_curso == 781;
+
+}
+
+CREAR PROCEDIMIENTO insertar_tercer_semestre (){
+
+	INSERTAR EN TABLA asignacion (281, 201403002, 17-01-2018 00:00:00, "C");
+	INSERTAR EN TABLA asignacion (281, 201403004, 17-01-2018 00:00:00, "C");
+
+}
+
+CREAR PROCEDIMIENTO consultas (){
+
+	SELECCIONAR * DE estudiante;
+
+	SELECCIONAR * DE curso;
+
+	SELECCIONAR * DE prerrequisito;
+
+	SELECCIONAR * DE asignacion;
+
+	SELECCIONAR curso.nombre, prerrequisito.prerrequisito 
+	DE prerrequisito, curso 
+	DONDE prerrequisito.codigo_curso == curso.codigo_curso;
+
+	SELECCIONAR curso.nombre, estudiante.nombre, asignacion.estado 
+	DE curso, asignacion, estudiante 
+	DONDE asignacion.codigo_curso == 281 
+	&& asignacion.carnet == estudiante.carnet 
+	&& asignacion.codigo_curso == curso.codigo_curso;
+
+	SELECCIONAR curso.nombre, estudiante.nombre, asignacion.estado 
+	DE curso, asignacion, estudiante 
+	DONDE asignacion.codigo_curso == 781 
+	&& asignacion.carnet == estudiante.carnet 
+	&& asignacion.codigo_curso == curso.codigo_curso;
+
+
+	SELECCIONAR curso.nombre, estudiante.nombre, asignacion.estado 
+	DE curso, asignacion, estudiante 
+	DONDE asignacion.carnet == estudiante.carnet 
+	&& asignacion.codigo_curso == curso.codigo_curso
+	&& asignacion.fh_asignacion >= 12-07-2017 00:00:00;
+
+}
+
+CREAR PROCEDIMIENTO ejecucion2 (){
+	insertar_primer_semestre();
+	finalizar_primer_semestre();
+	insertar_segundo_semestre();
+	finalizar_segundo_semestre();
+	insertar_tercer_semestre();
+	consultas();
+}
+
+ejecucion2();
+
+
+
+
+
